@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- generato da tools/i18n.py: non modificare a mano -->
+<resources>
+    <string name="connecting_vehicle" formatted="false">Araca bağlanılıyor…</string>
+    <string name="vehicle_unavailable" formatted="false">Araç hizmeti kullanılamıyor</string>
+    <string name="on" formatted="false">Açık</string>
+    <string name="off" formatted="false">Kapalı</string>
+    <string name="charge_charging" formatted="false">Şarj oluyor</string>
+    <string name="charge_fast" formatted="false">Hızlı şarj</string>
+    <string name="charge_wireless" formatted="false">Kablosuz şarj</string>
+    <string name="charge_done" formatted="false">Şarj tamamlandı</string>
+    <string name="charge_balancing" formatted="false">Batarya dengeleme</string>
+    <string name="charge_error" formatted="false">Şarj hatası</string>
+    <string name="charge_connecting" formatted="false">Bağlanıyor…</string>
+    <string name="charge_not_recognized" formatted="false">Takılı · tanınmadı</string>
+    <string name="charge_not_charging" formatted="false">Takılı · şarj olmuyor</string>
+    <string name="charge_stopped" formatted="false">Şarj durduruldu</string>
+    <string name="charge_scheduled" formatted="false">Planlı şarj</string>
+    <string name="charge_multiple" formatted="false">Çoklu şarj</string>
+    <string name="v2l_active" formatted="false">V2L açık · harici güç</string>
+    <string name="v2l_stopped" formatted="false">V2L durduruldu</string>
+    <string name="v2l_done" formatted="false">V2L bitti</string>
+    <string name="outside_temp">Dış %s°</string>
+    <string name="ac_desc" formatted="false">Klima</string>
+    <string name="auto_desc" formatted="false">Otomatik klima</string>
+    <string name="defrost_desc" formatted="false">Ön cam buz çözme</string>
+    <string name="fog_front" formatted="false">Ön sis farları</string>
+    <string name="fog_rear" formatted="false">Arka sis lambası</string>
+    <string name="inside_temp">İç %s°</string>
+    <string name="tpms_front" formatted="false">Ön</string>
+    <string name="tpms_rear" formatted="false">Arka</string>
+    <string name="seat_left" formatted="false">Sol koltuk ısıtma</string>
+    <string name="seat_right" formatted="false">Sağ koltuk ısıtma</string>
+    <string name="wheel_heat" formatted="false">Direksiyon ısıtma</string>
+    <string name="display" formatted="false">GÖRÜNÜM</string>
+    <string name="soc_decimals" formatted="false">Ondalıklı batarya yüzdesi</string>
+    <string name="show_tpms" formatted="false">Aracın altında lastik basıncı</string>
+    <string name="log_upload_label" formatted="false">GÜNLÜK GÖNDERİMİ</string>
+    <string name="log_upload_on" formatted="false">Günlükleri otomatik gönder</string>
+    <string name="log_upload_last">Son gönderim %1$s</string>
+    <string name="log_upload_never" formatted="false">Henüz günlük gönderilmedi (ilki başlangıçtan 90 sn sonra)</string>
+    <string name="log_upload_error">Gönderilemedi (%1$s): daha sonra yeniden denenecek</string>
+    <string name="log_upload_off" formatted="false">Günlük gönderimi kapalı</string>
+    <string name="log_upload_nokey" formatted="false">Bu sürümde günlük gönderimi yok</string>
+    <string name="show_inside_temp" formatted="false">İç sıcaklık</string>
+    <string name="sec_car" formatted="false">ARAÇ</string>
+    <string name="sec_car_sub" formatted="false">Renk, tavan</string>
+    <string name="sec_home" formatted="false">Ana ekran</string>
+    <string name="sec_home_sub" formatted="false">Batarya, lastikler, sıcaklıklar</string>
+    <string name="sec_look" formatted="false">Görünüm</string>
+    <string name="sec_look_sub" formatted="false">Tema, boyut, dil</string>
+    <string name="sec_drive" formatted="false">Sürüş</string>
+    <string name="sec_drive_sub" formatted="false">Direksiyon konumu, MG ana ekranı</string>
+    <string name="sec_system" formatted="false">Sistem</string>
+    <string name="sec_system_sub" formatted="false">Güncellemeler, günlükler, tanılama</string>
+    <string name="btn_back" formatted="false">Geri</string>
+    <string name="btn_check" formatted="false">Denetle</string>
+    <string name="btn_install" formatted="false">Yükle</string>
+    <string name="btn_open" formatted="false">Aç</string>
+    <string name="btn_save" formatted="false">Kaydet</string>
+    <string name="diag_waiting" formatted="false">Araç servisleri bekleniyor…</string>
+    <string name="drive_hint" formatted="false">Sağdan direksiyonda ana ekran ters çevrilir: araç ve klima sürücü tarafında.</string>
+    <string name="log_saving" formatted="false">Günlük kaydediliyor…</string>
+    <string name="save_log_sub" formatted="false">Belleğe (ve USB belleğe) tam bir günlük yazar</string>
+    <string name="set_black_roof" formatted="false">Siyah tavan</string>
+    <string name="set_black_roof_sub" formatted="false">Kontrast tavanlı versiyonlar gibi</string>
+    <string name="set_bodywork" formatted="false">KAROSER</string>
+    <string name="set_car_color" formatted="false">ARAÇ RENGİ</string>
+    <string name="set_diag_section" formatted="false">TANILAMA</string>
+    <string name="set_diag_sub" formatted="false">Araçtan okunan değerler ve son hatalar</string>
+    <string name="set_diag_title" formatted="false">Araç servisleri tanılaması</string>
+    <string name="set_home_card" formatted="false">ARAÇ PANELİ</string>
+    <string name="set_inside_sub" formatted="false">Dış sıcaklığın altında · araç vermezse «— °»</string>
+    <string name="set_language" formatted="false">DİL</string>
+    <string name="set_menu_title" formatted="false">Ayarlar</string>
+    <string name="set_open_original" formatted="false">Orijinal MG ana ekranını aç</string>
+    <string name="set_original_label" formatted="false">ORİJİNAL ANA EKRAN</string>
+    <string name="set_original_sub" formatted="false">Standart ana ekranın özelliklerini kullanmak için</string>
+    <string name="set_show_inside_temp" formatted="false">İç sıcaklık</string>
+    <string name="set_soc_decimals" formatted="false">Ondalıklı batarya yüzdesi</string>
+    <string name="set_soc_decimals_sub" formatted="false">Örn. %88 yerine %88,1</string>
+    <string name="set_theme" formatted="false">TEMA</string>
+    <string name="set_tpms_sub" formatted="false">Çizili aracın tekerleklerinin altında</string>
+    <string name="set_tpms_title" formatted="false">Lastik basıncı (TPMS)</string>
+    <string name="set_updates" formatted="false">GÜNCELLEMELER</string>
+    <string name="theme_auto" formatted="false">Otomatik</string>
+    <string name="theme_day" formatted="false">Gündüz</string>
+    <string name="theme_night" formatted="false">Gece</string>
+    <string name="upd_current" formatted="false">Sürüm güncel</string>
+    <string name="upd_installed_ver">Yüklü %1$s</string>
+    <string name="upd_new">Yeni sürüm mevcut: %1$s</string>
+    <string name="upd_new_short">Yeni sürüm %1$s</string>
+    <string name="upd_unknown" formatted="false">Güncellemeler henüz denetlenmedi</string>
+    <string name="a11y_desc" formatted="false">Yalnızca açılışta hangi uygulamanın önde olduğunu görmek ve MG ana ekranı yerine MG4 Launcher\'ı başlatmak için kullanılır. Ekran içeriğini okumaz.</string>
+    <string name="set_start_section" formatted="false">Ana ekran ve servis modu</string>
+    <string name="home_default_title" formatted="false">Varsayılan ana ekran olarak kullan</string>
+    <string name="home_default_sub" formatted="false">MG4 Launcher açılışta ve Ana ekran düğmesiyle açılır</string>
+    <string name="home_default_off_sub" formatted="false">Kapalı: orijinal MG ana ekranı kullanılır</string>
+    <string name="officina_until_sub">Servis modu %1$s tarihine kadar</string>
+    <string name="officina_title" formatted="false">Servis modu</string>
+    <string name="officina_sub" formatted="false">Birkaç gün araç orijinal MG ana ekranını kullanır, sonra başlatıcı kendiliğinden geri gelir</string>
+    <string name="days_1" formatted="false">1 gün</string>
+    <string name="days_3" formatted="false">3 gün</string>
+    <string name="days_7" formatted="false">7 gün</string>
+    <string name="btn_activate" formatted="false">Etkinleştir</string>
+    <string name="btn_deactivate" formatted="false">Kapat</string>
+    <string name="btn_cancel" formatted="false">İptal</string>
+    <string name="btn_turn_off" formatted="false">Kapat</string>
+    <string name="btn_keep" formatted="false">Açık bırak</string>
+    <string name="confirm_home_off_title" formatted="false">Orijinal MG ana ekranı kullanılsın mı?</string>
+    <string name="confirm_home_off_msg" formatted="false">MG ana ekranı, açılışta da varsayılan olur. MG ana ekranı uygulamaları arasında MG4 Launcher\'ı göstermez: geri dönmek için bilgisayar gerekir (adb shell cmd package set-home-activity com.mg4.launcher/.MainActivity). Yalnızca birkaç gün içinse Servis modunu kullan: başlatıcı kendiliğinden geri gelir.</string>
+    <string name="confirm_officina_title" formatted="false">Servis modu açılsın mı?</string>
+    <string name="confirm_officina_msg">%1$s tarihine kadar araç orijinal MG ana ekranını kullanacak ve güncellemeler duraklatılacak. Süre bitince MG4 Launcher kendiliğinden, eskisi gibi geri gelir.</string>
+    <string name="officina_active_title" formatted="false">Servis modu açık</string>
+    <string name="officina_active_msg">Servis modu %1$s tarihine kadar açık. Kapatmak istiyor musun?</string>
+    <string name="set_ui_size" formatted="false">KONTROL BOYUTU</string>
+    <string name="ui_size_normal" formatted="false">Normal</string>
+    <string name="ui_size_large" formatted="false">Büyük</string>
+    <string name="ui_size_xlarge" formatted="false">Çok büyük</string>
+    <string name="set_drive_side" formatted="false">DİREKSİYON KONUMU</string>
+    <string name="drive_auto" formatted="false">Araç gibi</string>
+    <string name="drive_left" formatted="false">Soldan direksiyon</string>
+    <string name="drive_right" formatted="false">Sağdan direksiyon</string>
+    <string name="left" formatted="false">Sol</string>
+    <string name="right" formatted="false">Sağ</string>
+    <string name="climate" formatted="false">Klima</string>
+    <string name="tab_map" formatted="false">Harita</string>
+    <string name="tab_media" formatted="false">Medya</string>
+    <string name="where_to" formatted="false">Nereye gidiyoruz?</string>
+    <string name="search_destination" formatted="false">Hedef ara</string>
+    <string name="nav_default">Navigasyon: %s</string>
+    <string name="home_place" formatted="false">Ev</string>
+    <string name="work_place" formatted="false">İş</string>
+    <string name="go_there" formatted="false">Rotayı başlat</string>
+    <string name="open_with" formatted="false">Şununla aç</string>
+    <string name="open_with_hint" formatted="false">varsayılan yapmak için basılı tutun</string>
+    <string name="nav_phone" formatted="false">Telefondan navigasyon</string>
+    <string name="next_maneuver" formatted="false">Sonraki manevra</string>
+    <string name="navigating" formatted="false">Navigasyon sürüyor</string>
+    <string name="remaining">%s kaldı</string>
+    <string name="tap_open_nav" formatted="false">Navigasyonu açmak için dokunun</string>
+    <string name="arrival">varış %s</string>
+    <string name="open_source_app" formatted="false">Kaynak uygulamasını aç</string>
+    <string name="src_radio" formatted="false">Radyo</string>
+    <string name="src_online" formatted="false">Çevrimiçi</string>
+    <string name="media_generic" formatted="false">Medya</string>
+    <string name="phone_connected" formatted="false">Telefon bağlı</string>
+    <string name="projection_ready">%s hazır. Tam ekran açmak için dokunun.</string>
+    <string name="open" formatted="false">Aç</string>
+    <string name="stations_title">%s istasyonları</string>
+    <string name="stations_empty" formatted="false">İstasyon bulunamadı. Radyo uygulamasından arama başlatın.</string>
+    <string name="open_radio_app" formatted="false">Radyoyu aç</string>
+    <string name="previous" formatted="false">Önceki</string>
+    <string name="next" formatted="false">Sonraki</string>
+    <string name="play_pause" formatted="false">Oynat veya duraklat</string>
+    <string name="temp_down" formatted="false">Sıcaklığı düşür</string>
+    <string name="temp_up" formatted="false">Sıcaklığı artır</string>
+    <string name="fan_down" formatted="false">Fan azalt</string>
+    <string name="fan_up" formatted="false">Fan artır</string>
+    <string name="no_track" formatted="false">Parça yok</string>
+    <string name="plug_usb" formatted="false">USB bellek takın</string>
+    <string name="bt_music" formatted="false">Bluetooth müzik</string>
+    <string name="bt_start" formatted="false">Telefondan çalmayı başlatın</string>
+    <string name="online_music" formatted="false">Çevrimiçi müzik</string>
+    <string name="from_phone" formatted="false">telefondan</string>
+    <string name="apps_title" formatted="false">Uygulamalar</string>
+    <string name="edit" formatted="false">Düzenle</string>
+    <string name="done" formatted="false">Bitti</string>
+    <string name="edit_desc" formatted="false">Gösterilecek yüklü uygulamaları seçin</string>
+    <string name="section_car" formatted="false">ARAÇ</string>
+    <string name="section_mine" formatted="false">SİZİN YÜKLEDİKLERİNİZ</string>
+    <string name="edit_note" formatted="false">göstermek veya gizlemek için dokunun</string>
+    <string name="app_vehicle" formatted="false">Araç</string>
+    <string name="app_energy" formatted="false">Enerji</string>
+    <string name="app_consumption" formatted="false">Tüketim</string>
+    <string name="app_phone" formatted="false">Telefon</string>
+    <string name="app_music" formatted="false">Müzik</string>
+    <string name="app_usb_video" formatted="false">USB video</string>
+    <string name="app_camera" formatted="false">360° kamera</string>
+    <string name="app_settings" formatted="false">Ayarlar</string>
+    <string name="app_navigator" formatted="false">Navigasyon</string>
+    <string name="app_weather" formatted="false">Hava durumu</string>
+    <string name="app_manual" formatted="false">Kılavuz</string>
+    <string name="app_account" formatted="false">Hesap</string>
+    <string name="app_sos" formatted="false">SOS çağrısı</string>
+    <string name="app_android_settings" formatted="false">Android ayarları</string>
+    <string name="app_android_files" formatted="false">Android dosyaları</string>
+    <string name="settings_title" formatted="false">Başlatıcı ayarları</string>
+    <string name="settings_desc" formatted="false">Başlatıcı ayarları</string>
+    <string name="car_color" formatted="false">ARAÇ RENGİ</string>
+    <string name="black_roof" formatted="false">Siyah tavan</string>
+    <string name="theme" formatted="false">TEMA</string>
+    <string name="language" formatted="false">DİL</string>
+    <string name="lang_auto" formatted="false">Araçla aynı</string>
+    <string name="lang_auto_hint" formatted="false">Otomatik, aracın sistem dilini izler.</string>
+    <string name="default_nav" formatted="false">VARSAYILAN NAVİGASYON</string>
+    <string name="nav_auto_hint" formatted="false">Otomatik: CarPlay veya Android Auto bağlıysa telefonunki, değilse MG.</string>
+    <string name="auto" formatted="false">Otomatik</string>
+    <string name="night" formatted="false">Gece</string>
+    <string name="day" formatted="false">Gündüz</string>
+    <string name="open_original_home" formatted="false">Orijinal MG ana ekranını aç</string>
+    <string name="diag_title" formatted="false">ARAÇ HİZMETLERİ TANILAMA</string>
+    <string name="save_log" formatted="false">Günlüğü kaydet</string>
+    <string name="save_log_hint" formatted="false">Günlüğü kaydet: USB bellek takılıysa dosya oraya da kaydedilir.</string>
+    <string name="close" formatted="false">Kapat</string>
+    <string name="updates" formatted="false">GÜNCELLEMELER</string>
+    <string name="check_updates" formatted="false">Güncellemeleri denetle</string>
+    <string name="download_install" formatted="false">İndir ve yükle</string>
+    <string name="download_install_v">%s indir ve yükle</string>
+    <string name="busy" formatted="false">İşlem sürüyor…</string>
+    <string name="press_check" formatted="false">Yeni sürüm aramak için Denetle\'ye dokunun</string>
+    <string name="saving_log" formatted="false">Günlük kaydediliyor…</string>
+    <string name="log_failed" formatted="false">Günlük hiçbir klasöre kaydedilemedi.</string>
+    <string name="log_saved_usb" formatted="false">Günlük kaydedildi, USB belleğe de:</string>
+    <string name="log_saved" formatted="false">Günlük kaydedildi:</string>
+    <string name="log_usb_hint" formatted="false">USB belleğe almak için: takın ve tekrar Günlüğü kaydet\'e dokunun.</string>
+    <string name="waiting_services" formatted="false">Araç hizmetleri bekleniyor…</string>
+    <string name="upd_checking" formatted="false">GitHub denetleniyor…</string>
+    <string name="upd_no_apk">Son sürüm (%s) APK içermiyor</string>
+    <string name="upd_available">Yeni sürüm mevcut: %s</string>
+    <string name="upd_latest">Güncelsiniz (%1$s, son sürüm %2$s)</string>
+    <string name="upd_no_connection">GitHub bağlantısı yok (%s)</string>
+    <string name="upd_downloading">%s indiriliyor…</string>
+    <string name="upd_download_pct">İndiriliyor %%%d…</string>
+    <string name="upd_download_failed">İndirme başarısız: %s</string>
+    <string name="upd_invalid_apk">İndirilen dosya geçerli bir APK değil (%d bayt)</string>
+    <string name="upd_wrong_package" formatted="false">İndirilen dosya bir başlatıcı güncellemesi değil</string>
+    <string name="upd_installing">%s yükleniyor… başlatıcı kendiliğinden yeniden başlayacak</string>
+    <string name="upd_install_failed">Yükleme başarısız: %s</string>
+    <string name="upd_new_version" formatted="false">yeni sürüm</string>
+    <string name="upd_not_found">%s üzerinde sürüm bulunamadı</string>
+    <string name="upd_token_invalid" formatted="false">GitHub belirteci geçersiz veya süresi dolmuş</string>
+    <string name="upd_refused" formatted="false">GitHub isteği reddetti (istek sınırı veya izinler)</string>
+    <string name="upd_unexpected">Beklenmeyen GitHub yanıtı: %d</string>
+    <string name="upd_confirm" formatted="false">Yüklemeyi ekranda onaylayın</string>
+    <string name="upd_installed" formatted="false">Güncelleme yüklendi</string>
+    <string name="upd_popup_title" formatted="false">Güncelleme mevcut</string>
+    <string name="upd_popup_text">MG4 Launcher %s kuruluma hazır</string>
+    <string name="upd_later" formatted="false">Daha sonra</string>
+    <string name="upd_now" formatted="false">Güncelle</string>
+    <string name="upd_popup_setting" formatted="false">Yeni güncelleme olduğunda bildir</string>
+    <string name="upd_error_code">hata %d</string>
+    <string name="btn_ok" formatted="false">Tamam</string>
+    <string name="time_h_min">%1$d sa %2$d dk</string>
+    <string name="time_min">%1$d dk</string>
+    <string name="recirc_desc" formatted="false">Hava sirkülasyonu</string>
+    <string name="map_shortcut_hint" formatted="false">Kısayol · navigasyonu açmak için dokunun</string>
+    <string name="phone_shortcut_hint" formatted="false">Kısayol · CarPlay ve Android Auto tam ekran açılır</string>
+    <string name="cb_limit" formatted="false">Şarj sınırı</string>
+    <string name="cb_current" formatted="false">AC akımı</string>
+    <string name="cb_charge" formatted="false">Şarj</string>
+    <string name="cb_v2l" formatted="false">V2L (harici priz)</string>
+    <string name="cb_start" formatted="false">Başlat</string>
+    <string name="cb_stop" formatted="false">Durdur</string>
+    <string name="cb_preparing" formatted="false">Hazırlanıyor…</string>
+    <string name="cb_unplugged" formatted="false">Takılı değil</string>
+    <string name="cb_limit_title" formatted="false">Şarj sınırı</string>
+    <string name="cb_limit_msg" formatted="false">Şarj bu yüzdede durur. %100 yalnızca uzun yolculuklar için.</string>
+    <string name="cb_current_title" formatted="false">AC şarj akımı</string>
+    <string name="cb_current_msg" formatted="false">Şarj istasyonundan veya ev prizinden çekilen akımı sınırlar. Max = aracın izin verdiği değer.</string>
+    <string name="cb_charge_start_title" formatted="false">Şarj başlatılsın mı?</string>
+    <string name="cb_charge_start_msg" formatted="false">Komut, Şarj yönetimi sayfasındaki gibi araca gönderilir.</string>
+    <string name="cb_charge_stop_title" formatted="false">Şarj durdurulsun mu?</string>
+    <string name="cb_charge_stop_msg" formatted="false">Şarj durur. Buradan veya MG uygulamasından yeniden başlatabilirsiniz.</string>
+    <string name="cb_v2l_start_title" formatted="false">V2L başlatılsın mı?</string>
+    <string name="cb_v2l_start_msg" formatted="false">Batarya, ayarlanan deşarj sınırına kadar harici prizi besler.</string>
+    <string name="cb_v2l_stop_title" formatted="false">V2L durdurulsun mu?</string>
+    <string name="cb_v2l_stop_msg" formatted="false">Harici priz güç vermeyi durdurur.</string>
+    <string name="cb_v2l_title" formatted="false">V2L kullanılamıyor</string>
+    <string name="cb_v2l_low">Deşarj sınırı (%1$s) mevcut şarjın üzerinde: V2L başlamaz. Enerji yönetiminden değiştirin.</string>
+    <string name="cb_open_energy" formatted="false">Enerji yönetimini aç</string>
+    <string name="set_show_date" formatted="false">Saatin yanında tarih</string>
+    <string name="set_show_date_sub" formatted="false">Örn. «Cum 16 Eki», menzil ile saat arasında</string>
+    <string name="set_tyre_unit" formatted="false">Basınç birimi</string>
+    <string name="set_tyre_unit_sub" formatted="false">Otomatik: gösterge mil ise psi, değilse bar</string>
+    <string name="unit_auto" formatted="false">Otomatik</string>
+    <string name="set_charge_buttons" formatted="false">Şarj düğmeleri</string>
+    <string name="set_charge_buttons_sub" formatted="false">Aracın altında sınır, AC akımı ve başlat/durdur · kapalı: daha büyük araç</string>
+    <string name="set_bar_card" formatted="false">ALT ÇUBUK</string>
+    <string name="set_big_bar" formatted="false">Büyük çubuk</string>
+    <string name="set_big_bar_sub" formatted="false">Daha büyük klima düğmeleri; müzik Medya panelinde kalır</string>
+    <string name="set_rear_fog" formatted="false">Arka sis düğmesi</string>
+    <string name="set_rear_fog_sub" formatted="false">Araçta zaten fiziksel düğme varsa veya sistem çubuğu gösteriyorsa kapatın</string>
+    <string name="set_auto_home" formatted="false">Açılıştan sonra Ana ekrana otomatik bas</string>
+    <string name="set_auto_home_sub" formatted="false">Bir kez, bu saniyelerden sonra, yalnızca MG ana ekranı açıksa (kamera, 360°, CarPlay veya arama sırasında asla)</string>
+    <string name="fw_other_title" formatted="false">Araç tanınmadı</string>
+    <string name="fw_other_msg">%1$s yazılımının MG uygulamaları bulunamadı: MG4 Launcher yalnızca MG4 bilgi-eğlence sisteminde çalışır. Tüm sürümler (SWI68, SWI69, SWI132, SWI133) burada:</string>
+    <string name="fw_open_original" formatted="false">Orijinal ana ekranı aç</string>
+    <string name="fw_wrong_title">Bu sürüm %1$s yazılımı içindir</string>
+    <string name="fw_wrong_msg">Aracınızda %2$s yazılımı var: araç hizmetleri farklı ve bu sürüm (%1$s) bağlanamıyor. %2$s için MG4 Launcher\'ı buradan yükleyin:</string>
+    <string name="news_title">MG4 Launcher %1$s yenilikleri</string>
+    <string name="news_sub" formatted="false">Yeni seçenekler ayarlarda (araç paneline uzun basın).</string>
+    <string name="news_1" formatted="false">Şarj düğmeleri: sınır, AC akımı ve şarjı veya V2L\'yi başlat/durdur</string>
+    <string name="news_2" formatted="false">Klima çubuğunda sirkülasyon düğmesi ve isteğe bağlı büyük çubuk</string>
+    <string name="news_3" formatted="false">İnternetsiz de radyo logoları ve kendi logolarınız için MG4Launcher/loghi klasörü</string>
+    <string name="news_4" formatted="false">CarPlay ve Android Auto: ileri ve oynat/duraklat telefonu kontrol eder</string>
+    <string name="news_5" formatted="false">Saatin yanında tarih, basınç birimi ve isteğe bağlı arka sis düğmesi</string>
+    <string name="news_6" formatted="false">«Açılıştan sonra Ana ekrana otomatik bas» seçeneği ve Lehçe dili</string>
+    <string name="radio_protected" formatted="false">Bu yazılımın radyo hizmeti launcher\'a yanıt vermiyor: Radyo uygulamasını kullanın</string>
+    <string name="news_7" formatted="false">Açılışta sabit ana ekran ve günlüklerden birçok düzeltme</string>
+</resources>

@@ -1,0 +1,6 @@
+{
+  "version": "0.1.0",
+  "apk": "releases/MG4Launcher-SWI133-0.1.0.apk",
+  "size": 545604,
+  "notes": "Prima versione per SWI133 (nuova MG4 Luxury), sperimentale: stessa grafica e funzioni della SWI68 0.8.1, servizi verificati sul firmware SWI133. Mandate il log diagnostico."
+}
