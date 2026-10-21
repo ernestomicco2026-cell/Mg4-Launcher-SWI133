@@ -71,6 +71,15 @@ public final class VehicleClient {
     // (sulla SWI68: condizione 45, impostazioni 187/188), quindi il pulsante resta nascosto.
     private static final String COND = "com.saicmotor.sdk.vehiclesettings.IVehicleConditionService";
     private static final int COND_BMS_AVAILABLE = 52;      // 1 = batteria (BMS) pronta a ricevere comandi (SWI133: 52, SWI68: 56)
+    // assistenza alla guida, come l'app Impostazioni veicolo originale (sicurezza / guida); stessi codici verificati su
+    // vehiclesettingservice_my24_P della SWI133 (getLaneKeepingAsstMode 83, getSignalPedal 163, getLdwsConfigCode 31…)
+    private static final int SET_GET_LKA = 83, SET_SET_LKA = 84, SET_GET_LAST_LKA = 147, SET_GET_LKA_FAILURE = 91;
+    // LKA: 0 non disponibile, 1 spento, 2 LDW, 3 LDP, 4 LKA, 5 ELK, 6-7 riservati
+    private static final int SET_GET_OPD = 163, SET_SET_OPD = 164, SET_GET_OPD_INHIBIT = 165;   // One Pedal Drive: 1 acceso
+    private static final int COND_LDWS_CONFIG = 31;        // 1 = assistenza corsia assente (-1 = presente, come l'originale)
+    private static final int COND_ONE_PEDAL_CONFIG = 41;   // 0 = One Pedal presente (-1 = assente, come l'originale)
+    // sedili: spegnimento diretto (il tocco "premuto" fa il giro 0 → 3 → 2 → 1 → 0)
+    private static final int AC_CLOSE_DRV_SEAT_HEAT = 35, AC_CLOSE_PSG_SEAT_HEAT = 39;
 
     /** Livelli ventola come nell'originale (AcCardView): 1..11, 0 = spenta, 15 = automatico. */
     public static final int FAN_OFF = 0, FAN_AUTO = 15;
@@ -108,6 +117,10 @@ public final class VehicleClient {
         public float insideTemp = Float.NaN;
         public int rearFog = -1, frontFog = -1;           // 1 acceso, 0 spento, -1 non disponibile
         public boolean hasFrontFog;
+        public int lka = -1;              // 1 acceso, 0 spento, -1 non disponibile
+        public int lkaMode = -1;          // valore grezzo dell'auto (vedi SET_GET_LKA)
+        public int opd = -1;              // One Pedal Drive: 1 acceso, 0 spento, -1 non disponibile
+        public int opdInhibit;            // motivo del blocco OPD (1 in carica, 2 sistema, 3 condizioni), 0 nessuno
         public int fanLevel = -1;         // 0 spenta, 1..max, 15 auto
         public int fanMin = 1, fanMax = 11;
         public float outsideTemp = -10000f;   // °C
@@ -346,6 +359,7 @@ public final class VehicleClient {
                     s.rearFog = held(SET_GET_REAR_FOG, Rpc.callInt(st, SET, SET_GET_REAR_FOG), now);
                     s.hasFrontFog = false;
                     Diag.put("luci.fendinebbia post", s.rearFog + " (anteriori non previsti sulla SWI133)");
+                    readAssist(st, s, now);
                 }
             } catch (Exception e) {
                 Diag.error("luci", e.toString());
@@ -474,6 +488,119 @@ public final class VehicleClient {
 
     // ---- pulsanti a commutazione (A/C, AUTO, sbrinamento, fendinebbia) ------------------------
 
+    private int ldwsConfig = Integer.MIN_VALUE, onePedalConfig = Integer.MIN_VALUE;
+
+    /** LKA e OPD: configurazione letta una volta, stato a ogni giro. Senza configurazione valida il pulsante non c'è. */
+    private void readAssist(IBinder st, State s, long now) throws Exception {
+        if (ldwsConfig == Integer.MIN_VALUE || onePedalConfig == Integer.MIN_VALUE) {
+            IBinder cnd = sub("vehiclecondition");
+            if (cnd == null) return;
+            int l = Rpc.callInt(cnd, COND, COND_LDWS_CONFIG), o = Rpc.callInt(cnd, COND, COND_ONE_PEDAL_CONFIG);
+            ldwsConfig = l == -1 ? 4 : l;
+            onePedalConfig = o == -1 ? 1 : o;
+            Diag.put("assistenza.config", "LDWS " + l + ", One Pedal " + o);
+        }
+        if (ldwsConfig != 1) {
+            int mode = Rpc.callInt(st, SET, SET_GET_LKA);
+            s.lkaMode = mode;
+            int on = mode == 1 ? 0 : mode >= 2 && mode <= 5 ? 1 : -1;
+            s.lka = held(SET_GET_LKA, on, now);
+        }
+        if (onePedalConfig == 0) {
+            int v = Rpc.callInt(st, SET, SET_GET_OPD);
+            s.opd = held(SET_GET_OPD, v == 1 ? 1 : v == 0 ? 0 : -1, now);
+            s.opdInhibit = Rpc.callInt(st, SET, SET_GET_OPD_INHIBIT);
+        }
+        Diag.put("assistenza.stato", "LKA " + s.lka + " (modo " + s.lkaMode + "), OPD " + s.opd + " (blocco " + s.opdInhibit + ")");
+    }
+
+    /** LKA acceso/spento. Per riaccenderlo usa l'ultima modalità che l'auto ricorda (LDW, LDP o ELK), come l'originale. */
+    public void toggleLka() {
+        if (bg == null) return;
+        int cur = predicted(SET_GET_LKA, last.lka);
+        if (cur < 0) return;
+        boolean turnOn = cur == 0;
+        hold(SET_GET_LKA, turnOn ? 1 : 0);
+        bg.post(() -> {
+            try {
+                IBinder st = sub("vehiclesetting");
+                if (st == null) return;
+                int value = 1;
+                if (turnOn) {
+                    int lastMode = Rpc.callInt(st, SET, SET_GET_LAST_LKA);
+                    value = lastMode == 2 || lastMode == 3 || lastMode == 5 ? lastMode : 2;
+                }
+                final int v = value;
+                Rpc.call(st, SET, SET_SET_LKA, p -> p.writeInt(v));
+                int fail = Rpc.callInt(st, SET, SET_GET_LKA_FAILURE);
+                Diag.put("comando.ultimo", "assistenza.lka · " + (turnOn ? "acceso (modo " + v + ")" : "spento") + " · guasto " + fail);
+            } catch (Exception e) {
+                Diag.error("assistenza.lka", e.toString());
+            }
+            poll();
+        });
+    }
+
+    /** One Pedal Drive acceso/spento. Se l'auto lo blocca (in carica, condizioni…) lo stato letto resta com'era. */
+    public void toggleOpd() {
+        if (bg == null) return;
+        int cur = predicted(SET_GET_OPD, last.opd);
+        if (cur < 0) return;
+        int next = cur == 1 ? 0 : 1;
+        hold(SET_GET_OPD, next);
+        bg.post(() -> {
+            try {
+                IBinder st = sub("vehiclesetting");
+                if (st == null) return;
+                Rpc.call(st, SET, SET_SET_OPD, p -> p.writeInt(next));
+                Diag.put("comando.ultimo", "assistenza.opd · " + (next == 1 ? "acceso" : "spento") + " · blocco " + Rpc.callInt(st, SET, SET_GET_OPD_INHIBIT));
+            } catch (Exception e) {
+                Diag.error("assistenza.opd", e.toString());
+            }
+            poll();
+        });
+    }
+
+    // ---- sedili a livello (gruppo Comfort: spento → 1 → 2 → 3 → spento) ------------------------
+
+    private volatile int seatTargetLeft = -1, seatTargetRight = -1;
+
+    /**
+     * Porta il sedile al livello successivo nell'ordine spento → 1 → 2 → 3 → spento. L'auto conosce solo "premuto"
+     * (giro 0 → 3 → 2 → 1 → 0) e "spegni": per salire servono tre pressioni, distanziate e controllate una a una.
+     */
+    public void stepSeat(boolean driver) {
+        if (bg == null) return;
+        int getCode = driver ? AC_GET_DRV_SEAT_HEAT : AC_GET_PSG_SEAT_HEAT;
+        int cur = predicted(getCode, driver ? last.seatLeft : last.seatRight);
+        if (cur < 0) return;
+        int target = (cur + 1) % 4;
+        hold(getCode, target);
+        if (driver) seatTargetLeft = target; else seatTargetRight = target;
+        String what = driver ? "clima.sedileSx" : "clima.sedileDx";
+        bg.post(() -> {
+            if ((driver ? seatTargetLeft : seatTargetRight) != target) return;   // superato da un tocco più recente
+            try {
+                IBinder a = sub("aircondition");
+                if (a == null) return;
+                int now = Rpc.callInt(a, AC, getCode), presses = 0;
+                if (target == 0) {
+                    Rpc.call(a, AC, driver ? AC_CLOSE_DRV_SEAT_HEAT : AC_CLOSE_PSG_SEAT_HEAT, Rpc.NONE);
+                } else {
+                    while (now != target && presses < 4 && (driver ? seatTargetLeft : seatTargetRight) == target) {
+                        Rpc.call(a, AC, driver ? AC_SET_DRV_SEAT_HEAT : AC_SET_PSG_SEAT_HEAT, p -> p.writeInt(1));
+                        presses++;
+                        Thread.sleep(450);
+                        now = Rpc.callInt(a, AC, getCode);
+                    }
+                }
+                Diag.put("comando.ultimo", what + " · livello " + target + " · pressioni " + presses + " · letto " + now);
+            } catch (Exception e) {
+                Diag.error(what, e.toString());
+            }
+            poll();
+        });
+    }
     private int distUnit = -1;
 
     /** Stati di ricarica (servizio SAIC): in carica / bilanciamento / rapida / wireless. */
