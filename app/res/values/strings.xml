@@ -63,6 +63,8 @@
     <string name="set_show_inside_temp" formatted="false">Inside temperature</string>
     <string name="set_soc_decimals" formatted="false">Battery percentage with decimals</string>
     <string name="set_soc_decimals_sub" formatted="false">E.g. 88.1% instead of 88%</string>
+    <string name="set_soc_big" formatted="false">Large battery percentage</string>
+    <string name="set_soc_big_sub" formatted="false">Swaps km and percentage: the percentage becomes the big number</string>
     <string name="set_theme" formatted="false">THEME</string>
     <string name="set_tpms_sub" formatted="false">Under the wheels of the drawn car</string>
     <string name="set_tpms_title" formatted="false">Tyre pressure (TPMS)</string>

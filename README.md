@@ -2,7 +2,7 @@
 
 🇮🇹 [Italiano](#italiano) · 🇬🇧 [English](#english)
 
-**Ultima versione / Latest version: [0.2.0](releases/MG4Launcher-SWI133-0.2.0.apk)** · 🧪 **sperimentale / experimental**
+**Ultima versione / Latest version: [0.2.1](releases/MG4Launcher-SWI133-0.2.1.apk)** · 🧪 **sperimentale / experimental**
 
 [![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/pool/9tv7fQ36nA?sr=wccr) [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/pool/9tv7fQ36nA?sr=wccr)
 
@@ -30,6 +30,9 @@
 > The MG / MG4 names only identify the compatible car (SWI133 infotainment). Install and use it at your own risk.
 
 ---
+![MG4 Launcher SWI133 0.2.1 — percentuale batteria in grande (simulazione / mock-up)](docs/home-SWI133-0.2.1-percentuale.png)
+*Home 0.2.1: opzione "Percentuale batteria in grande", km e percentuale invertiti · 0.2.1 home: "Large battery percentage" option, km and percentage swapped (mock-up).*
+
 ![MG4 Launcher SWI133 0.2.0 — home con la lista stazioni (simulazione / mock-up)](docs/home-SWI133-0.2.0.png)
 *Home 0.2.0: grafica identica alla versione SWI68 0.8.3 — gruppi Clima e Comfort, LKA e OPD, lista stazioni e preferiti con logo, nome e frequenza; valori e stazioni sono di esempio · 0.2.0 home: same design as SWI68 version 0.8.3 — Climate and Comfort groups, LKA and OPD, station list and favourites with logo, name and frequency; values and stations are examples (mock-up).*
 
@@ -133,7 +136,7 @@ Il firmware MG blocca l'installazione normale delle app: l'opzione `-f` la perme
 1. Scarica l'APK dalla cartella [`releases/`](releases/).
 2. Installa:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.2.0.apk
+   adb install -r -f MG4Launcher-SWI133-0.2.1.apk
    ```
 3. Rendilo la home predefinita:
    ```bash
@@ -204,6 +207,15 @@ vuoi. Anche una stella al repository o una segnalazione di un problema sono un a
 [![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/pool/9tv7fQ36nA?sr=wccr)
 
 ### Versioni
+
+#### 0.2.1
+- **La home si apre da sola all'accensione**: dai log di questa versione la home MG arriva spesso *dopo* il launcher
+  (fino a 223 secondi dopo), quando il controllo dell'avvio era già finito. Ora, finché la home MG non è comparsa, il launcher la
+  aspetta (al massimo 6 minuti) e poi torna davanti; anche *Premi Home da solo* riprova invece di fare un solo
+  tentativo. Retrocamera, CarPlay/Android Auto, chiamate e la home MG aperta apposta restano come prima.
+- **Niente più crash all'accensione**: prima dello sblocco del sistema le impostazioni del launcher non sono leggibili;
+  ora il launcher aspetta lo sblocco invece di chiudersi a ogni avvio.
+- **Percentuale batteria in grande** (Impostazioni → Home): inverte km e percentuale.
 
 #### 0.2.0
 Stesse novità della versione SWI68 0.8.2 e 0.8.3, con i servizi della SWI133, verificati sul firmware
@@ -353,7 +365,7 @@ The MG firmware blocks normal app installs; the `-f` option allows it.
 1. Download the APK from the [`releases/`](releases/) folder.
 2. Install it:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.2.0.apk
+   adb install -r -f MG4Launcher-SWI133-0.2.1.apk
    ```
 3. Make it the default home:
    ```bash
@@ -425,6 +437,15 @@ minimum amount**, you can give whatever you like. A star on the repository or a 
 [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/pool/9tv7fQ36nA?sr=wccr)
 
 ### Changelog
+
+#### 0.2.1
+- **The home opens by itself at start-up**: the logs of this version show the MG home often arriving *after* the
+  launcher (up to 223 seconds later), when the start-up check had already ended. Now, until the MG home has appeared,
+  the launcher waits for it (up to 6 minutes) and then comes back to the front; *Press Home automatically* also
+  retries instead of trying once. Rear camera, CarPlay/Android Auto, calls and an MG home opened on purpose are left alone.
+- **No more crashes at start-up**: before the system is unlocked the launcher settings can't be read; the launcher now
+  waits for the unlock instead of closing at every start.
+- **Large battery percentage** (Settings → Home): swaps km and percentage.
 
 #### 0.2.0
 Same changes as the SWI68 versions 0.8.2 and 0.8.3, with the SWI133 services, checked on the `SWI133-29176-1300R36`

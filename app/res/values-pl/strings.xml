@@ -63,6 +63,8 @@
     <string name="set_show_inside_temp" formatted="false">Temperatura wewnątrz</string>
     <string name="set_soc_decimals" formatted="false">Procent baterii z miejscem po przecinku</string>
     <string name="set_soc_decimals_sub" formatted="false">Np. 88,1% zamiast 88%</string>
+    <string name="set_soc_big" formatted="false">Procent baterii w dużym rozmiarze</string>
+    <string name="set_soc_big_sub" formatted="false">Zamienia km i procent: procent staje się dużą liczbą</string>
     <string name="set_theme" formatted="false">MOTYW</string>
     <string name="set_tpms_sub" formatted="false">Pod kołami narysowanego samochodu</string>
     <string name="set_tpms_title" formatted="false">Ciśnienie w oponach (TPMS)</string>

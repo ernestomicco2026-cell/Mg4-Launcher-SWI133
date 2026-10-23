@@ -63,6 +63,8 @@
     <string name="set_show_inside_temp" formatted="false">Innentemperatur</string>
     <string name="set_soc_decimals" formatted="false">Akkustand mit Nachkommastelle</string>
     <string name="set_soc_decimals_sub" formatted="false">Z. B. 88,1 % statt 88 %</string>
+    <string name="set_soc_big" formatted="false">Akkustand groß anzeigen</string>
+    <string name="set_soc_big_sub" formatted="false">Tauscht km und Prozent: der Akkustand wird zur großen Zahl</string>
     <string name="set_theme" formatted="false">DESIGN</string>
     <string name="set_tpms_sub" formatted="false">Unter den Rädern des gezeichneten Autos</string>
     <string name="set_tpms_title" formatted="false">Reifendruck (TPMS)</string>

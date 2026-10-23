@@ -345,6 +345,11 @@ public final class SettingsView extends FrameLayout {
                     prefs.setSocDecimals(on);
                     host.settingsChanged(false);
                 }), false));
+        card.addView(row(c, L.s(R.string.set_soc_big), L.s(R.string.set_soc_big_sub),
+                toggle(c, prefs.socBig(), on -> {
+                    prefs.setSocBig(on);
+                    host.settingsChanged(true);
+                }), false));
         card.addView(row(c, L.s(R.string.set_tpms_title), L.s(R.string.set_tpms_sub),
                 toggle(c, prefs.showTpms(), on -> {
                     prefs.setShowTpms(on);

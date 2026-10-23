@@ -225,7 +225,7 @@ public final class HomeView extends LinearLayout {
         rangeTv = Ui.text(c, "—", 76, t.text, Ui.LIGHT);
         rangeTv.setLetterSpacing(-0.03f);
         head.addView(rangeTv);
-        rangeUnitTv = Ui.text(c, "km", 26, t.sub, Ui.REGULAR);
+        rangeUnitTv = Ui.text(c, prefs.socBig() ? "%" : "km", 26, t.sub, Ui.REGULAR);
         head.addView(rangeUnitTv, Ui.margins(Ui.lp(-2, -2), dp(14), 0, 0, dp(8)));
         head.addView(Ui.spacer(c));
         // data (opzione) tra l'autonomia e l'ora, allineata alla base dei numeri
@@ -407,12 +407,21 @@ public final class HomeView extends LinearLayout {
             return;
         }
         lastVehicle = s;
-        rangeTv.setText(s.rangeKm > 0 && s.rangeKm < 2000 ? String.valueOf(s.rangeKm) : "—");
-        if (s.distUnit == 1) rangeUnitTv.setText("mi");
-        if (s.soc >= 0 && s.soc <= 100) {
-            socTv.setText(prefs.socDecimals() ? String.format(L.locale(), "%.1f%%", s.soc) : Math.round(s.soc) + "%");
-            battery.setValue(s.soc / 100f);
+        String km = s.rangeKm > 0 && s.rangeKm < 2000 ? String.valueOf(s.rangeKm) : "—";
+        String unit = s.distUnit == 1 ? "mi" : "km";
+        boolean socOk = s.soc >= 0 && s.soc <= 100;
+        String soc = prefs.socDecimals() ? String.format(L.locale(), "%.1f", s.soc) : String.valueOf(Math.round(s.soc));
+        if (prefs.socBig()) {
+            // 0.2.1: percentuale in grande, autonomia accanto alla barra
+            if (socOk) rangeTv.setText(soc);
+            rangeUnitTv.setText("%");
+            socTv.setText("—".equals(km) ? "—" : km + " " + unit);
+        } else {
+            rangeTv.setText(km);
+            rangeUnitTv.setText(unit);
+            if (socOk) socTv.setText(soc + "%");
         }
+        if (socOk) battery.setValue(s.soc / 100f);
         battery.setLimit(s.chargeLimit > 0 && s.chargeLimit < 100 ? s.chargeLimit / 100f : -1);
         // stato solo durante ricarica o scarica (tipo, potenza, tempo rimanente); a riposo lo spazio resta vuoto
         String st = chargeText(s);

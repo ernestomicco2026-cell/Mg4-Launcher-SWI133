@@ -63,6 +63,8 @@
     <string name="set_show_inside_temp" formatted="false">İç sıcaklık</string>
     <string name="set_soc_decimals" formatted="false">Ondalıklı batarya yüzdesi</string>
     <string name="set_soc_decimals_sub" formatted="false">Örn. %88 yerine %88,1</string>
+    <string name="set_soc_big" formatted="false">Büyük batarya yüzdesi</string>
+    <string name="set_soc_big_sub" formatted="false">Km ve yüzdeyi değiştirir: yüzde büyük sayı olur</string>
     <string name="set_theme" formatted="false">TEMA</string>
     <string name="set_tpms_sub" formatted="false">Çizili aracın tekerleklerinin altında</string>
     <string name="set_tpms_title" formatted="false">Lastik basıncı (TPMS)</string>

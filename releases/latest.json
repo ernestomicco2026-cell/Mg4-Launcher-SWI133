@@ -1,6 +1,6 @@
 {
-  "version": "0.2.0",
-  "apk": "releases/MG4Launcher-SWI133-0.2.0.apk",
-  "size": 520398,
-  "notes": "Gruppi Clima e Comfort, LKA e OPD, loghi radio per paese (FM e DAB), riavvio del dongle CarPlay/AA, launcher più leggero."
+  "version": "0.2.1",
+  "apk": "releases/MG4Launcher-SWI133-0.2.1.apk",
+  "size": 524494,
+  "notes": "Home che si apre da sola all'accensione anche quando la home MG arriva tardi, niente crash all'avvio, opzione percentuale batteria in grande."
 }

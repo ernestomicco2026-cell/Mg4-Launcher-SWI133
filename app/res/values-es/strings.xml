@@ -63,6 +63,8 @@
     <string name="set_show_inside_temp" formatted="false">Temperatura interior</string>
     <string name="set_soc_decimals" formatted="false">Porcentaje de batería con decimales</string>
     <string name="set_soc_decimals_sub" formatted="false">P. ej. 88,1 % en lugar de 88 %</string>
+    <string name="set_soc_big" formatted="false">Porcentaje de batería en grande</string>
+    <string name="set_soc_big_sub" formatted="false">Intercambia km y porcentaje: el porcentaje pasa a ser el número grande</string>
     <string name="set_theme" formatted="false">TEMA</string>
     <string name="set_tpms_sub" formatted="false">Bajo las ruedas del coche dibujado</string>
     <string name="set_tpms_title" formatted="false">Presión de neumáticos (TPMS)</string>

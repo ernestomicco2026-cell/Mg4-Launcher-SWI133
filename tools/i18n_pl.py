@@ -68,6 +68,8 @@ PL = {
     "set_show_inside_temp": "Temperatura wewnątrz",
     "set_soc_decimals": "Procent baterii z miejscem po przecinku",
     "set_soc_decimals_sub": "Np. 88,1% zamiast 88%",
+    "set_soc_big": "Procent baterii w dużym rozmiarze",
+    "set_soc_big_sub": "Zamienia km i procent: procent staje się dużą liczbą",
     "set_theme": "MOTYW",
     "set_tpms_sub": "Pod kołami narysowanego samochodu",
     "set_tpms_title": "Ciśnienie w oponach (TPMS)",
