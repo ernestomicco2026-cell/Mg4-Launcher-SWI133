@@ -90,6 +90,11 @@
     <string name="days_7" formatted="false">7 Tage</string>
     <string name="btn_activate" formatted="false">Aktivieren</string>
     <string name="btn_deactivate" formatted="false">Deaktivieren</string>
+    <string name="uninstall_title" formatted="false">MG4 Launcher deinstallieren</string>
+    <string name="uninstall_sub" formatted="false">Stellt den originalen MG-Startbildschirm wieder her und entfernt den Launcher aus dem Auto</string>
+    <string name="btn_uninstall" formatted="false">Deinstallieren</string>
+    <string name="uninstall_confirm" formatted="false">Der Launcher wird entfernt und der originale MG-Startbildschirm kehrt zurück. Um ihn wieder zu nutzen, musst du ihn neu installieren.</string>
+    <string name="uninstall_failed">Deinstallation fehlgeschlagen: %1$s</string>
     <string name="btn_cancel" formatted="false">Abbrechen</string>
     <string name="btn_turn_off" formatted="false">Ausschalten</string>
     <string name="btn_keep" formatted="false">Beibehalten</string>

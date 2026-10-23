@@ -30,6 +30,9 @@
 > The MG / MG4 names only identify the compatible car (SWI133 infotainment). Install and use it at your own risk.
 
 ---
+![MG4 Launcher SWI133 0.2.1 — temperatura e batteria più grandi (simulazione / mock-up)](docs/home-SWI133-0.2.1.png)
+*Home 0.2.1: percentuale della batteria e temperatura più grandi · 0.2.1 home: bigger battery percentage and temperature (mock-up).*
+
 ![MG4 Launcher SWI133 0.2.1 — percentuale batteria in grande (simulazione / mock-up)](docs/home-SWI133-0.2.1-percentuale.png)
 *Home 0.2.1: opzione "Percentuale batteria in grande", km e percentuale invertiti · 0.2.1 home: "Large battery percentage" option, km and percentage swapped (mock-up).*
 
@@ -169,7 +172,9 @@ Dal launcher: impostazioni → **Apri la home originale MG**. Per renderla di nu
 adb shell cmd package set-home-activity com.saicmotor.hmi.launcher/.ui.MainActivity
 ```
 
-Per rimuovere del tutto il launcher: `adb uninstall com.mg4.launcher`. L'app originale non viene mai modificata.
+Per rimuovere del tutto il launcher, anche senza computer (dalla 0.2.1): impostazioni → **Disinstalla MG4 Launcher**.
+Rimette la home MG originale e toglie il launcher dall'auto. Da computer: `adb uninstall com.mg4.launcher`.
+L'app originale non viene mai modificata.
 
 ### Comandi utili
 
@@ -216,6 +221,9 @@ vuoi. Anche una stella al repository o una segnalazione di un problema sono un a
 - **Niente più crash all'accensione**: prima dello sblocco del sistema le impostazioni del launcher non sono leggibili;
   ora il launcher aspetta lo sblocco invece di chiudersi a ogni avvio.
 - **Percentuale batteria in grande** (Impostazioni → Home): inverte km e percentuale.
+- **Temperatura interna/esterna e percentuale della batteria più grandi** e più chiare, leggibili durante la guida.
+- **Disinstallazione dall'auto**: Impostazioni → Sistema → *Disinstalla MG4 Launcher*. Rimette la home MG originale
+  come predefinita e toglie il launcher, senza computer.
 
 #### 0.2.0
 Stesse novità della versione SWI68 0.8.2 e 0.8.3, con i servizi della SWI133, verificati sul firmware
@@ -399,7 +407,9 @@ From the launcher: settings → **Apri la home originale MG** (Open the original
 adb shell cmd package set-home-activity com.saicmotor.hmi.launcher/.ui.MainActivity
 ```
 
-To remove the launcher completely: `adb uninstall com.mg4.launcher`. The original app is never modified.
+To remove the launcher completely, even without a computer (since 0.2.1): settings → **Uninstall MG4 Launcher**.
+It restores the original MG home and removes the launcher from the car. From a computer: `adb uninstall com.mg4.launcher`.
+The original app is never modified.
 
 ### Useful commands
 
@@ -446,6 +456,9 @@ minimum amount**, you can give whatever you like. A star on the repository or a 
 - **No more crashes at start-up**: before the system is unlocked the launcher settings can't be read; the launcher now
   waits for the unlock instead of closing at every start.
 - **Large battery percentage** (Settings → Home): swaps km and percentage.
+- **Bigger, brighter inside/outside temperature and battery percentage**, easy to read while driving.
+- **Uninstall from the car**: Settings → System → *Uninstall MG4 Launcher*. It restores the original MG home as
+  default and removes the launcher, no computer needed.
 
 #### 0.2.0
 Same changes as the SWI68 versions 0.8.2 and 0.8.3, with the SWI133 services, checked on the `SWI133-29176-1300R36`

@@ -90,6 +90,11 @@
     <string name="days_7" formatted="false">7 jours</string>
     <string name="btn_activate" formatted="false">Activer</string>
     <string name="btn_deactivate" formatted="false">Désactiver</string>
+    <string name="uninstall_title" formatted="false">Désinstaller MG4 Launcher</string>
+    <string name="uninstall_sub" formatted="false">Rétablit l\'accueil MG d\'origine et supprime le launcher de la voiture</string>
+    <string name="btn_uninstall" formatted="false">Désinstaller</string>
+    <string name="uninstall_confirm" formatted="false">Le launcher sera supprimé et l\'accueil MG d\'origine reviendra. Pour le récupérer, il faudra le réinstaller.</string>
+    <string name="uninstall_failed">Échec de la désinstallation : %1$s</string>
     <string name="btn_cancel" formatted="false">Annuler</string>
     <string name="btn_turn_off" formatted="false">Désactiver</string>
     <string name="btn_keep" formatted="false">Garder</string>

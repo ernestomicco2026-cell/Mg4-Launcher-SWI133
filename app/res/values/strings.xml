@@ -90,6 +90,11 @@
     <string name="days_7" formatted="false">7 days</string>
     <string name="btn_activate" formatted="false">Activate</string>
     <string name="btn_deactivate" formatted="false">Turn off</string>
+    <string name="uninstall_title" formatted="false">Uninstall MG4 Launcher</string>
+    <string name="uninstall_sub" formatted="false">Restores the original MG home and removes the launcher from the car</string>
+    <string name="btn_uninstall" formatted="false">Uninstall</string>
+    <string name="uninstall_confirm" formatted="false">The launcher will be removed and the original MG home will come back. To get it back you will need to install it again.</string>
+    <string name="uninstall_failed">Uninstall failed: %1$s</string>
     <string name="btn_cancel" formatted="false">Cancel</string>
     <string name="btn_turn_off" formatted="false">Turn off</string>
     <string name="btn_keep" formatted="false">Keep it on</string>

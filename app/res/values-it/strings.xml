@@ -90,6 +90,11 @@
     <string name="days_7" formatted="false">7 giorni</string>
     <string name="btn_activate" formatted="false">Attiva</string>
     <string name="btn_deactivate" formatted="false">Disattiva</string>
+    <string name="uninstall_title" formatted="false">Disinstalla MG4 Launcher</string>
+    <string name="uninstall_sub" formatted="false">Rimette la home MG originale e toglie il launcher dall\'auto</string>
+    <string name="btn_uninstall" formatted="false">Disinstalla</string>
+    <string name="uninstall_confirm" formatted="false">Il launcher verrà tolto e tornerà la home MG originale. Per riaverlo dovrai installarlo di nuovo.</string>
+    <string name="uninstall_failed">Disinstallazione non riuscita: %1$s</string>
     <string name="btn_cancel" formatted="false">Annulla</string>
     <string name="btn_turn_off" formatted="false">Spegni</string>
     <string name="btn_keep" formatted="false">Lascia attiva</string>

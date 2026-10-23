@@ -90,6 +90,11 @@
     <string name="days_7" formatted="false">7 gün</string>
     <string name="btn_activate" formatted="false">Etkinleştir</string>
     <string name="btn_deactivate" formatted="false">Kapat</string>
+    <string name="uninstall_title" formatted="false">MG4 Launcher\'ı kaldır</string>
+    <string name="uninstall_sub" formatted="false">Orijinal MG ana ekranını geri yükler ve launcher\'ı araçtan kaldırır</string>
+    <string name="btn_uninstall" formatted="false">Kaldır</string>
+    <string name="uninstall_confirm" formatted="false">Launcher kaldırılacak ve orijinal MG ana ekranı geri gelecek. Tekrar kullanmak için yeniden yüklemeniz gerekir.</string>
+    <string name="uninstall_failed">Kaldırılamadı: %1$s</string>
     <string name="btn_cancel" formatted="false">İptal</string>
     <string name="btn_turn_off" formatted="false">Kapat</string>
     <string name="btn_keep" formatted="false">Açık bırak</string>
