@@ -2,7 +2,7 @@
 
 🇮🇹 [Italiano](#italiano) · 🇬🇧 [English](#english)
 
-**Ultima versione / Latest version: [0.2.1](releases/MG4Launcher-SWI133-0.2.1.apk)** · 🧪 **sperimentale / experimental**
+**Ultima versione / Latest version: [0.2.2](releases/MG4Launcher-SWI133-0.2.2.apk)** · 🧪 **sperimentale / experimental**
 
 [![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/pool/9tv7fQ36nA?sr=wccr) [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/pool/9tv7fQ36nA?sr=wccr)
 
@@ -30,6 +30,13 @@
 > The MG / MG4 names only identify the compatible car (SWI133 infotainment). Install and use it at your own risk.
 
 ---
+![MG4 Launcher SWI133 0.2.2 — home (simulazione / mock-up)](docs/home-SWI133-0.2.2.png)
+*Home 0.2.2: grafica uguale alla 0.2.1 · 0.2.2 home: same look as 0.2.1 (mock-up).*
+
+![MG4 Clima aperto dal tasto del clima del launcher (simulazione / mock-up)](docs/clima-SWI133-0.2.2-mg4clima.png)
+*Dalla 0.2.2 il tasto del clima apre [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4), se è installato ·
+from 0.2.2 the climate button opens [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4), if installed (mock-up).*
+
 ![MG4 Launcher SWI133 0.2.1 — temperatura e batteria più grandi (simulazione / mock-up)](docs/home-SWI133-0.2.1.png)
 *Home 0.2.1: percentuale della batteria e temperatura più grandi · 0.2.1 home: bigger battery percentage and temperature (mock-up).*
 
@@ -139,7 +146,7 @@ Il firmware MG blocca l'installazione normale delle app: l'opzione `-f` la perme
 1. Scarica l'APK dalla cartella [`releases/`](releases/).
 2. Installa:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.2.1.apk
+   adb install -r -f MG4Launcher-SWI133-0.2.2.apk
    ```
 3. Rendilo la home predefinita:
    ```bash
@@ -212,6 +219,11 @@ vuoi. Anche una stella al repository o una segnalazione di un problema sono un a
 [![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/pool/9tv7fQ36nA?sr=wccr)
 
 ### Versioni
+
+#### 0.2.2
+- **Tasto del clima**: se è installato [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4) apre
+  direttamente quello (la nuova schermata del clima in stile Tesla), senza far vedere per un istante il clima originale.
+  Senza MG4 Clima tutto resta come prima.
 
 #### 0.2.1
 - **La home si apre da sola all'accensione**: dai log di questa versione la home MG arriva spesso *dopo* il launcher
@@ -373,7 +385,7 @@ The MG firmware blocks normal app installs; the `-f` option allows it.
 1. Download the APK from the [`releases/`](releases/) folder.
 2. Install it:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.2.1.apk
+   adb install -r -f MG4Launcher-SWI133-0.2.2.apk
    ```
 3. Make it the default home:
    ```bash
@@ -447,6 +459,11 @@ minimum amount**, you can give whatever you like. A star on the repository or a 
 [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/pool/9tv7fQ36nA?sr=wccr)
 
 ### Changelog
+
+#### 0.2.2
+- **Climate button**: if [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4) is installed it opens it
+  directly (the new Tesla-style climate screen), without briefly showing the original climate. Without MG4 Clima
+  everything stays as before.
 
 #### 0.2.1
 - **The home opens by itself at start-up**: the logs of this version show the MG home often arriving *after* the

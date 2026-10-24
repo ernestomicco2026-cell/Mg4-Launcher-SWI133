@@ -59,8 +59,21 @@ public final class HvacPanel {
         link.start();
     }
 
-    /** Apre il pannello clima. False se non è disponibile. */
+    /** MG4 Clima installato: il tasto clima apre quella (che rimanda al pannello originale se l'utente lo sceglie). */
+    private static boolean openMg4Clima(Context c) {
+        Intent i = new Intent("com.mg4.clima.APRI").setPackage("com.mg4.clima").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            if (c.getPackageManager().resolveActivity(i, 0) == null) return false;
+            c.startActivity(i);
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
+    /** Apre il pannello clima (o MG4 Clima, se installato). False se non è disponibile. */
     public static boolean open(Context c) {
+        if (openMg4Clima(c)) return true;
         if (!available(c)) return false;
         prepare(c);
         if (link.isConnected()) {
