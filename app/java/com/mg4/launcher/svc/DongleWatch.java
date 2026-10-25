@@ -27,6 +27,9 @@ import java.util.Set;
  *   <li>solo se dopo N secondi dall'accensione (20 di default) non è partita nessuna sessione CarPlay/AA;</li>
  *   <li>al massimo 2 tentativi per accensione: reset della porta USB del dongle (come toglierlo e rimetterlo), poi
  *   riavvio del servizio CarPlay/AA (Allgo);</li>
+ *   <li>riconoscimento automatico: alcuni dongle (es. SmartBox) si presentano sull'USB come un iPhone (05ac:12a8) o un
+ *   telefono Android; se dopo il ritardo non c'è nessuna sessione, conta come dongle qualsiasi dispositivo Apple o Android
+ *   (AOA) collegato all'USB (anche un telefono col cavo: il reset è come staccarlo e riattaccarlo);</li>
  *   <li>mai durante una chiamata.</li>
  * </ul>
  * Ogni passo va nella diagnostica (chiavi dongle.*).
@@ -231,6 +234,11 @@ public final class DongleWatch {
             if (isDongleVid(d.getVendorId())) return d;
             String serial = serial(d);
             if (!serial.isEmpty() && s.contains(serial)) return d;
+        }
+        // riconoscimento automatico: dongle che si presentano come iPhone o telefono Android (es. SmartBox = 05ac:12a8)
+        for (UsbDevice d : devices()) {
+            int vid = d.getVendorId();
+            if (vid == APPLE_VID || vid == GOOGLE_AOAP_VID) return d;
         }
         return null;
     }

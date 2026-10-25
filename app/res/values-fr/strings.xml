@@ -28,7 +28,7 @@
     <string name="log_upload_off" formatted="false">Envoi des journaux désactivé</string>
     <string name="log_upload_nokey" formatted="false">Envoi des journaux indisponible dans cette version</string>
     <string name="sec_car" formatted="false">VOITURE</string>
-    <string name="sec_car_sub" formatted="false">Couleur, toit</string>
+    <string name="sec_car_sub" formatted="false">Couleur, jantes, toit</string>
     <string name="sec_home" formatted="false">Accueil</string>
     <string name="sec_home_sub" formatted="false">Batterie, pneus, températures</string>
     <string name="sec_look" formatted="false">Apparence</string>
@@ -315,4 +315,13 @@
     <string name="tile_on_m" formatted="false">Activé</string>
     <string name="tile_off_m" formatted="false">Désactivé</string>
     <string name="tile_level">Niveau %d</string>
+    <string name="set_wheels" formatted="false">Jantes</string>
+    <string name="wheel_16" formatted="false">16″ enjoliveurs noirs</string>
+    <string name="wheel_17" formatted="false">17″ Aero bicolores</string>
+    <string name="wheel_18_lux" formatted="false">18″ Luxury / Trophy</string>
+    <string name="wheel_18_xpower" formatted="false">18″ XPOWER</string>
+    <string name="newsv_1" formatted="false">Jantes au choix dans les réglages, sous la couleur : 16″, 17″ Aero, 18″ Luxury/Trophy, 18″ XPOWER</string>
+    <string name="newsv_2" formatted="false">Température extérieure plus fiable : les valeurs non valides (comme -40°) ne s\'affichent plus</string>
+    <string name="newsv_3" formatted="false">Température intérieure masquée : la voiture ne la fournit pas (elle affichait l\'extérieure) ; nous la cherchons dans les journaux</string>
+    <string name="newsv_4" formatted="false">Les dongles CarPlay/Android Auto qui se présentent comme un iPhone sont reconnus et redémarrés s\'ils ne démarrent pas</string>
 </resources>

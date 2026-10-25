@@ -319,17 +319,10 @@ public final class MainActivity extends Activity implements HomeView.Host, AppsV
 
     // ---- popup "Novità" dopo un aggiornamento -------------------------------------------------
 
-    /** Una sola volta per versione, nella lingua scelta; non dopo la prima installazione. */
+    /** Una sola volta per ogni versione (anche le correzioni), nella lingua scelta; non dopo la prima installazione. */
     private void showNewsIfUpdated() {
         String ver = updater.currentVersion();
-        // le novità sono della versione principale (0.8): le correzioni 0.8.x non le rimostrano
-        String major = ver.indexOf('.', ver.indexOf('.') + 1) > 0 ? ver.substring(0, ver.indexOf('.', ver.indexOf('.') + 1)) : ver;
-        String seen = prefs.newsShownFor();
-        // SWI133: la 0.1 è la prima versione, non ha novità da mostrare (anche se installata sopra un'altra versione)
-        if ("0.1".equals(major) || ver.equals(seen) || seen.startsWith(major + ".") || seen.equals(major)) {
-            prefs.setNewsShownFor(ver);
-            return;
-        }
+        if (ver.equals(prefs.newsShownFor())) return;
         boolean updated = false;
         try {
             android.content.pm.PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -338,12 +331,24 @@ public final class MainActivity extends Activity implements HomeView.Host, AppsV
         }
         prefs.setNewsShownFor(ver);
         if (!updated) return;
-        showNews(major + ".0");
+        showNews(ver);
+    }
+
+    /** Novità di ogni versione (testi in tutte le lingue in strings.xml). */
+    private static int[] newsFor(String ver) {
+        switch (ver) {
+            case "0.2.3":
+                return new int[]{R.string.newsv_1, R.string.newsv_2, R.string.newsv_3, R.string.newsv_4};
+            default:
+                return new int[]{R.string.news_1, R.string.news_2, R.string.news_3, R.string.news_4, R.string.news_5,
+                        R.string.news_6, R.string.news_7};
+        }
     }
 
     private void showNews(String ver) {
-        String[] items = {L.s(R.string.news_1), L.s(R.string.news_2), L.s(R.string.news_3), L.s(R.string.news_4),
-                L.s(R.string.news_5), L.s(R.string.news_6), L.s(R.string.news_7)};
+        int[] ids = newsFor(ver);
+        String[] items = new String[ids.length];
+        for (int i = 0; i < ids.length; i++) items[i] = L.s(ids[i]);
         com.mg4.launcher.ui.Confirm.notice(root, theme, L.f(R.string.news_title, ver), L.s(R.string.news_sub), items,
                 L.s(R.string.btn_ok), null);
     }
