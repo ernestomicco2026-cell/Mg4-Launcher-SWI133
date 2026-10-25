@@ -2,7 +2,7 @@
 
 🇮🇹 [Italiano](#italiano) · 🇬🇧 [English](#english)
 
-**Ultima versione / Latest version: [0.2.3](releases/MG4Launcher-SWI133-0.2.3.apk)** · 🧪 **sperimentale / experimental**
+**Ultima versione / Latest version: [0.2.4](releases/MG4Launcher-SWI133-0.2.4.apk)** · 🧪 **sperimentale / experimental**
 
 > 🌡️ **Nuovo: [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4)** — la schermata del clima in stile Tesla, per SWI68, SWI69, SWI132 e SWI133. Con MG4 Clima installato il tasto del clima del launcher apre direttamente quella.
 >
@@ -35,8 +35,8 @@
 > The MG / MG4 names only identify the compatible car (SWI133 infotainment). Install and use it at your own risk.
 
 ---
-![MG4 Launcher SWI133 0.2.3 — home con i cerchi 18″ XPOWER (simulazione / mock-up)](docs/home-SWI133-0.2.3.png)
-*Home 0.2.3 con i cerchi 18″ XPOWER · 0.2.3 home with the 18″ XPOWER wheels (mock-up).*
+![MG4 Launcher SWI133 0.2.4 — home con i cerchi 18″ XPOWER (simulazione / mock-up)](docs/home-SWI133-0.2.4.png)
+*Home 0.2.4 con i cerchi 18″ XPOWER · 0.2.4 home with the 18″ XPOWER wheels (mock-up).*
 
 ![MG4 Launcher SWI133 0.2.3 — impostazioni, cerchi (simulazione / mock-up)](docs/impostazioni-SWI133-0.2.3-cerchi.png)
 *Impostazioni → Auto: colore, cerchi e tetto · Settings → Car: colour, wheels and roof (mock-up).*
@@ -157,7 +157,7 @@ Il firmware MG blocca l'installazione normale delle app: l'opzione `-f` la perme
 1. Scarica l'APK dalla cartella [`releases/`](releases/).
 2. Installa:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.2.3.apk
+   adb install -r -f MG4Launcher-SWI133-0.2.4.apk
    ```
 3. Rendilo la home predefinita:
    ```bash
@@ -230,6 +230,10 @@ vuoi. Anche una stella al repository o una segnalazione di un problema sono un a
 [![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/pool/9tv7fQ36nA?sr=wccr)
 
 ### Versioni
+
+#### 0.2.4
+- **Ventola su OFF**: l'auto non accetta la ventola a 0 e dopo un attimo la rimetteva a 1. Come nell'app originale,
+  la ventola va da 1 in su e OFF ora spegne davvero il clima.
 
 #### 0.2.3
 - **Cerchi a scelta** nelle impostazioni (Auto, sotto il colore): 16″ copricerchi neri, 17″ Aero bicolore (di serie),
@@ -408,7 +412,7 @@ The MG firmware blocks normal app installs; the `-f` option allows it.
 1. Download the APK from the [`releases/`](releases/) folder.
 2. Install it:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.2.3.apk
+   adb install -r -f MG4Launcher-SWI133-0.2.4.apk
    ```
 3. Make it the default home:
    ```bash
@@ -482,6 +486,10 @@ minimum amount**, you can give whatever you like. A star on the repository or a 
 [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/pool/9tv7fQ36nA?sr=wccr)
 
 ### Changelog
+
+#### 0.2.4
+- **Fan set to OFF**: the car doesn't accept the fan at 0 and put it back to 1 after a moment. Like the original app,
+  the fan goes from 1 up and OFF now really turns the climate off.
 
 #### 0.2.3
 - **Choose your wheels** in the settings (Car, under the colour): 16″ black covers, 17″ Aero two-tone (standard),

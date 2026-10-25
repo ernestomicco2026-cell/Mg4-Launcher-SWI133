@@ -330,4 +330,5 @@ PL = {
     "newsv_2": 'Bardziej wiarygodna temperatura zewnętrzna: nieprawidłowe wartości (np. -40°) nie są już pokazywane',
     "newsv_3": 'Temperatura wewnętrzna ukryta: auto jej nie podaje (pokazywała zewnętrzną); szukamy jej w logach',
     "newsv_4": 'Dongle CarPlay/Android Auto widoczne jako iPhone są teraz rozpoznawane i restartowane, gdy nie startują',
+    "newsf_1": 'Wentylator na OFF teraz naprawdę wyłącza klimatyzację (wcześniej wracał do 1)',
 }
