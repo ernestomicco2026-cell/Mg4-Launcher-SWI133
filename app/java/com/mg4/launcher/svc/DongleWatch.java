@@ -153,6 +153,7 @@ public final class DongleWatch {
         if (n == 0) {
             boolean ok = resetUsb(d);
             Diag.put("dongle.tentativo1", "reset porta USB " + describe(d) + ": " + (ok ? "fatto" : "non riuscito"));
+            checkReappear("dongle.dopoReset", d.getVendorId(), d.getProductId());
             if (!ok) {   // passa subito al secondo
                 bg.postDelayed(this::check, 2000);
                 return;
@@ -296,6 +297,24 @@ public final class DongleWatch {
             UsbManager.class.getMethod("grantPermission", UsbDevice.class).invoke(um, d);
         } catch (Throwable ignored) {
         }
+    }
+
+    /** Dopo un reset o una riaccensione della porta: registra se il dongle ricompare sul bus (1.x). */
+    private void checkReappear(String tag, int vid, int pid) {
+        bg.postDelayed(() -> {
+            try {
+                UsbManager um = (UsbManager) ctx.getSystemService(Context.USB_SERVICE);
+                boolean found = false, any = false;
+                for (UsbDevice x : um.getDeviceList().values()) {
+                    if (isDongleVid(x.getVendorId())) any = true;
+                    if (vid != 0 && x.getVendorId() == vid && x.getProductId() == pid) found = true;
+                }
+                String esito = vid != 0 ? (found ? "ricomparso" : "NON ricomparso") : (any ? "un dongle è visibile" : "nessun dongle visibile");
+                Diag.put(tag, esito + " 8 s dopo il reset");
+            } catch (Throwable e) {
+                Diag.error(tag, e.toString());
+            }
+        }, 8000);
     }
 
     /** Reset della porta USB (come staccare e riattaccare), lo stesso che usa il servizio Allgo. */
