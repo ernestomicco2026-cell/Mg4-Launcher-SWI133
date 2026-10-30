@@ -1,6 +1,6 @@
 {
-  "version": "0.2.7",
-  "apk": "releases/MG4Launcher-SWI133-0.2.7.apk",
-  "size": 623645,
-  "notes": "Dimensione separata per la schermata App (icone e testo più grandi). Il log del dongle registra se ricompare dopo il reset. Certificati di sicurezza Sectigo/USERTrust aggiunti."
+  "version": "0.2.8",
+  "apk": "releases/MG4Launcher-SWI133-0.2.8.apk",
+  "size": 636152,
+  "notes": "Il riavvio del dongle CarPlay/AA non resetta più i telefoni col cavo, solo i dongle wireless veri. Permesso della velocità, nuovi certificati Sectigo/USERTrust, prima configurazione di Android riconosciuta, niente log da telefoni ed emulatori."
 }
