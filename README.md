@@ -1,15 +1,22 @@
 # MG4 Launcher — SWI133 (MG4 Luxury MY24)
 
-🇮🇹 [Italiano](#italiano) · 🇬🇧 [English](#english)
+<p align="center"><img src="screenshots/home.png" alt="Home di MG4 Launcher SWI133 (simulazione) · MG4 Launcher SWI133 home (mock-up)" width="100%"></p>
 
-**Ultima versione / Latest version: [0.2.8](releases/MG4Launcher-SWI133-0.2.8.apk)** · 🧪 **sperimentale / experimental**
+<p align="center">
+<b>Launcher in stile Tesla per l'infotainment MG4 SWI133</b><br>
+<i>Tesla-style launcher for the MG4 SWI133 infotainment</i>
+</p>
 
-> 🌡️ **Nuovo: [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4)** — la schermata del clima in stile Tesla, per SWI68, SWI69, SWI132 e SWI133. Con MG4 Clima installato il tasto del clima del launcher apre direttamente quella.
->
-> 🌡️ **New: [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4)** — the Tesla-style climate screen, for SWI68, SWI69, SWI132 and SWI133. With MG4 Clima installed the launcher's climate button opens it directly.
+<p align="center">
+<a href="releases/MG4Launcher-SWI133-0.2.8.apk"><img alt="Scarica / Download 0.2.8" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.2.8-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
+<a href="https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT"><img alt="Sostieni il progetto con PayPal · Support the project with PayPal" src="https://img.shields.io/badge/Sostieni%20%2F%20Support-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white"></a> <img alt="sperimentale / experimental" src="https://img.shields.io/badge/sperimentale%20%2F%20experimental-orange?style=for-the-badge">
+</p>
 
-
-[![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT) [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
+<p align="center">
+🇮🇹 <a href="#italiano">Italiano</a> · 🇬🇧 <a href="#english">English</a> ·
+<a href="#quale-versione-installare--which-version-should-i-install">Quale versione? / Which version?</a> ·
+<a href="#versioni">Novità</a> / <a href="#changelog">What's new</a>
+</p>
 
 > ⚠️ **Compatibilità / Compatibility:** solo infotainment **SWI133 (nuova MG4 Luxury)** · only **SWI133 (new MG4 Luxury)** infotainment.
 > Per gli altri software usa la versione dedicata · for the other software use the dedicated version:
@@ -28,54 +35,30 @@
 > **Log upload** on (it is on by default) or send me the diagnostic log (**Save log** in the settings), and tell me
 > what works and what doesn't.
 
-> Progetto amatoriale e **non ufficiale**: non è affiliato né approvato da MG Motor o SAIC Motor.
-> I nomi MG / MG4 servono solo a indicare l'auto compatibile (infotainment SWI133). Installalo e usalo a tuo rischio.
+---
+
+## Schermate / Screenshots
+
+<table>
+<tr>
+<td width="50%" valign="top"><img src="screenshots/guida.png" alt="Gruppo Guida: corsia, One Pedal, assistente, pedale del freno" width="100%"><br>
+<sub>Gruppo <b>Guida</b>: corsia, One Pedal, assistente, pedale del freno · <i><b>Driving</b> group: lane, One Pedal, assistant, brake pedal</i></sub></td>
+<td width="50%" valign="top"><img src="screenshots/clima-rapido.png" alt="Gruppo Clima: A/C, automatico, ricircolo" width="100%"><br>
+<sub>Gruppo <b>Clima</b>: A/C, automatico, ricircolo · <i><b>Climate</b> group: A/C, auto, recirculation</i></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screenshots/impostazioni.png" alt="Impostazioni: colore, cerchi e tetto dell'auto" width="100%"><br>
+<sub><b>Impostazioni</b>: colore, cerchi e tetto dell'auto · <i><b>Settings</b>: car colour, wheels and roof</i></sub></td>
+<td width="50%" valign="top"><img src="screenshots/mg4clima.png" alt="MG4 Clima aperto dal tasto del clima" width="100%"><br>
+<sub><a href="https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4">MG4 Clima</a> aperto dal tasto del clima · <i><a href="https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4">MG4 Clima</a> opened from the climate button</i></sub></td>
+</tr>
+</table>
+
+<sub>Simulazioni della grafica: valori, stazioni e loghi sono di esempio · Design mock-ups: values, stations and logos are examples.</sub>
+
+> 🌡️ **Nuovo: [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4)** — la schermata del clima in stile Tesla, per SWI68, SWI69, SWI132 e SWI133. Con MG4 Clima installato il tasto del clima del launcher apre direttamente quella.
 >
-> Hobby project, **not official**: not affiliated with or endorsed by MG Motor or SAIC Motor.
-> The MG / MG4 names only identify the compatible car (SWI133 infotainment). Install and use it at your own risk.
-
----
-![MG4 Launcher 0.2.6 — home con l'icona di CarPlay / Android Auto nella barra (simulazione / mock-up)](docs/home-SWI133-0.2.6.png)
-*Home 0.2.6: icona di CarPlay / Android Auto nella barra con il telefono collegato · 0.2.6 home: CarPlay / Android Auto icon in the bar with the phone connected (mock-up).*
-
-![MG4 Launcher 0.2.5 — home con il gruppo Guida (simulazione / mock-up)](docs/home-SWI133-0.2.5.png)
-*Home 0.2.5: nuovo pulsante Guida nella barra · 0.2.5 home: new Driving button in the bar (mock-up).*
-
-![MG4 Launcher 0.2.5 — gruppo Guida aperto (simulazione / mock-up)](docs/home-SWI133-0.2.5-guida.png)
-*Gruppo Guida aperto: LKA, One Pedal, assistente, pedale del freno · Driving group open: LKA, One Pedal, assistant, brake pedal (mock-up).*
-
-![MG4 Launcher 0.2.5 — ricircolo su Auto (simulazione / mock-up)](docs/home-SWI133-0.2.5-ricircolo.png)
-*Ricircolo a 3 stati, qui su Auto · 3-state recirculation, here on Auto (mock-up).*
-
-![MG4 Launcher SWI133 0.2.4 — home con i cerchi 18″ XPOWER (simulazione / mock-up)](docs/home-SWI133-0.2.4.png)
-*Home 0.2.4 con i cerchi 18″ XPOWER · 0.2.4 home with the 18″ XPOWER wheels (mock-up).*
-
-![MG4 Launcher SWI133 0.2.3 — impostazioni, cerchi (simulazione / mock-up)](docs/impostazioni-SWI133-0.2.3-cerchi.png)
-*Impostazioni → Auto: colore, cerchi e tetto · Settings → Car: colour, wheels and roof (mock-up).*
-
-![MG4 Launcher SWI133 0.2.2 — home (simulazione / mock-up)](docs/home-SWI133-0.2.2.png)
-*Home 0.2.2: grafica uguale alla 0.2.1 · 0.2.2 home: same look as 0.2.1 (mock-up).*
-
-![MG4 Clima aperto dal tasto del clima del launcher (simulazione / mock-up)](docs/clima-SWI133-0.2.2-mg4clima.png)
-*Dalla 0.2.2 il tasto del clima apre [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4), se è installato ·
-from 0.2.2 the climate button opens [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4), if installed (mock-up).*
-
-![MG4 Launcher SWI133 0.2.1 — temperatura e batteria più grandi (simulazione / mock-up)](docs/home-SWI133-0.2.1.png)
-*Home 0.2.1: percentuale della batteria e temperatura più grandi · 0.2.1 home: bigger battery percentage and temperature (mock-up).*
-
-![MG4 Launcher SWI133 0.2.1 — percentuale batteria in grande (simulazione / mock-up)](docs/home-SWI133-0.2.1-percentuale.png)
-*Home 0.2.1: opzione "Percentuale batteria in grande", km e percentuale invertiti · 0.2.1 home: "Large battery percentage" option, km and percentage swapped (mock-up).*
-
-![MG4 Launcher SWI133 0.2.0 — home con la lista stazioni (simulazione / mock-up)](docs/home-SWI133-0.2.0.png)
-*Home 0.2.0: grafica identica alla versione SWI68 0.8.3 — gruppi Clima e Comfort, LKA e OPD, lista stazioni e preferiti con logo, nome e frequenza; valori e stazioni sono di esempio · 0.2.0 home: same design as SWI68 version 0.8.3 — Climate and Comfort groups, LKA and OPD, station list and favourites with logo, name and frequency; values and stations are examples (mock-up).*
-
----
-
-## Video recensione / Video review
-
-<a href="https://youtu.be/JKZ0N3Lr7FI"><img width="640" alt="Video recensione di MG4 Launcher su YouTube · MG4 Launcher video review on YouTube" src="https://img.youtube.com/vi/JKZ0N3Lr7FI/hqdefault.jpg" /></a>
-
-Guarda la [video recensione su YouTube](https://youtu.be/JKZ0N3Lr7FI) · Watch the [video review on YouTube](https://youtu.be/JKZ0N3Lr7FI).
+> 🌡️ **New: [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4)** — the Tesla-style climate screen, for SWI68, SWI69, SWI132 and SWI133. With MG4 Clima installed the launcher's climate button opens it directly.
 
 ---
 
@@ -104,6 +87,14 @@ connect to the car. Check your software with `adb shell getprop ro.build.mt2712.
 
 ---
 
+## Video recensione / Video review
+
+<a href="https://youtu.be/JKZ0N3Lr7FI"><img width="640" alt="Video recensione di MG4 Launcher su YouTube · MG4 Launcher video review on YouTube" src="https://img.youtube.com/vi/JKZ0N3Lr7FI/hqdefault.jpg" /></a>
+
+Guarda la [video recensione su YouTube](https://youtu.be/JKZ0N3Lr7FI) · Watch the [video review on YouTube](https://youtu.be/JKZ0N3Lr7FI).
+
+---
+
 ## Italiano
 
 Launcher in stile Tesla per l'infotainment della **nuova MG4 Luxury** con software **SWI133** (MY24, Android Automotive 9).
@@ -115,6 +106,8 @@ sono diversi: il launcher se ne accorge, mostra un avviso con il link alla versi
 aiutarmi lascia attivo l'invio dei log o mandami il log diagnostico (vedi *Segnalare un problema*).
 Per gli altri software ci sono launcher dedicati: **SWI68 SAIC 1.0+** → [Mg4-Launcher-SWI68](https://github.com/ernestomicco2026-cell/Mg4-Launcher-SWI68), **SWI69 Color Radio** → [Mg4-Launcher-SWI69](https://github.com/ernestomicco2026-cell/Mg4-Launcher-SWI69), **SWI132** (MG4 MY24) → [Mg4-Launcher-SWI132](https://github.com/ernestomicco2026-cell/Mg4-Launcher-SWI132).
 Sostituisce la schermata home originale mantenendone le funzioni, con una grafica nuova e pulita.
+
+**Indice:** [Cosa fa](#cosa-fa) · [Installazione](#installazione) · [Aggiornamenti](#aggiornamenti) · [Tornare alla home MG originale](#tornare-alla-home-mg-originale) · [Comandi utili](#comandi-utili) · [Segnalare un problema](#segnalare-un-problema) · [Sostieni il progetto](#sostieni-il-progetto) · [Versioni](#versioni)
 
 ### Cosa fa
 
@@ -277,6 +270,9 @@ Anche solo **2 €** sono un aiuto prezioso per continuare a sviluppare e provar
 - **CarPlay / Android Auto**: si apre con un solo tocco e ha la sua icona nella barra finché il telefono è collegato.
 - **Impostazioni**: tolto lo spazio vuoto tra Riquadro auto e Barra in basso.
 
+<details>
+<summary><b>Versioni precedenti</b></summary>
+
 #### 0.2.5
 - **Gruppo Guida** nella barra (icona dell'auto tra le linee della corsia): LKA, One Pedal, **assistente di guida**
   (Spento / ACC / TJA) e **sensibilità del pedale del freno** (Comfort / Medium / Sport) in un unico riquadro, solo i
@@ -355,7 +351,12 @@ Stesse novità della versione SWI68 0.8.2 e 0.8.3, con i servizi della SWI133, v
   alla versione giusta e non si collega all'auto.
 - Log diagnostici nella cartella SWI133 e aggiornamenti da questo repository.
 
-### Compilare
+</details>
+
+<details>
+<summary><b>Per sviluppatori: compilare, come comunica con l'auto, note</b></summary>
+
+#### Compilare
 
 Nessun Gradle: `./build.sh` usa aapt2, javac (bytecode 8), D8 e firma v1+v2 con la chiave platform AOSP
 (la stessa del sistema dell'auto, build test-keys). L'APK esce in `build/`. La versione è in `version.properties`.
@@ -376,7 +377,7 @@ qui sopra, poi commit e push. Il launcher controlla `releases/latest.json` e anc
 Per la Release di GitHub basta crearla con il tag `vX.Y.Z`: l'automazione `.github/workflows/allega-apk.yml`
 allega da sola `releases/MG4Launcher-SWI133-X.Y.Z.apk` (e, se la descrizione è vuota, usa le note di `latest.json`).
 
-### Come comunica con l'auto
+#### Come comunica con l'auto
 
 Servizi del software **SWI133** (ricavati dall'analisi del firmware `SWI133-29176-1300R36`; sono gli stessi della SWI68
 salvo dove indicato).
@@ -396,12 +397,15 @@ salvo dove indicato).
 La mappa del navigatore non può essere mostrata dentro il launcher (è un'altra app):
 il pannello Mappa mostra le indicazioni e apre il navigatore a schermo intero.
 
-### Note
+#### Note
 
 - L'immagine dell'auto deriva da una foto ufficiale MG; marchi e immagini appartengono ai rispettivi proprietari.
 - I loghi delle stazioni FM vengono da [radio-browser.info](https://www.radio-browser.info), database pubblico e gratuito.
 
+</details>
+
 ---
+
 ## English
 
 Tesla-style launcher for the **new MG4 Luxury** infotainment system running **SWI133** software (MY24, Android Automotive 9).
@@ -413,6 +417,8 @@ services: the launcher notices, shows a notice with a link to the right version 
 keep log upload on or send me the diagnostic log (see *Reporting a problem*).
 For the other software there are dedicated launchers: **SWI68 SAIC 1.0+** → [Mg4-Launcher-SWI68](https://github.com/ernestomicco2026-cell/Mg4-Launcher-SWI68), **SWI69 Color Radio** → [Mg4-Launcher-SWI69](https://github.com/ernestomicco2026-cell/Mg4-Launcher-SWI69), **SWI132** (MG4 MY24) → [Mg4-Launcher-SWI132](https://github.com/ernestomicco2026-cell/Mg4-Launcher-SWI132).
 It replaces the original home screen, keeping its features, with a new, clean design.
+
+**Contents:** [Features](#features) · [Installation](#installation) · [Updates](#updates) · [Going back to the original MG home](#going-back-to-the-original-mg-home) · [Useful commands](#useful-commands) · [Reporting a problem](#reporting-a-problem) · [Support the project](#support-the-project) · [Changelog](#changelog)
 
 ### Features
 
@@ -576,6 +582,9 @@ Even just **€2** is a great help to keep developing and testing new versions i
 - **CarPlay / Android Auto**: opens with a single tap and has its own icon in the bar while the phone is connected.
 - **Settings**: removed the blank space between Car panel and Bottom bar.
 
+<details>
+<summary><b>Older versions</b></summary>
+
 #### 0.2.5
 - **Driving group** in the bar (car icon between the lane lines): LKA, One Pedal, **driving assistant** (Off / ACC / TJA)
   and **brake pedal feel** (Comfort / Medium / Sport) in a single panel, only the controls the car has. Assistant and
@@ -653,7 +662,12 @@ firmware.
   the right version and does not connect to the car.
 - Diagnostic logs in the SWI133 folder and updates from this repository.
 
-### Building
+</details>
+
+<details>
+<summary><b>For developers: building, how it talks to the car, notes</b></summary>
+
+#### Building
 
 No Gradle: `./build.sh` uses aapt2, javac (bytecode 8), D8 and v1+v2 signing with the AOSP platform key
 (the same as the car's system, test-keys build). The APK ends up in `build/`. The version is in `version.properties`.
@@ -672,7 +686,7 @@ copy the APK to `releases/`, update `releases/latest.json` (version, file name a
 then commit and push. The launcher checks `releases/latest.json` and GitHub Releases
 (tag `vX.Y.Z` with the APK attached) and offers the newest one.
 
-### How it talks to the car
+#### How it talks to the car
 
 Services of the **SWI133** software (taken from analysing the `SWI133-29176-1300R36` firmware; the same as SWI68 except
 where noted).
@@ -692,7 +706,17 @@ where noted).
 The navigator's map cannot be shown inside the launcher (it is a separate app):
 the Map panel shows the guidance and opens the navigator full screen.
 
-### Notes
+#### Notes
 
 - The car image is derived from an official MG photo; trademarks and images belong to their respective owners.
 - FM station logos come from [radio-browser.info](https://www.radio-browser.info), a free public database.
+
+</details>
+
+---
+
+> Progetto amatoriale e **non ufficiale**: non è affiliato né approvato da MG Motor o SAIC Motor.
+> I nomi MG / MG4 servono solo a indicare l'auto compatibile (infotainment SWI133). Installalo e usalo a tuo rischio.
+>
+> Hobby project, **not official**: not affiliated with or endorsed by MG Motor or SAIC Motor.
+> The MG / MG4 names only identify the compatible car (SWI133 infotainment). Install and use it at your own risk.
