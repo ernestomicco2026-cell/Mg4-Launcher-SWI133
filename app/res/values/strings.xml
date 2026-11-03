@@ -222,6 +222,12 @@
     <string name="cb_limit" formatted="false">Charge limit</string>
     <string name="cb_current" formatted="false">AC current</string>
     <string name="cb_charge" formatted="false">Charging</string>
+    <string name="cb_unlock" formatted="false">Unlock socket</string>
+    <string name="cb_unlock_title" formatted="false">Unlock the charging socket?</string>
+    <string name="cb_unlock_msg" formatted="false">The command goes to the car as from the button on the Charge management page.</string>
+    <string name="cb_unlock_wait" formatted="false">The car hasn\'t sent the socket status yet: try again shortly.</string>
+    <string name="cb_unlock_locked" formatted="false">Locked</string>
+    <string name="cb_unlock_unlocked" formatted="false">Unlocked</string>
     <string name="cb_v2l" formatted="false">V2L (external socket)</string>
     <string name="cb_start" formatted="false">Start</string>
     <string name="cb_stop" formatted="false">Stop</string>
@@ -381,6 +387,7 @@
     <string name="news_v030_4" formatted="false">New official climate icons (A/C, AUTO, recirculation, heated seats and steering wheel) with color and background by state, and a Front defrost tile</string>
     <string name="news_v030_5" formatted="false">CarPlay / Android Auto: the whole card now opens it, not just the button</string>
     <string name="news_v030_6" formatted="false">Reorganized settings, configurable 360 button, personal logos folder and default navigator</string>
+    <string name="news_v030_7" formatted="false">New \"Unlock socket\" button on the charging bar, with confirmation before sending it</string>
     <string name="set_apps_size" formatted="false">APP SIZE</string>
     <string name="news_v027_1" formatted="false">Separate size for the App screen: choose it in settings (larger icons and text)</string>
     <string name="news_v027_2" formatted="false">Dongle: the log now records whether the dongle reappears after the reset</string>

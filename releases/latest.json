@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
   "apk": "releases/MG4Launcher-SWI133-0.3.0.apk",
-  "size": 674305,
-  "notes": "Tasto Home corretto (touch e fisico), unità distanza configurabile, icone ufficiali del clima, tutta la scheda CarPlay/Android Auto si tocca, impostazioni riorganizzate con tasto 360 configurabile, cartella loghi personali e navigatore predefinito."
+  "size": 678401,
+  "notes": "Tasto Home corretto (touch e fisico), unità distanza configurabile, icone ufficiali del clima, tutta la scheda CarPlay/Android Auto si tocca, impostazioni riorganizzate con tasto 360 configurabile, cartella loghi personali e navigatore predefinito, sblocca presa di ricarica."
 }

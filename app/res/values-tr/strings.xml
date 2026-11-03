@@ -222,6 +222,12 @@
     <string name="cb_limit" formatted="false">Şarj sınırı</string>
     <string name="cb_current" formatted="false">AC akımı</string>
     <string name="cb_charge" formatted="false">Şarj</string>
+    <string name="cb_unlock" formatted="false">Soketi kilidini aç</string>
+    <string name="cb_unlock_title" formatted="false">Şarj soketinin kilidi açılsın mı?</string>
+    <string name="cb_unlock_msg" formatted="false">Komut, Şarj yönetimi sayfasındaki düğme gibi araca gönderilir.</string>
+    <string name="cb_unlock_wait" formatted="false">Araç henüz soket durumunu göndermedi: kısa süre sonra tekrar dene.</string>
+    <string name="cb_unlock_locked" formatted="false">Kilitli</string>
+    <string name="cb_unlock_unlocked" formatted="false">Kilidi açık</string>
     <string name="cb_v2l" formatted="false">V2L (harici priz)</string>
     <string name="cb_start" formatted="false">Başlat</string>
     <string name="cb_stop" formatted="false">Durdur</string>
@@ -381,6 +387,7 @@
     <string name="news_v030_4" formatted="false">Klima için yeni resmi simgeler (A/C, AUTO, resirkülasyon, koltuk ve direksiyon ısıtma), duruma göre renk ve arka planla, ve Ön buğu giderme kutusu</string>
     <string name="news_v030_5" formatted="false">CarPlay / Android Auto: artık sadece düğme değil, tüm kart açılıyor</string>
     <string name="news_v030_6" formatted="false">Yeniden düzenlenmiş ayarlar, yapılandırılabilir 360 düğmesi, kişisel logo klasörü ve varsayılan navigasyon</string>
+    <string name="news_v030_7" formatted="false">Şarj çubuğunda yeni \"Soketi kilidini aç\" düğmesi, göndermeden önce onay ister</string>
     <string name="set_apps_size" formatted="false">UYGULAMA BOYUTU</string>
     <string name="news_v027_1" formatted="false">Uygulama ekranı için ayrı boyut: ayarlardan seçilir (daha büyük simge ve metin)</string>
     <string name="news_v027_2" formatted="false">Dongle: günlük artık sıfırlamadan sonra dongle\'ın tekrar görünüp görünmediğini kaydeder</string>

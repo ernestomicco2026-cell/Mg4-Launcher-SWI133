@@ -65,8 +65,8 @@ public final class HomeView extends LinearLayout {
     private ImageView statusIcon;
     // pulsanti di ricarica (opzione)
     private LinearLayout chargeRow;
-    private View limitBtn, currentBtn, startBtn;
-    private TextView limitVal, currentVal, startLabel, startVal;
+    private View limitBtn, currentBtn, startBtn, unlockBtn;
+    private TextView limitVal, currentVal, startLabel, startVal, unlockVal;
     private VehicleClient.State lastVehicle = new VehicleClient.State();
     private Bars.Progress battery;
     private CarView car;
@@ -298,9 +298,12 @@ public final class HomeView extends LinearLayout {
             limitVal = (TextView) ((ViewGroup) limitBtn).getChildAt(1);
             currentBtn = chargeButton(c, chargeRow, L.s(R.string.cb_current), true, v -> pickCurrent());
             currentVal = (TextView) ((ViewGroup) currentBtn).getChildAt(1);
-            startBtn = chargeButton(c, chargeRow, L.s(R.string.cb_charge), false, v -> startStop());
+            startBtn = chargeButton(c, chargeRow, L.s(R.string.cb_charge), true, v -> startStop());
             startLabel = (TextView) ((ViewGroup) startBtn).getChildAt(0);
             startVal = (TextView) ((ViewGroup) startBtn).getChildAt(1);
+            // 0.3.0 (punto 6): sblocca presa - sempre visibile, non è un interruttore del clima
+            unlockBtn = chargeButton(c, chargeRow, L.s(R.string.cb_unlock), false, v -> unlockSocket());
+            unlockVal = (TextView) ((ViewGroup) unlockBtn).getChildAt(1);
             p.addView(chargeRow, new LayoutParams(-1, -2));
             styleChargeButtons(new VehicleClient.State());
         }
@@ -357,6 +360,19 @@ public final class HomeView extends LinearLayout {
         startBtn.setBackground(Ui.pressable(getContext(), can && running ? t.text : t.chip, 14, t));
         startLabel.setTextColor(can && running ? t.panel : t.sub);
         startVal.setTextColor(can && running ? t.panel : t.text);
+        // 0.3.0 (punto 6): sblocca presa - sempre cliccabile (spiega il motivo se non si può), mai disattivato
+        unlockVal.setText(s.chargeLock == 1 ? L.s(R.string.cb_unlock_locked) : s.chargeLock == 2 ? L.s(R.string.cb_unlock_unlocked) : "—");
+    }
+
+    /** 0.3.0 (punto 6): sblocca la presa di ricarica, con conferma; spiega il motivo se lo stato non è ancora noto. */
+    private void unlockSocket() {
+        VehicleClient.State s = lastVehicle;
+        if (s == null || !s.connected || s.chargeLock <= 0) {
+            Confirm.notice(host.overlay(), t, L.s(R.string.cb_unlock_title), "", new String[]{L.s(R.string.cb_unlock_wait)}, L.s(R.string.btn_ok), null);
+            return;
+        }
+        Confirm.show(host.overlay(), t, L.s(R.string.cb_unlock_title), L.s(R.string.cb_unlock_msg),
+                L.s(R.string.btn_cancel), L.s(R.string.cb_unlock), () -> vehicle.unlockChargingSocket());
     }
 
     private void pickLimit() {

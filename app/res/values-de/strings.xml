@@ -222,6 +222,12 @@
     <string name="cb_limit" formatted="false">Ladelimit</string>
     <string name="cb_current" formatted="false">AC-Ladestrom</string>
     <string name="cb_charge" formatted="false">Laden</string>
+    <string name="cb_unlock" formatted="false">Steckdose entsperren</string>
+    <string name="cb_unlock_title" formatted="false">Ladesteckdose entsperren?</string>
+    <string name="cb_unlock_msg" formatted="false">Der Befehl geht an das Auto wie über die Taste der Seite Ladeverwaltung.</string>
+    <string name="cb_unlock_wait" formatted="false">Das Auto hat den Steckdosenstatus noch nicht gesendet: versuche es gleich noch einmal.</string>
+    <string name="cb_unlock_locked" formatted="false">Verriegelt</string>
+    <string name="cb_unlock_unlocked" formatted="false">Entriegelt</string>
     <string name="cb_v2l" formatted="false">V2L (externe Steckdose)</string>
     <string name="cb_start" formatted="false">Starten</string>
     <string name="cb_stop" formatted="false">Stoppen</string>
@@ -381,6 +387,7 @@
     <string name="news_v030_4" formatted="false">Neue offizielle Klima-Symbole (A/C, AUTO, Umluft, Sitz- und Lenkradheizung) mit Farbe und Hintergrund je Zustand, sowie die Frontscheibenheizung-Kachel</string>
     <string name="news_v030_5" formatted="false">CarPlay / Android Auto: jetzt öffnet die ganze Kachel, nicht nur die Taste</string>
     <string name="news_v030_6" formatted="false">Neu organisierte Einstellungen, konfigurierbare 360-Taste, persönlicher Logo-Ordner und Standard-Navigator</string>
+    <string name="news_v030_7" formatted="false">Neue Taste \"Steckdose entsperren\" in der Ladeleiste, mit Bestätigung vor dem Senden</string>
     <string name="set_apps_size" formatted="false">APP-GRÖSSE</string>
     <string name="news_v027_1" formatted="false">Eigene Größe für den App-Bildschirm: einstellbar in den Einstellungen (größere Symbole und Text)</string>
     <string name="news_v027_2" formatted="false">Dongle: Das Protokoll zeigt jetzt, ob der Dongle nach dem Zurücksetzen wieder erscheint</string>

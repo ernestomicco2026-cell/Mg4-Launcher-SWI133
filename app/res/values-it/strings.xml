@@ -222,6 +222,12 @@
     <string name="cb_limit" formatted="false">Limite di ricarica</string>
     <string name="cb_current" formatted="false">Corrente AC</string>
     <string name="cb_charge" formatted="false">Ricarica</string>
+    <string name="cb_unlock" formatted="false">Sblocca presa</string>
+    <string name="cb_unlock_title" formatted="false">Sbloccare la presa di ricarica?</string>
+    <string name="cb_unlock_msg" formatted="false">Il comando va all\'auto come dal pulsante della pagina Gestione ricarica.</string>
+    <string name="cb_unlock_wait" formatted="false">L\'auto non ha ancora mandato lo stato della presa: riprova tra poco.</string>
+    <string name="cb_unlock_locked" formatted="false">Bloccata</string>
+    <string name="cb_unlock_unlocked" formatted="false">Sbloccata</string>
     <string name="cb_v2l" formatted="false">V2L (presa esterna)</string>
     <string name="cb_start" formatted="false">Avvia</string>
     <string name="cb_stop" formatted="false">Ferma</string>
@@ -381,6 +387,7 @@
     <string name="news_v030_4" formatted="false">Nuove icone ufficiali per il clima (A/C, AUTO, ricircolo, sedili e volante riscaldati) con colore e sfondo secondo lo stato, e il riquadro Sbrinamento parabrezza</string>
     <string name="news_v030_5" formatted="false">CarPlay / Android Auto: tutta la scheda si tocca per aprire, non solo il pulsante</string>
     <string name="news_v030_6" formatted="false">Impostazioni riorganizzate, tasto 360 configurabile, cartella loghi personali e navigatore predefinito</string>
+    <string name="news_v030_7" formatted="false">Nuovo pulsante \"Sblocca presa\" nella barra di ricarica, con conferma prima di inviarlo</string>
     <string name="set_apps_size" formatted="false">DIMENSIONE APP</string>
     <string name="news_v027_1" formatted="false">Dimensione separata per la schermata App: si sceglie nelle impostazioni (icone e testo più grandi)</string>
     <string name="news_v027_2" formatted="false">Dongle: il log registra ora se il dongle ricompare dopo il reset</string>

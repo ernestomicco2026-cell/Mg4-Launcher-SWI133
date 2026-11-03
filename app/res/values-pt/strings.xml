@@ -222,6 +222,12 @@
     <string name="cb_limit" formatted="false">Limite de carga</string>
     <string name="cb_current" formatted="false">Corrente AC</string>
     <string name="cb_charge" formatted="false">Carregamento</string>
+    <string name="cb_unlock" formatted="false">Desbloquear tomada</string>
+    <string name="cb_unlock_title" formatted="false">Desbloquear a tomada de carregamento?</string>
+    <string name="cb_unlock_msg" formatted="false">O comando vai para o carro como a partir do botão da página Gestão de carregamento.</string>
+    <string name="cb_unlock_wait" formatted="false">O carro ainda não enviou o estado da tomada: tenta novamente dentro de pouco.</string>
+    <string name="cb_unlock_locked" formatted="false">Bloqueada</string>
+    <string name="cb_unlock_unlocked" formatted="false">Desbloqueada</string>
     <string name="cb_v2l" formatted="false">V2L (tomada externa)</string>
     <string name="cb_start" formatted="false">Iniciar</string>
     <string name="cb_stop" formatted="false">Parar</string>
@@ -381,6 +387,7 @@
     <string name="news_v030_4" formatted="false">Novos ícones oficiais do clima (A/C, AUTO, recirculação, bancos e volante aquecidos) com cor e fundo segundo o estado, e o painel de desembaciamento frontal</string>
     <string name="news_v030_5" formatted="false">CarPlay / Android Auto: agora é todo o cartão que abre, não só o botão</string>
     <string name="news_v030_6" formatted="false">Definições reorganizadas, botão 360 configurável, pasta de logótipos pessoais e navegador predefinido</string>
+    <string name="news_v030_7" formatted="false">Novo botão \"Desbloquear tomada\" na barra de carregamento, com confirmação antes de o enviar</string>
     <string name="set_apps_size" formatted="false">TAMANHO DAS APPS</string>
     <string name="news_v027_1" formatted="false">Tamanho próprio para o ecrã das apps: escolhe nas definições (ícones e texto maiores)</string>
     <string name="news_v027_2" formatted="false">Dongle: o registo indica agora se o dongle reaparece após a reposição</string>

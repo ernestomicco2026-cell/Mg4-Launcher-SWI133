@@ -245,6 +245,8 @@ Anche solo **2 €** sono un aiuto prezioso per continuare a sviluppare e provar
   ricircolo, sedili e volante riscaldati), con colore e sfondo evidenziati secondo lo stato (acceso, caldo, spento,
   non disponibile), giorno e notte. Aggiunto il riquadro **Sbrinamento parabrezza** nel gruppo Clima.
 - **CarPlay / Android Auto**: tutta la scheda si tocca per aprire, non solo il pulsante.
+- **Sblocca presa di ricarica**: nuovo pulsante sempre visibile nella barra di ricarica, con conferma prima
+  dell'invio; spiega da solo se lo stato della presa non è ancora noto.
 - **Impostazioni riorganizzate** (sezioni Barra e pulsanti, Radio e loghi, Avvio e app), **tasto 360** che si può
   scegliere cosa apre, **cartella loghi personali** da USB e **navigatore predefinito** per il riquadro mappa.
 - **Paese dei loghi radio automatico**: ordine più affidabile (RDS/DAB → lingua e regione d'accordo → fuso → regione).
@@ -570,6 +572,8 @@ Even just **€2** is a great help to keep developing and testing new versions i
   recirculation, heated seats and steering wheel), with color and highlighted background by state (on, warm, off,
   unavailable), day and night. Added a **Front defrost** tile to the Climate group.
 - **CarPlay / Android Auto**: the whole card now opens it, not just the button.
+- **Unlock charging socket**: new always-visible button on the charging bar, with confirmation before sending it;
+  it explains itself if the socket status isn't known yet.
 - **Reorganized settings** (Bar and buttons, Radio and logos, Startup and apps sections), a **360 button** you can
   choose what it opens, a **personal logos folder** from USB, and a **default navigator** for the map panel.
 - **Automatic radio logo country**: more reliable order (RDS/DAB → language and region agreement → time zone → region).

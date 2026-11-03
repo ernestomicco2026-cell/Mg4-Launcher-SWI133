@@ -222,6 +222,12 @@
     <string name="cb_limit" formatted="false">Limite de charge</string>
     <string name="cb_current" formatted="false">Courant AC</string>
     <string name="cb_charge" formatted="false">Recharge</string>
+    <string name="cb_unlock" formatted="false">Déverrouiller la prise</string>
+    <string name="cb_unlock_title" formatted="false">Déverrouiller la prise de recharge ?</string>
+    <string name="cb_unlock_msg" formatted="false">La commande est envoyée à la voiture comme depuis le bouton de la page Gestion de la recharge.</string>
+    <string name="cb_unlock_wait" formatted="false">La voiture n\'a pas encore envoyé l\'état de la prise : réessaie dans un instant.</string>
+    <string name="cb_unlock_locked" formatted="false">Verrouillée</string>
+    <string name="cb_unlock_unlocked" formatted="false">Déverrouillée</string>
     <string name="cb_v2l" formatted="false">V2L (prise externe)</string>
     <string name="cb_start" formatted="false">Démarrer</string>
     <string name="cb_stop" formatted="false">Arrêter</string>
@@ -381,6 +387,7 @@
     <string name="news_v030_4" formatted="false">Nouvelles icônes officielles du climat (A/C, AUTO, recyclage, sièges et volant chauffants) avec couleur et fond selon l\'état, et le panneau Désembuage avant</string>
     <string name="news_v030_5" formatted="false">CarPlay / Android Auto : toute la carte ouvre maintenant, pas seulement le bouton</string>
     <string name="news_v030_6" formatted="false">Réglages réorganisés, bouton 360 configurable, dossier de logos personnels et navigateur par défaut</string>
+    <string name="news_v030_7" formatted="false">Nouveau bouton « Déverrouiller la prise » dans la barre de recharge, avec confirmation avant envoi</string>
     <string name="set_apps_size" formatted="false">TAILLE DES APPS</string>
     <string name="news_v027_1" formatted="false">Taille séparée pour l\'écran des applis : à régler dans les réglages (icônes et texte plus grands)</string>
     <string name="news_v027_2" formatted="false">Dongle : le journal indique maintenant si le dongle réapparaît après la réinitialisation</string>
