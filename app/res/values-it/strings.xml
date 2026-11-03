@@ -33,8 +33,12 @@
     <string name="sec_home_sub" formatted="false">Batteria, pneumatici, temperature</string>
     <string name="sec_look" formatted="false">Aspetto</string>
     <string name="sec_look_sub" formatted="false">Tema, dimensione, lingua</string>
-    <string name="sec_drive" formatted="false">Guida</string>
-    <string name="sec_drive_sub" formatted="false">Posizione di guida, home MG</string>
+    <string name="sec_bar" formatted="false">Barra e pulsanti</string>
+    <string name="sec_bar_sub" formatted="false">Barra, pulsanti raggruppati, tasto 360</string>
+    <string name="sec_logos" formatted="false">Radio e loghi</string>
+    <string name="sec_logos_sub" formatted="false">Paese dei loghi, pacchetti, cartella personale</string>
+    <string name="sec_launch" formatted="false">Avvio e app</string>
+    <string name="sec_launch_sub" formatted="false">Avvio sicuro, altri launcher, dongle</string>
     <string name="sec_system" formatted="false">Sistema</string>
     <string name="sec_system_sub" formatted="false">Aggiornamenti, log, diagnostica</string>
     <string name="btn_back" formatted="false">Indietro</string>
@@ -354,6 +358,29 @@
     <string name="newsh_5" formatted="false">CarPlay / Android Auto: si apre con un solo tocco e ha la sua icona nella barra finché il telefono è collegato</string>
     <string name="newsh_6" formatted="false">Impostazioni: tolto lo spazio vuoto tra Riquadro auto e Barra in basso</string>
     <string name="newsh_7" formatted="false">Con MG4 Clima aperto il pannello clima di sistema si chiude da solo con il comando del sistema</string>
+    <string name="set_dist_unit" formatted="false">Unità distanza</string>
+    <string name="set_dist_unit_sub" formatted="false">Come mostrare l\'autonomia e le distanze: automatica (come il quadro), km o miglia</string>
+    <string name="set_cam360" formatted="false">Il tasto 360 apre</string>
+    <string name="set_cam360_sub" formatted="false">Cosa succede toccando il tasto della telecamera 360 nella barra</string>
+    <string name="cam360_original" formatted="false">360 originale</string>
+    <string name="cam360_mg4" formatted="false">MG4 360</string>
+    <string name="cam360_app" formatted="false">Un\'altra app</string>
+    <string name="cam360_hidden" formatted="false">Nascosto</string>
+    <string name="cam360_pick_app" formatted="false">Scegli l\'app</string>
+    <string name="set_logos_usb" formatted="false">Cartella loghi personali</string>
+    <string name="set_logos_usb_sub" formatted="false">Metti MG4Launcher/loghi/&lt;codice paese&gt;.zip su una chiavetta USB: si installa da solo, senza internet</string>
+    <string name="set_nav_default" formatted="false">Navigatore predefinito</string>
+    <string name="set_nav_default_sub" formatted="false">Cosa apre il riquadro mappa quando tocchi \"Vai\"; con CarPlay/Android Auto collegato compare anche come scelta</string>
+    <string name="nav_default_mg" formatted="false">Navigatore MG</string>
+    <string name="nav_default_phone" formatted="false">CarPlay / Android Auto</string>
+    <string name="tile_defrost_front" formatted="false">Sbrinamento parabrezza</string>
+    <string name="tap_to_open" formatted="false">Tocca per aprire</string>
+    <string name="news_v030_1" formatted="false">Tasto Home touch dello schermo: corretto, torna sempre al launcher</string>
+    <string name="news_v030_2" formatted="false">Tasto Home fisico: chiude le finestre aperte (impostazioni, app) invece di lasciarle sopra la home</string>
+    <string name="news_v030_3" formatted="false">Unità distanza configurabile (automatica, km o miglia) per autonomia e distanze del navigatore</string>
+    <string name="news_v030_4" formatted="false">Nuove icone ufficiali per il clima (A/C, AUTO, ricircolo, sedili e volante riscaldati) con colore e sfondo secondo lo stato, e il riquadro Sbrinamento parabrezza</string>
+    <string name="news_v030_5" formatted="false">CarPlay / Android Auto: tutta la scheda si tocca per aprire, non solo il pulsante</string>
+    <string name="news_v030_6" formatted="false">Impostazioni riorganizzate, tasto 360 configurabile, cartella loghi personali e navigatore predefinito</string>
     <string name="set_apps_size" formatted="false">DIMENSIONE APP</string>
     <string name="news_v027_1" formatted="false">Dimensione separata per la schermata App: si sceglie nelle impostazioni (icone e testo più grandi)</string>
     <string name="news_v027_2" formatted="false">Dongle: il log registra ora se il dongle ricompare dopo il reset</string>

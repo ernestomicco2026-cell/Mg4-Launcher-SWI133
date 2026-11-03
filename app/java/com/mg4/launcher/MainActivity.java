@@ -342,6 +342,8 @@ public final class MainActivity extends Activity implements HomeView.Host, AppsV
     /** Novità di ogni versione (testi in tutte le lingue in strings.xml). */
     private static int[] newsFor(String ver) {
         switch (ver) {
+            case "0.3.0":
+                return new int[]{R.string.news_v030_1, R.string.news_v030_2, R.string.news_v030_3, R.string.news_v030_4, R.string.news_v030_5, R.string.news_v030_6};
             case "0.2.8":
                 return new int[]{R.string.news_v098_1, R.string.news_v098_2, R.string.news_v098_3};
             case "0.2.7":
@@ -393,9 +395,19 @@ public final class MainActivity extends Activity implements HomeView.Host, AppsV
         if (d.getSystemUiVisibility() != IMMERSIVE) d.setSystemUiVisibility(IMMERSIVE);
     }
 
+    /** 0.3.0: true mentre il launcher è davanti (onResume..onPause), per sapere se Home arriva "da dentro". */
+    private boolean inFront;
+
+    @Override
+    protected void onPause() {
+        inFront = false;
+        super.onPause();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        inFront = true;
         if (wrongFirmware) {
             goFullscreen();
             return;
@@ -408,6 +420,12 @@ public final class MainActivity extends Activity implements HomeView.Host, AppsV
         }, "mg4-homelock").start();
         askOfficina();
         goFullscreen();
+        // 0.3.0: se giorno/notte è cambiato mentre il launcher era dietro e l'avviso non è arrivato, si ricostruisce qui
+        if (theme != null && root != null && com.mg4.launcher.ui.Theme.wouldBeDay(this, prefs) != theme.day) {
+            com.mg4.launcher.svc.Diag.put("tema.ripreso", "cambio recuperato al ritorno nel launcher");
+            IconStyler.clearCache();
+            build();
+        }
     }
 
     @Override
@@ -492,8 +510,26 @@ public final class MainActivity extends Activity implements HomeView.Host, AppsV
         super.onNewIntent(intent);
         if (wrongFirmware) return;
         // tasto Home: torna sempre alla schermata principale
+        // 0.3.0 (punto 3): con il launcher già davanti chiude anche ogni popup aperto (Clima, Comfort, Guida,
+        // conferme, elenchi, avvisi)
+        if (inFront) closePopups("tasto Home");
         closeSettings();
         closeApps();
+    }
+
+    /** Toglie dalla schermata tutto ciò che non è la home/app o le impostazioni: popup dei gruppi, conferme, avvisi. */
+    private void closePopups(String why) {
+        int n = 0;
+        if (home != null && home.closePopup()) n++;
+        if (root != null) {
+            for (int i = root.getChildCount() - 1; i >= 0; i--) {
+                View v = root.getChildAt(i);
+                if (v == pager || v == settings) continue;
+                root.removeViewAt(i);
+                n++;
+            }
+        }
+        com.mg4.launcher.svc.Diag.put("home.popupChiusi", n + " (" + why + ")");
     }
 
     @Override
@@ -656,6 +692,11 @@ public final class MainActivity extends Activity implements HomeView.Host, AppsV
     @Override
     public java.util.List<AppCatalog.App> otherNavApps() {
         return catalog.otherNavApps(nav.last().mapPackage);
+    }
+
+    @Override
+    public java.util.List<AppCatalog.App> allLaunchableApps() {
+        return catalog.userApps();
     }
 
     // --- AppsView.Host ------------------------------------------------------------------------

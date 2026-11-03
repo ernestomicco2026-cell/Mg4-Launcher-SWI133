@@ -33,8 +33,12 @@
     <string name="sec_home_sub" formatted="false">Batterie, Reifen, Temperaturen</string>
     <string name="sec_look" formatted="false">Darstellung</string>
     <string name="sec_look_sub" formatted="false">Design, Größe, Sprache</string>
-    <string name="sec_drive" formatted="false">Fahren</string>
-    <string name="sec_drive_sub" formatted="false">Lenkradposition, MG-Startseite</string>
+    <string name="sec_bar" formatted="false">Leiste und Tasten</string>
+    <string name="sec_bar_sub" formatted="false">Leiste, gruppierte Tasten, 360-Taste</string>
+    <string name="sec_logos" formatted="false">Radio und Logos</string>
+    <string name="sec_logos_sub" formatted="false">Logo-Land, Pakete, persönlicher Ordner</string>
+    <string name="sec_launch" formatted="false">Start und Apps</string>
+    <string name="sec_launch_sub" formatted="false">Sicherer Start, andere Launcher, Dongle</string>
     <string name="sec_system" formatted="false">System</string>
     <string name="sec_system_sub" formatted="false">Updates, Logs, Diagnose</string>
     <string name="btn_back" formatted="false">Zurück</string>
@@ -354,6 +358,29 @@
     <string name="newsh_5" formatted="false">CarPlay / Android Auto: öffnet mit einem Tipp und hat ein eigenes Symbol in der Leiste, solange das Telefon verbunden ist</string>
     <string name="newsh_6" formatted="false">Einstellungen: Leerraum zwischen Fahrzeugbereich und unterer Leiste entfernt</string>
     <string name="newsh_7" formatted="false">Bei geöffnetem MG4 Clima schließt sich das System-Klimafeld jetzt selbst mit dem Systembefehl</string>
+    <string name="set_dist_unit" formatted="false">Distanzeinheit</string>
+    <string name="set_dist_unit_sub" formatted="false">Wie Reichweite und Distanzen angezeigt werden: automatisch (wie das Kombiinstrument), km oder Meilen</string>
+    <string name="set_cam360" formatted="false">Die 360-Taste öffnet</string>
+    <string name="set_cam360_sub" formatted="false">Was passiert, wenn man die 360-Kamera-Taste in der Leiste berührt</string>
+    <string name="cam360_original" formatted="false">Original 360</string>
+    <string name="cam360_mg4" formatted="false">MG4 360</string>
+    <string name="cam360_app" formatted="false">Andere App</string>
+    <string name="cam360_hidden" formatted="false">Ausgeblendet</string>
+    <string name="cam360_pick_app" formatted="false">Wähle die App</string>
+    <string name="set_logos_usb" formatted="false">Persönlicher Logo-Ordner</string>
+    <string name="set_logos_usb_sub" formatted="false">Lege MG4Launcher/loghi/&lt;Ländercode&gt;.zip auf einen USB-Stick: es installiert sich selbst, ohne Internet</string>
+    <string name="set_nav_default" formatted="false">Standard-Navigator</string>
+    <string name="set_nav_default_sub" formatted="false">Was das Kartenfeld beim Tippen auf „Los\" öffnet; bei verbundenem CarPlay/Android Auto erscheint es ebenfalls als Option</string>
+    <string name="nav_default_mg" formatted="false">MG-Navigator</string>
+    <string name="nav_default_phone" formatted="false">CarPlay / Android Auto</string>
+    <string name="tile_defrost_front" formatted="false">Frontscheibenheizung</string>
+    <string name="tap_to_open" formatted="false">Zum Öffnen tippen</string>
+    <string name="news_v030_1" formatted="false">Touch-Home-Taste des Bildschirms: korrigiert, kehrt jetzt immer zum Launcher zurück</string>
+    <string name="news_v030_2" formatted="false">Physische Home-Taste: schließt jetzt offene Fenster (Einstellungen, Apps), statt sie über der Startseite zu lassen</string>
+    <string name="news_v030_3" formatted="false">Konfigurierbare Distanzeinheit (automatisch, km oder Meilen) für Reichweite und Navigator-Distanzen</string>
+    <string name="news_v030_4" formatted="false">Neue offizielle Klima-Symbole (A/C, AUTO, Umluft, Sitz- und Lenkradheizung) mit Farbe und Hintergrund je Zustand, sowie die Frontscheibenheizung-Kachel</string>
+    <string name="news_v030_5" formatted="false">CarPlay / Android Auto: jetzt öffnet die ganze Kachel, nicht nur die Taste</string>
+    <string name="news_v030_6" formatted="false">Neu organisierte Einstellungen, konfigurierbare 360-Taste, persönlicher Logo-Ordner und Standard-Navigator</string>
     <string name="set_apps_size" formatted="false">APP-GRÖSSE</string>
     <string name="news_v027_1" formatted="false">Eigene Größe für den App-Bildschirm: einstellbar in den Einstellungen (größere Symbole und Text)</string>
     <string name="news_v027_2" formatted="false">Dongle: Das Protokoll zeigt jetzt, ob der Dongle nach dem Zurücksetzen wieder erscheint</string>

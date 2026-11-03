@@ -33,8 +33,12 @@
     <string name="sec_home_sub" formatted="false">Batarya, lastikler, sıcaklıklar</string>
     <string name="sec_look" formatted="false">Görünüm</string>
     <string name="sec_look_sub" formatted="false">Tema, boyut, dil</string>
-    <string name="sec_drive" formatted="false">Sürüş</string>
-    <string name="sec_drive_sub" formatted="false">Direksiyon konumu, MG ana ekranı</string>
+    <string name="sec_bar" formatted="false">Çubuk ve düğmeler</string>
+    <string name="sec_bar_sub" formatted="false">Çubuk, gruplu düğmeler, 360 düğmesi</string>
+    <string name="sec_logos" formatted="false">Radyo ve logolar</string>
+    <string name="sec_logos_sub" formatted="false">Logo ülkesi, paketler, kişisel klasör</string>
+    <string name="sec_launch" formatted="false">Başlangıç ve uygulamalar</string>
+    <string name="sec_launch_sub" formatted="false">Güvenli başlangıç, diğer launcher\'lar, dongle</string>
     <string name="sec_system" formatted="false">Sistem</string>
     <string name="sec_system_sub" formatted="false">Güncellemeler, günlükler, tanılama</string>
     <string name="btn_back" formatted="false">Geri</string>
@@ -354,6 +358,29 @@
     <string name="newsh_5" formatted="false">CarPlay / Android Auto: tek dokunuşla açılır ve telefon bağlıyken çubukta kendi simgesi olur</string>
     <string name="newsh_6" formatted="false">Ayarlar: Araç paneli ile Alt çubuk arasındaki boşluk kaldırıldı</string>
     <string name="newsh_7" formatted="false">MG4 Clima açıkken sistem klima paneli sistemin kendi komutuyla kendiliğinden kapanır</string>
+    <string name="set_dist_unit" formatted="false">Mesafe birimi</string>
+    <string name="set_dist_unit_sub" formatted="false">Menzil ve mesafelerin nasıl gösterileceği: otomatik (gösterge paneli gibi), km veya mil</string>
+    <string name="set_cam360" formatted="false">360 düğmesi şunu açar</string>
+    <string name="set_cam360_sub" formatted="false">Çubuktaki 360 kamera düğmesine dokunulduğunda ne olur</string>
+    <string name="cam360_original" formatted="false">Orijinal 360</string>
+    <string name="cam360_mg4" formatted="false">MG4 360</string>
+    <string name="cam360_app" formatted="false">Başka bir uygulama</string>
+    <string name="cam360_hidden" formatted="false">Gizli</string>
+    <string name="cam360_pick_app" formatted="false">Uygulamayı seç</string>
+    <string name="set_logos_usb" formatted="false">Kişisel logo klasörü</string>
+    <string name="set_logos_usb_sub" formatted="false">MG4Launcher/loghi/&lt;ülke kodu&gt;.zip dosyasını bir USB belleğe koy: internet olmadan kendiliğinden kurulur</string>
+    <string name="set_nav_default" formatted="false">Varsayılan navigasyon</string>
+    <string name="set_nav_default_sub" formatted="false">\"Git\"e dokunduğunda harita paneli neyi açar; CarPlay/Android Auto bağlıyken bir seçenek olarak da görünür</string>
+    <string name="nav_default_mg" formatted="false">MG navigasyon</string>
+    <string name="nav_default_phone" formatted="false">CarPlay / Android Auto</string>
+    <string name="tile_defrost_front" formatted="false">Ön buğu giderme</string>
+    <string name="tap_to_open" formatted="false">Açmak için dokun</string>
+    <string name="news_v030_1" formatted="false">Ekranın dokunmatik Ana Sayfa düğmesi: düzeltildi, artık her zaman başlatıcıya döner</string>
+    <string name="news_v030_2" formatted="false">Fiziksel Ana Sayfa düğmesi: artık açık pencereleri (ayarlar, uygulamalar) ana ekranın üstünde bırakmak yerine kapatıyor</string>
+    <string name="news_v030_3" formatted="false">Menzil ve navigasyon mesafeleri için yapılandırılabilir mesafe birimi (otomatik, km veya mil)</string>
+    <string name="news_v030_4" formatted="false">Klima için yeni resmi simgeler (A/C, AUTO, resirkülasyon, koltuk ve direksiyon ısıtma), duruma göre renk ve arka planla, ve Ön buğu giderme kutusu</string>
+    <string name="news_v030_5" formatted="false">CarPlay / Android Auto: artık sadece düğme değil, tüm kart açılıyor</string>
+    <string name="news_v030_6" formatted="false">Yeniden düzenlenmiş ayarlar, yapılandırılabilir 360 düğmesi, kişisel logo klasörü ve varsayılan navigasyon</string>
     <string name="set_apps_size" formatted="false">UYGULAMA BOYUTU</string>
     <string name="news_v027_1" formatted="false">Uygulama ekranı için ayrı boyut: ayarlardan seçilir (daha büyük simge ve metin)</string>
     <string name="news_v027_2" formatted="false">Dongle: günlük artık sıfırlamadan sonra dongle\'ın tekrar görünüp görünmediğini kaydeder</string>

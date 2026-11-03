@@ -33,8 +33,12 @@
     <string name="sec_home_sub" formatted="false">Batería, neumáticos, temperaturas</string>
     <string name="sec_look" formatted="false">Apariencia</string>
     <string name="sec_look_sub" formatted="false">Tema, tamaño, idioma</string>
-    <string name="sec_drive" formatted="false">Conducción</string>
-    <string name="sec_drive_sub" formatted="false">Posición de conducción, inicio MG</string>
+    <string name="sec_bar" formatted="false">Barra y botones</string>
+    <string name="sec_bar_sub" formatted="false">Barra, botones agrupados, botón 360</string>
+    <string name="sec_logos" formatted="false">Radio y logotipos</string>
+    <string name="sec_logos_sub" formatted="false">País de los logotipos, paquetes, carpeta personal</string>
+    <string name="sec_launch" formatted="false">Inicio y apps</string>
+    <string name="sec_launch_sub" formatted="false">Inicio seguro, otros launchers, dongle</string>
     <string name="sec_system" formatted="false">Sistema</string>
     <string name="sec_system_sub" formatted="false">Actualizaciones, registros, diagnóstico</string>
     <string name="btn_back" formatted="false">Atrás</string>
@@ -354,6 +358,29 @@
     <string name="newsh_5" formatted="false">CarPlay / Android Auto: se abre con un solo toque y tiene su icono en la barra mientras el teléfono está conectado</string>
     <string name="newsh_6" formatted="false">Ajustes: eliminado el espacio vacío entre Panel del coche y Barra inferior</string>
     <string name="newsh_7" formatted="false">Con MG4 Clima abierto, el panel de clima del sistema se cierra solo con el comando del sistema</string>
+    <string name="set_dist_unit" formatted="false">Unidad de distancia</string>
+    <string name="set_dist_unit_sub" formatted="false">Cómo mostrar la autonomía y las distancias: automática (como el cuadro), km o millas</string>
+    <string name="set_cam360" formatted="false">El botón 360 abre</string>
+    <string name="set_cam360_sub" formatted="false">Qué ocurre al tocar el botón de la cámara 360 en la barra</string>
+    <string name="cam360_original" formatted="false">360 original</string>
+    <string name="cam360_mg4" formatted="false">MG4 360</string>
+    <string name="cam360_app" formatted="false">Otra app</string>
+    <string name="cam360_hidden" formatted="false">Oculto</string>
+    <string name="cam360_pick_app" formatted="false">Elige la app</string>
+    <string name="set_logos_usb" formatted="false">Carpeta de logotipos personales</string>
+    <string name="set_logos_usb_sub" formatted="false">Pon MG4Launcher/loghi/&lt;código de país&gt;.zip en una memoria USB: se instala solo, sin internet</string>
+    <string name="set_nav_default" formatted="false">Navegador predeterminado</string>
+    <string name="set_nav_default_sub" formatted="false">Qué abre el panel del mapa al tocar \"Ir\"; con CarPlay/Android Auto conectado también aparece como opción</string>
+    <string name="nav_default_mg" formatted="false">Navegador MG</string>
+    <string name="nav_default_phone" formatted="false">CarPlay / Android Auto</string>
+    <string name="tile_defrost_front" formatted="false">Desempañado delantero</string>
+    <string name="tap_to_open" formatted="false">Toca para abrir</string>
+    <string name="news_v030_1" formatted="false">Botón Home táctil de la pantalla: corregido, vuelve siempre al launcher</string>
+    <string name="news_v030_2" formatted="false">Botón Home físico: ahora cierra las ventanas abiertas (ajustes, apps) en vez de dejarlas sobre el inicio</string>
+    <string name="news_v030_3" formatted="false">Unidad de distancia configurable (automática, km o millas) para la autonomía y las distancias del navegador</string>
+    <string name="news_v030_4" formatted="false">Nuevos iconos oficiales del clima (A/C, AUTO, recirculación, asientos y volante calefactados) con color y fondo según el estado, y el panel de desempañado delantero</string>
+    <string name="news_v030_5" formatted="false">CarPlay / Android Auto: toda la tarjeta abre ahora, no solo el botón</string>
+    <string name="news_v030_6" formatted="false">Ajustes reorganizados, botón 360 configurable, carpeta de logotipos personales y navegador predeterminado</string>
     <string name="set_apps_size" formatted="false">TAMAÑO DE APPS</string>
     <string name="news_v027_1" formatted="false">Tamaño propio para la pantalla de apps: elígelo en ajustes (iconos y texto más grandes)</string>
     <string name="news_v027_2" formatted="false">Dongle: el registro indica ahora si el dongle vuelve a aparecer tras el reinicio</string>

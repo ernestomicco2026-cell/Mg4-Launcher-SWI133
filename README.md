@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-<a href="releases/MG4Launcher-SWI133-0.2.8.apk"><img alt="Scarica / Download 0.2.8" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.2.8-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
+<a href="releases/MG4Launcher-SWI133-0.3.0.apk"><img alt="Scarica / Download 0.3.0" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.3.0-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
 <a href="https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT"><img alt="Sostieni il progetto con PayPal · Support the project with PayPal" src="https://img.shields.io/badge/Sostieni%20%2F%20Support-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white"></a> <img alt="sperimentale / experimental" src="https://img.shields.io/badge/sperimentale%20%2F%20experimental-orange?style=for-the-badge">
 </p>
 
@@ -161,7 +161,7 @@ Il firmware MG blocca l'installazione normale delle app: l'opzione `-f` la perme
 1. Scarica l'APK dalla cartella [`releases/`](releases/).
 2. Installa:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.2.8.apk
+   adb install -r -f MG4Launcher-SWI133-0.3.0.apk
    ```
 3. Rendilo la home predefinita:
    ```bash
@@ -236,6 +236,19 @@ Anche solo **2 €** sono un aiuto prezioso per continuare a sviluppare e provar
 [![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
 
 ### Versioni
+
+#### 0.3.0
+- **Tasto Home touch dello schermo**: corretto, ora torna sempre al launcher.
+- **Tasto Home fisico**: chiude le finestre aperte (impostazioni, app) invece di lasciarle sopra la home.
+- **Unità distanza** configurabile (automatica, km o miglia) per l'autonomia e le distanze del navigatore.
+- **Icone del clima**: barra in basso e riquadri Clima/Comfort usano ora le icone ufficiali di MG4 Clima (A/C, AUTO,
+  ricircolo, sedili e volante riscaldati), con colore e sfondo evidenziati secondo lo stato (acceso, caldo, spento,
+  non disponibile), giorno e notte. Aggiunto il riquadro **Sbrinamento parabrezza** nel gruppo Clima.
+- **CarPlay / Android Auto**: tutta la scheda si tocca per aprire, non solo il pulsante.
+- **Impostazioni riorganizzate** (sezioni Barra e pulsanti, Radio e loghi, Avvio e app), **tasto 360** che si può
+  scegliere cosa apre, **cartella loghi personali** da USB e **navigatore predefinito** per il riquadro mappa.
+- **Paese dei loghi radio automatico**: ordine più affidabile (RDS/DAB → lingua e regione d'accordo → fuso → regione).
+- **Rete senza internet**: invio dei log, controllo aggiornamenti e loghi condividono ora una sola pausa crescente.
 
 #### 0.2.8
 - **Riavvio del dongle CarPlay/AA**: non resetta più i telefoni collegati col cavo (iPhone, Android Auto). Interviene
@@ -472,7 +485,7 @@ The MG firmware blocks normal app installs; the `-f` option allows it.
 1. Download the APK from the [`releases/`](releases/) folder.
 2. Install it:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.2.8.apk
+   adb install -r -f MG4Launcher-SWI133-0.3.0.apk
    ```
 3. Make it the default home:
    ```bash
@@ -548,6 +561,19 @@ Even just **€2** is a great help to keep developing and testing new versions i
 [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
 
 ### Changelog
+
+#### 0.3.0
+- **Screen's touch Home button**: fixed, now always returns to the launcher.
+- **Physical Home button**: now closes any open window (settings, apps) instead of leaving it on top of the home.
+- Configurable **distance unit** (automatic, km or miles) for range and navigator distances.
+- **Climate icons**: the bottom bar and the Climate/Comfort panels now use the official MG4 Clima icons (A/C, AUTO,
+  recirculation, heated seats and steering wheel), with color and highlighted background by state (on, warm, off,
+  unavailable), day and night. Added a **Front defrost** tile to the Climate group.
+- **CarPlay / Android Auto**: the whole card now opens it, not just the button.
+- **Reorganized settings** (Bar and buttons, Radio and logos, Startup and apps sections), a **360 button** you can
+  choose what it opens, a **personal logos folder** from USB, and a **default navigator** for the map panel.
+- **Automatic radio logo country**: more reliable order (RDS/DAB → language and region agreement → time zone → region).
+- **Offline network**: log upload, update checks and logo packs now share a single growing back-off pause.
 
 #### 0.2.8
 - **CarPlay/AA dongle restart**: phones connected with a cable (iPhone, Android Auto) are no longer reset. It only acts

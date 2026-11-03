@@ -33,8 +33,12 @@
     <string name="sec_home_sub" formatted="false">Battery, tyres, temperatures</string>
     <string name="sec_look" formatted="false">Appearance</string>
     <string name="sec_look_sub" formatted="false">Theme, size, language</string>
-    <string name="sec_drive" formatted="false">Driving</string>
-    <string name="sec_drive_sub" formatted="false">Driving side, MG home</string>
+    <string name="sec_bar" formatted="false">Bar and buttons</string>
+    <string name="sec_bar_sub" formatted="false">Bar, grouped buttons, 360 button</string>
+    <string name="sec_logos" formatted="false">Radio and logos</string>
+    <string name="sec_logos_sub" formatted="false">Logo country, packs, personal folder</string>
+    <string name="sec_launch" formatted="false">Startup and apps</string>
+    <string name="sec_launch_sub" formatted="false">Safe start, other launchers, dongle</string>
     <string name="sec_system" formatted="false">System</string>
     <string name="sec_system_sub" formatted="false">Updates, logs, diagnostics</string>
     <string name="btn_back" formatted="false">Back</string>
@@ -354,6 +358,29 @@
     <string name="newsh_5" formatted="false">CarPlay / Android Auto: opens with a single tap and has its own icon in the bar while the phone is connected</string>
     <string name="newsh_6" formatted="false">Settings: removed the blank space between Car panel and Bottom bar</string>
     <string name="newsh_7" formatted="false">With MG4 Clima open, the system climate panel now closes by itself with the system\'s own command</string>
+    <string name="set_dist_unit" formatted="false">Distance unit</string>
+    <string name="set_dist_unit_sub" formatted="false">How to show range and distances: automatic (like the instrument cluster), km or miles</string>
+    <string name="set_cam360" formatted="false">The 360 button opens</string>
+    <string name="set_cam360_sub" formatted="false">What happens when you tap the 360 camera button in the bar</string>
+    <string name="cam360_original" formatted="false">Original 360</string>
+    <string name="cam360_mg4" formatted="false">MG4 360</string>
+    <string name="cam360_app" formatted="false">Another app</string>
+    <string name="cam360_hidden" formatted="false">Hidden</string>
+    <string name="cam360_pick_app" formatted="false">Choose the app</string>
+    <string name="set_logos_usb" formatted="false">Personal logos folder</string>
+    <string name="set_logos_usb_sub" formatted="false">Put MG4Launcher/loghi/&lt;country code&gt;.zip on a USB stick: it installs by itself, without internet</string>
+    <string name="set_nav_default" formatted="false">Default navigator</string>
+    <string name="set_nav_default_sub" formatted="false">What the map panel opens when you tap \"Go\"; with CarPlay/Android Auto connected it also appears as a choice</string>
+    <string name="nav_default_mg" formatted="false">MG navigator</string>
+    <string name="nav_default_phone" formatted="false">CarPlay / Android Auto</string>
+    <string name="tile_defrost_front" formatted="false">Front defrost</string>
+    <string name="tap_to_open" formatted="false">Tap to open</string>
+    <string name="news_v030_1" formatted="false">Screen\'s touch Home button: fixed, now always returns to the launcher</string>
+    <string name="news_v030_2" formatted="false">Physical Home button: now closes any open window (settings, apps) instead of leaving it on top of the home</string>
+    <string name="news_v030_3" formatted="false">Configurable distance unit (automatic, km or miles) for range and navigator distances</string>
+    <string name="news_v030_4" formatted="false">New official climate icons (A/C, AUTO, recirculation, heated seats and steering wheel) with color and background by state, and a Front defrost tile</string>
+    <string name="news_v030_5" formatted="false">CarPlay / Android Auto: the whole card now opens it, not just the button</string>
+    <string name="news_v030_6" formatted="false">Reorganized settings, configurable 360 button, personal logos folder and default navigator</string>
     <string name="set_apps_size" formatted="false">APP SIZE</string>
     <string name="news_v027_1" formatted="false">Separate size for the App screen: choose it in settings (larger icons and text)</string>
     <string name="news_v027_2" formatted="false">Dongle: the log now records whether the dongle reappears after the reset</string>

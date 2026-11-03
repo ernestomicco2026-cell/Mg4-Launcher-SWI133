@@ -33,8 +33,12 @@
     <string name="sec_home_sub" formatted="false">Batterie, pneus, températures</string>
     <string name="sec_look" formatted="false">Apparence</string>
     <string name="sec_look_sub" formatted="false">Thème, taille, langue</string>
-    <string name="sec_drive" formatted="false">Conduite</string>
-    <string name="sec_drive_sub" formatted="false">Position de conduite, accueil MG</string>
+    <string name="sec_bar" formatted="false">Barre et boutons</string>
+    <string name="sec_bar_sub" formatted="false">Barre, boutons groupés, bouton 360</string>
+    <string name="sec_logos" formatted="false">Radio et logos</string>
+    <string name="sec_logos_sub" formatted="false">Pays des logos, paquets, dossier personnel</string>
+    <string name="sec_launch" formatted="false">Démarrage et applis</string>
+    <string name="sec_launch_sub" formatted="false">Démarrage sécurisé, autres launchers, dongle</string>
     <string name="sec_system" formatted="false">Système</string>
     <string name="sec_system_sub" formatted="false">Mises à jour, journaux, diagnostic</string>
     <string name="btn_back" formatted="false">Retour</string>
@@ -354,6 +358,29 @@
     <string name="newsh_5" formatted="false">CarPlay / Android Auto : s\'ouvre d\'un seul toucher et a son icône dans la barre tant que le téléphone est connecté</string>
     <string name="newsh_6" formatted="false">Réglages : supprimé l\'espace vide entre Panneau véhicule et Barre du bas</string>
     <string name="newsh_7" formatted="false">Avec MG4 Clima ouvert, le panneau climat du système se ferme tout seul avec la commande du système</string>
+    <string name="set_dist_unit" formatted="false">Unité de distance</string>
+    <string name="set_dist_unit_sub" formatted="false">Comment afficher l\'autonomie et les distances : automatique (comme le combiné), km ou miles</string>
+    <string name="set_cam360" formatted="false">Le bouton 360 ouvre</string>
+    <string name="set_cam360_sub" formatted="false">Ce qui se passe en touchant le bouton caméra 360 dans la barre</string>
+    <string name="cam360_original" formatted="false">360 d\'origine</string>
+    <string name="cam360_mg4" formatted="false">MG4 360</string>
+    <string name="cam360_app" formatted="false">Une autre application</string>
+    <string name="cam360_hidden" formatted="false">Masqué</string>
+    <string name="cam360_pick_app" formatted="false">Choisis l\'application</string>
+    <string name="set_logos_usb" formatted="false">Dossier de logos personnels</string>
+    <string name="set_logos_usb_sub" formatted="false">Mets MG4Launcher/loghi/&lt;code pays&gt;.zip sur une clé USB : il s\'installe seul, sans internet</string>
+    <string name="set_nav_default" formatted="false">Navigateur par défaut</string>
+    <string name="set_nav_default_sub" formatted="false">Ce que le panneau carte ouvre en touchant « Aller » ; avec CarPlay/Android Auto connecté, il apparaît aussi comme choix</string>
+    <string name="nav_default_mg" formatted="false">Navigateur MG</string>
+    <string name="nav_default_phone" formatted="false">CarPlay / Android Auto</string>
+    <string name="tile_defrost_front" formatted="false">Désembuage avant</string>
+    <string name="tap_to_open" formatted="false">Touchez pour ouvrir</string>
+    <string name="news_v030_1" formatted="false">Bouton Accueil tactile de l\'écran : corrigé, revient toujours au launcher</string>
+    <string name="news_v030_2" formatted="false">Bouton Accueil physique : ferme maintenant les fenêtres ouvertes (réglages, applis) au lieu de les laisser au-dessus de l\'accueil</string>
+    <string name="news_v030_3" formatted="false">Unité de distance configurable (automatique, km ou miles) pour l\'autonomie et les distances du navigateur</string>
+    <string name="news_v030_4" formatted="false">Nouvelles icônes officielles du climat (A/C, AUTO, recyclage, sièges et volant chauffants) avec couleur et fond selon l\'état, et le panneau Désembuage avant</string>
+    <string name="news_v030_5" formatted="false">CarPlay / Android Auto : toute la carte ouvre maintenant, pas seulement le bouton</string>
+    <string name="news_v030_6" formatted="false">Réglages réorganisés, bouton 360 configurable, dossier de logos personnels et navigateur par défaut</string>
     <string name="set_apps_size" formatted="false">TAILLE DES APPS</string>
     <string name="news_v027_1" formatted="false">Taille séparée pour l\'écran des applis : à régler dans les réglages (icônes et texte plus grands)</string>
     <string name="news_v027_2" formatted="false">Dongle : le journal indique maintenant si le dongle réapparaît après la réinitialisation</string>
