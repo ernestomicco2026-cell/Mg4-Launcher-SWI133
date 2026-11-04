@@ -1,3 +1,20 @@
+> [!WARNING]
+> 🇮🇹 **Hai la 0.3.0? Aggiorna a mano alla 0.3.1.** Nella 0.3.0 il menu delle impostazioni non scorre e il tasto Aggiorna non si raggiunge: scarica [l'APK 0.3.1](releases/MG4Launcher-SWI133-0.3.1.apk) e installalo come la prima volta.
+>
+> 🇬🇧 **Running 0.3.0? Update manually to 0.3.1.** In 0.3.0 the settings menu doesn't scroll and the Update button can't be reached: download [the 0.3.1 APK](releases/MG4Launcher-SWI133-0.3.1.apk) and install it like the first time.
+>
+> 🇪🇸 **¿Tienes la 0.3.0? Actualiza a mano a la 0.3.1.** En la 0.3.0 el menú de ajustes no se desplaza y no se llega al botón Actualizar: descarga [el APK 0.3.1](releases/MG4Launcher-SWI133-0.3.1.apk) e instálalo como la primera vez.
+>
+> 🇩🇪 **Version 0.3.0 installiert? Bitte manuell auf 0.3.1 aktualisieren.** In 0.3.0 lässt sich das Einstellungsmenü nicht scrollen und die Schaltfläche „Aktualisieren“ ist nicht erreichbar: [APK 0.3.1](releases/MG4Launcher-SWI133-0.3.1.apk) herunterladen und wie beim ersten Mal installieren.
+>
+> 🇫🇷 **Vous avez la 0.3.0 ? Mettez à jour manuellement vers la 0.3.1.** Dans la 0.3.0, le menu des réglages ne défile pas et le bouton Mettre à jour est inaccessible : téléchargez [l'APK 0.3.1](releases/MG4Launcher-SWI133-0.3.1.apk) et installez-le comme la première fois.
+>
+> 🇵🇱 **Masz wersję 0.3.0? Zaktualizuj ręcznie do 0.3.1.** W wersji 0.3.0 menu ustawień się nie przewija i nie da się dojść do przycisku Aktualizuj: pobierz [APK 0.3.1](releases/MG4Launcher-SWI133-0.3.1.apk) i zainstaluj jak za pierwszym razem.
+>
+> 🇹🇷 **0.3.0 sürümünü mü kullanıyorsunuz? 0.3.1 sürümüne elle güncelleyin.** 0.3.0 sürümünde ayarlar menüsü kaymıyor ve Güncelle düğmesine ulaşılamıyor: [0.3.1 APK'sını](releases/MG4Launcher-SWI133-0.3.1.apk) indirin ve ilk seferdeki gibi kurun.
+>
+> 🇵🇹 **Tem a 0.3.0? Atualize manualmente para a 0.3.1.** Na 0.3.0 o menu das definições não desliza e não se chega ao botão Atualizar: descarregue [o APK 0.3.1](releases/MG4Launcher-SWI133-0.3.1.apk) e instale-o como da primeira vez.
+
 # MG4 Launcher — SWI133 (MG4 Luxury MY24)
 
 <p align="center"><img src="screenshots/home.png" alt="Home di MG4 Launcher SWI133 (simulazione) · MG4 Launcher SWI133 home (mock-up)" width="100%"></p>
