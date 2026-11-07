@@ -13,6 +13,11 @@ public final class Confirm {
     private Confirm() {}
 
     public static void show(FrameLayout root, Theme t, String title, String msg, String cancel, String ok, Runnable onOk) {
+        show(root, t, title, msg, cancel, ok, onOk, null);
+    }
+
+    /** Come sopra; onCancel (facoltativo) quando si preme il primo pulsante. ok null = un solo pulsante. */
+    public static void show(FrameLayout root, Theme t, String title, String msg, String cancel, String ok, Runnable onOk, Runnable onCancel) {
         Context c = root.getContext();
         FrameLayout dim = new FrameLayout(c);
         dim.setBackgroundColor(t.day ? 0x66000000 : 0xB3000000);
@@ -27,8 +32,11 @@ public final class Confirm {
         card.addView(m, Ui.margins(new LinearLayout.LayoutParams(-1, -2), 0, Ui.dp(c, 16), 0, 0));
         LinearLayout btns = Ui.row(c);
         btns.setGravity(Gravity.END);
-        btns.addView(button(c, t, cancel, false, v -> ((ViewGroup) dim.getParent()).removeView(dim)), Ui.lp(-2, Ui.tp(c, 60)));
-        btns.addView(button(c, t, ok, true, v -> {
+        btns.addView(button(c, t, cancel, ok == null, v -> {
+            ((ViewGroup) dim.getParent()).removeView(dim);
+            if (onCancel != null) onCancel.run();
+        }), Ui.lp(-2, Ui.tp(c, 60)));
+        if (ok != null) btns.addView(button(c, t, ok, true, v -> {
             ((ViewGroup) dim.getParent()).removeView(dim);
             onOk.run();
         }), Ui.margins(Ui.lp(-2, Ui.tp(c, 60)), Ui.dp(c, 12), 0, 0, 0));

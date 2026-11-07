@@ -58,7 +58,7 @@
     <string name="set_diag_sub" formatted="false">Wartości odczytane z samochodu i ostatnie błędy</string>
     <string name="set_diag_title" formatted="false">Diagnostyka usług samochodu</string>
     <string name="set_home_card" formatted="false">PANEL SAMOCHODU</string>
-    <string name="set_inside_sub" formatted="false">Pod zewnętrzną · «— °», jeśli samochód jej nie podaje</string>
+    <string name="set_inside_sub" formatted="false">Pod zewnętrzną. Jeśli auto nie podaje wiarygodnej wartości, widać «--» (nigdy zewnętrznej zamiast niej)</string>
     <string name="set_language" formatted="false">JĘZYK</string>
     <string name="set_menu_title" formatted="false">Ustawienia</string>
     <string name="set_open_original" formatted="false">Otwórz oryginalny ekran MG</string>
@@ -395,4 +395,32 @@
     <string name="news_v098_1" formatted="false">Dongle restart: phones connected with a cable (iPhone, Android Auto) are no longer reset, only real wireless dongles</string>
     <string name="news_v098_2" formatted="false">Speed permission granted automatically, and new Sectigo/USERTrust root certificates for logos, updates and logs</string>
     <string name="news_v098_3" formatted="false">Android first-time setup recognized as home (not the MG home); no logs sent from phones and emulators</string>
+    <string name="opt_show" formatted="false">Pokaż</string>
+    <string name="opt_hide" formatted="false">Ukryj</string>
+    <string name="set_charge_limit" formatted="false">Limit ładowania</string>
+    <string name="set_charge_limit_sub" formatted="false">Znacznik na pasku baterii i przycisk. Automatycznie: tylko gdy auto obsługuje polecenie</string>
+    <string name="set_retro_return" formatted="false">Po cofaniu wróć do poprzedniej aplikacji</string>
+    <string name="set_retro_return_sub" formatted="false">Gdy kamera się zamyka, ponownie otwiera CarPlay, Android Auto, nawigację lub otwartą aplikację</string>
+    <string name="quick_none" formatted="false">Brak</string>
+    <string name="set_quick" formatted="false">Przycisk w prawym górnym rogu</string>
+    <string name="set_quick_sub" formatted="false">Obok Mapy i Mediów. Przy «Brak» przyciski źródeł zawsze mają podpis</string>
+    <string name="quick_pick_app" formatted="false">Aplikacja dla przycisku w prawym górnym rogu</string>
+    <string name="notice_title" formatted="false">Komunikat</string>
+    <string name="notice_important" formatted="false">Ważny komunikat</string>
+    <string name="upd_auto_failed" formatted="false">Nie można teraz sprawdzić aktualizacji: ponowna próba później</string>
+    <string name="cb_reserve" formatted="false">Zaplanowane</string>
+    <string name="cb_reserve_title" formatted="false">Ładowanie zaplanowane</string>
+    <string name="cb_reserve_msg" formatted="false">Jak w aplikacji Energia auta: ładowanie startuje tylko w wybranym przedziale godzin</string>
+    <string name="cb_reserve_turn_on">Włącz (%1$s)</string>
+    <string name="cb_reserve_turn_off" formatted="false">Wyłącz</string>
+    <string name="cb_reserve_start">Początek: %1$s</string>
+    <string name="cb_reserve_stop">Koniec: %1$s</string>
+    <string name="cb_reserve_pick_start" formatted="false">Godzina rozpoczęcia</string>
+    <string name="cb_reserve_pick_stop" formatted="false">Godzina zakończenia</string>
+    <string name="news_v032_1" formatted="false">Po cofaniu launcher ponownie otwiera CarPlay, Android Auto lub poprzednią aplikację (można wyłączyć)</string>
+    <string name="news_v032_2" formatted="false">Media: FM/DAB pod przyciskiem Radio, wznowienie ostatniego źródła po uruchomieniu i pewniejszy Bluetooth</string>
+    <string name="news_v032_3" formatted="false">Motyw dzień/noc także według świateł i wschodu/zachodu słońca; zapalone światła na rysunku auta</string>
+    <string name="news_v032_4" formatted="false">Zwięzła temperatura zewnętrzna, większe ciśnienie opon, czytelniejsze ikony 360°</string>
+    <string name="news_v032_5" formatted="false">Limit i ładowanie zaplanowane tylko, gdy auto je obsługuje; przycisk w prawym górnym rogu do wyboru</string>
+    <string name="news_v032_6" formatted="false">Launcher sam sprawdza aktualizacje i może wyświetlać ważne komunikaty</string>
 </resources>

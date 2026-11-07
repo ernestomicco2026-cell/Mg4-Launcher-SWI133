@@ -41,6 +41,21 @@ public final class CarView extends View {
     private final Paint rimShade = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF rimDst = new RectF();
 
+    // 0.3.2 (punto 6b): fari accesi sul disegno quando l'auto ha anabbaglianti o luci di posizione accesi
+    private boolean lights;
+    private final Paint glowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint beamPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final android.graphics.Path beam = new android.graphics.Path();
+    /** Fanale anteriore e posteriore nella foto (car_base 763×287): centro e raggi del bagliore. */
+    private static final float HEAD_X = 58f, HEAD_Y = 137f, TAIL_X = 724f, TAIL_Y = 96f;
+
+    /** Fari accesi/spenti sul disegno (false anche quando lo stato non si legge: l'auto resta com'è). */
+    public void setLights(boolean on) {
+        if (on == lights) return;
+        lights = on;
+        invalidate();
+    }
+
     public CarView(Context c) {
         super(c);
         load(c);
@@ -119,6 +134,35 @@ public final class CarView extends View {
         c.drawBitmap(highlight, null, dst, hlLayer);
         c.drawBitmap(base, null, dst, plain);
         drawWheels(c, s, dst.left, dst.top);
+        if (lights) drawLights(c, s, dst.left, dst.top);
+    }
+
+    /** Bagliore bianco sul fanale anteriore con un fascio leggero in avanti, bagliore rosso sul fanale posteriore. */
+    private void drawLights(Canvas c, float s, float left, float top) {
+        float hx = left + HEAD_X * s, hy = top + HEAD_Y * s;
+        // fascio in avanti (verso sinistra), molto tenue
+        beam.reset();
+        beam.moveTo(left + 98 * s, top + 124 * s);
+        beam.lineTo(left + 24 * s, top + 148 * s);
+        beam.lineTo(left - 150 * s, top + 196 * s);
+        beam.lineTo(left - 150 * s, top + 92 * s);
+        beam.close();
+        beamPaint.setShader(new android.graphics.LinearGradient(left + 60 * s, 0, left - 150 * s, 0, 0x55FFF6DC, 0x00FFF6DC, Shader.TileMode.CLAMP));
+        c.drawPath(beam, beamPaint);
+        // bagliore del fanale (ovale allungato lungo il gruppo ottico)
+        c.save();
+        c.rotate(-17f, hx, hy);
+        c.scale(1f, 0.32f, hx, hy);
+        glowPaint.setShader(new RadialGradient(hx, hy, 56 * s, new int[]{0xF2FFFFFF, 0xA0E8F1FF, 0x00E8F1FF}, new float[]{0f, 0.45f, 1f}, Shader.TileMode.CLAMP));
+        c.drawCircle(hx, hy, 56 * s, glowPaint);
+        c.restore();
+        // fanale posteriore
+        float tx = left + TAIL_X * s, ty = top + TAIL_Y * s;
+        c.save();
+        c.scale(0.8f, 1f, tx, ty);
+        glowPaint.setShader(new RadialGradient(tx, ty, 34 * s, new int[]{0xE0FF3B30, 0x80FF2A1F, 0x00FF2A1F}, new float[]{0f, 0.5f, 1f}, Shader.TileMode.CLAMP));
+        c.drawCircle(tx, ty, 34 * s, glowPaint);
+        c.restore();
     }
 
     private void drawWheels(Canvas c, float s, float left, float top) {

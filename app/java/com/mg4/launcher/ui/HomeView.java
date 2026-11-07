@@ -65,8 +65,8 @@ public final class HomeView extends LinearLayout {
     private ImageView statusIcon;
     // pulsanti di ricarica (opzione)
     private LinearLayout chargeRow;
-    private View limitBtn, currentBtn, startBtn, unlockBtn;
-    private TextView limitVal, currentVal, startLabel, startVal, unlockVal;
+    private View limitBtn, currentBtn, startBtn, unlockBtn, reserveBtn;
+    private TextView limitVal, currentVal, startLabel, startVal, unlockVal, reserveVal;
     private VehicleClient.State lastVehicle = new VehicleClient.State();
     private Bars.Progress battery;
     private CarView car;
@@ -75,6 +75,8 @@ public final class HomeView extends LinearLayout {
     private FrameLayout right;
     private View mapPanel, mediaPanel, phonePanel;
     private TextView tabMap, tabMedia, tabPhone;
+    /** Pulsante rapido in alto a destra (Prefs.quickButton). */
+    private String quick = Prefs.QUICK_PROJ;
     private LinearLayout connRow;
     private ImageView connBt, connWifi;
     private TextView connNet;
@@ -103,6 +105,7 @@ public final class HomeView extends LinearLayout {
     private TextView mTitle, mSub, mMeta, mPos, mDur, artFreq, artUnit, artBand;
     private ImageView artIcon, artLogo;
     private LinearLayout artRadio, progressRow, bandRow, favRow;
+    private View subLink;
     private View favScroll;
     private String favSignature = "";
     private Bars.Progress mProgress;
@@ -133,7 +136,6 @@ public final class HomeView extends LinearLayout {
     private int recircIcon;
     private View barView;
     private GroupPopup popup;
-    private ImageView outIcon;
 
     /** Spazio lasciato libero in alto a sinistra quando la barra di sistema disegna la spia luci. */
     private static final int SYSTEM_LIGHT_INSET = 64;
@@ -253,25 +255,23 @@ public final class HomeView extends LinearLayout {
         p.addView(batRow, Ui.margins(new LayoutParams(-1, -2), 0, dp(10), 0, 0));
         updateClock();
 
+        // 0.3.2 (punto 6a): temperatura esterna compatta a sinistra ("12°C", senza scritta "esterni"), poi lo stato
+        // della ricarica; sotto l'esterna, se attiva, quella interna
         LinearLayout status = Ui.row(c);
-        statusIcon = Ui.icon(c, R.drawable.ic_bolt, t.battery, 22);
-        status.addView(statusIcon);
-        statusTv = Ui.oneLine(Ui.text(c, L.s(R.string.connecting_vehicle), 20, t.sub, Ui.REGULAR));
-        status.addView(statusTv, Ui.margins(Ui.lpWeight(0, -2, 1), dp(10), 0, 0, 0));
-        // altezza fissa: a riposo la riga resta vuota senza spostare l'auto
-        status.setMinimumHeight(dp(34));
-        // temperatura esterna e, sotto, quella interna
-        outIcon = Ui.icon(c, R.drawable.ic_thermo, t.text, 26);
-        outIcon.setVisibility(GONE);
-        status.addView(outIcon);
         LinearLayout temps = Ui.column(c);
-        temps.setGravity(Gravity.END);
-        outTv = Ui.text(c, "", 26, t.text, Ui.REGULAR);   // 0.2.1: più grande e chiara (era 20, grigia)
+        temps.setGravity(Gravity.START);
+        outTv = Ui.oneLine(Ui.text(c, "", 30, t.text, Ui.REGULAR));
         temps.addView(outTv);
-        inTv = Ui.text(c, "", 24, t.text, Ui.REGULAR);    // 0.2.1: più grande e chiara (era 17, grigia)
+        inTv = Ui.oneLine(Ui.text(c, "", 20, t.sub, Ui.REGULAR));
         inTv.setVisibility(showInside() ? VISIBLE : GONE);
         temps.addView(inTv);
-        status.addView(temps, Ui.margins(Ui.lp(-2, -2), dp(6), 0, 0, 0));
+        status.addView(temps, Ui.margins(Ui.lp(-2, -2), 0, 0, dp(18), 0));
+        statusIcon = Ui.icon(c, R.drawable.ic_bolt, t.battery, 22);
+        status.addView(statusIcon, Ui.margins(new LayoutParams(dp(22), dp(22)), 0, dp(6), 0, 0));
+        statusTv = Ui.oneLine(Ui.text(c, L.s(R.string.connecting_vehicle), 20, t.sub, Ui.REGULAR));
+        status.addView(statusTv, Ui.margins(Ui.lpWeight(0, -2, 1), dp(10), dp(4), 0, 0));
+        // altezza fissa: a riposo la riga resta vuota senza spostare l'auto
+        status.setMinimumHeight(dp(38));
         status.setGravity(Gravity.TOP);
         p.addView(status, Ui.margins(new LayoutParams(-1, -2), 0, dp(14), 0, 0));
 
@@ -301,6 +301,10 @@ public final class HomeView extends LinearLayout {
             startBtn = chargeButton(c, chargeRow, L.s(R.string.cb_charge), true, v -> startStop());
             startLabel = (TextView) ((ViewGroup) startBtn).getChildAt(0);
             startVal = (TextView) ((ViewGroup) startBtn).getChildAt(1);
+            // 0.3.2 (punto 6d): ricarica programmata, solo se l'auto la supporta (come l'app Energia originale)
+            reserveBtn = chargeButton(c, chargeRow, L.s(R.string.cb_reserve), true, v -> pickReserve());
+            reserveVal = (TextView) ((ViewGroup) reserveBtn).getChildAt(1);
+            reserveBtn.setVisibility(GONE);
             // 0.3.0 (punto 6): sblocca presa - sempre visibile, non è un interruttore del clima
             unlockBtn = chargeButton(c, chargeRow, L.s(R.string.cb_unlock), false, v -> unlockSocket());
             unlockVal = (TextView) ((ViewGroup) unlockBtn).getChildAt(1);
@@ -338,6 +342,7 @@ public final class HomeView extends LinearLayout {
     private void styleChargeButtons(VehicleClient.State s) {
         if (chargeRow == null) return;
         boolean ok = s.connected;
+        limitBtn.setVisibility(showLimit(s) ? VISIBLE : GONE);
         limitVal.setText(s.chargeLimitCode >= 1 ? LIMIT_LABELS[s.chargeLimitCode - 1] : "—");
         enable(limitBtn, ok && s.chargeLimitCode >= 1);
         currentVal.setText(s.currentLimit >= 1 ? VehicleClient.CURRENT_LABELS[s.currentLimit - 1] : "—");
@@ -360,6 +365,9 @@ public final class HomeView extends LinearLayout {
         startBtn.setBackground(Ui.pressable(getContext(), can && running ? t.text : t.chip, 14, t));
         startLabel.setTextColor(can && running ? t.panel : t.sub);
         startVal.setTextColor(can && running ? t.panel : t.text);
+        boolean res = ok && s.reserveSupported();
+        reserveBtn.setVisibility(res ? VISIBLE : GONE);
+        if (res) reserveVal.setText(s.reserveOn() ? hhmm(s.reserveStartH, s.reserveStartM) : L.s(R.string.off));
         // 0.3.0 (punto 6): sblocca presa - sempre cliccabile (spiega il motivo se non si può), mai disattivato
         unlockVal.setText(s.chargeLock == 1 ? L.s(R.string.cb_unlock_locked) : s.chargeLock == 2 ? L.s(R.string.cb_unlock_unlocked) : "—");
     }
@@ -373,6 +381,35 @@ public final class HomeView extends LinearLayout {
         }
         Confirm.show(host.overlay(), t, L.s(R.string.cb_unlock_title), L.s(R.string.cb_unlock_msg),
                 L.s(R.string.btn_cancel), L.s(R.string.cb_unlock), () -> vehicle.unlockChargingSocket());
+    }
+
+    private static String hhmm(int h, int m) {
+        return h < 0 ? "—" : String.format(Locale.ROOT, "%02d:%02d", h, Math.max(0, m));
+    }
+
+    /** 0.3.2 (punto 6d): ricarica programmata - accendi/spegni, ora di inizio, ora di fine (a passi di 30 minuti). */
+    private void pickReserve() {
+        VehicleClient.State s = lastVehicle;
+        if (!s.reserveSupported()) return;
+        String range = hhmm(s.reserveStartH, s.reserveStartM) + "–" + hhmm(s.reserveStopH, s.reserveStopM);
+        String[] opts = {s.reserveOn() ? L.s(R.string.cb_reserve_turn_off) : L.f(R.string.cb_reserve_turn_on, range),
+                L.f(R.string.cb_reserve_start, hhmm(s.reserveStartH, s.reserveStartM)),
+                L.f(R.string.cb_reserve_stop, hhmm(s.reserveStopH, s.reserveStopM))};
+        Confirm.pick(host.overlay(), t, L.s(R.string.cb_reserve_title), L.s(R.string.cb_reserve_msg), opts, -1,
+                L.s(R.string.btn_cancel), i -> {
+                    if (i == 0) vehicle.setReserve(!s.reserveOn());
+                    else pickReserveTime(i == 1);
+                });
+    }
+
+    private void pickReserveTime(boolean start) {
+        VehicleClient.State s = lastVehicle;
+        String[] times = new String[48];
+        for (int i = 0; i < 48; i++) times[i] = hhmm(i / 2, (i % 2) * 30);
+        int h = start ? s.reserveStartH : s.reserveStopH, m = start ? s.reserveStartM : s.reserveStopM;
+        int sel = h < 0 ? -1 : h * 2 + (m >= 30 ? 1 : 0);
+        Confirm.pick(host.overlay(), t, L.s(start ? R.string.cb_reserve_pick_start : R.string.cb_reserve_pick_stop), "", times, sel,
+                L.s(R.string.btn_cancel), i -> vehicle.setReserveTime(start, i / 2, (i % 2) * 30));
     }
 
     private void pickLimit() {
@@ -411,9 +448,28 @@ public final class HomeView extends LinearLayout {
         });
     }
 
-    /** 0.9.5: temperatura interna tolta, l'auto non la manda allo schermo (vedi Impostazioni › Home). */
+    private String limitDiag = "";
+
+    /** Limite di ricarica visibile? Automatico = solo se la lettura del limite è valida; Mostra / Nascondi forzano. */
+    private boolean showLimit(VehicleClient.State s) {
+        String mode = prefs.chargeLimitMode();
+        boolean supported = s.chargeLimitCode >= 1;
+        boolean on = Prefs.LIMIT_SHOW.equals(mode) || (Prefs.LIMIT_AUTO.equals(mode) && supported);
+        if (s.connected) {
+            String d = "supportato " + (supported ? "sì" : "no") + " · valore letto " + (supported ? s.chargeLimit + "% (codice " + s.chargeLimitCode + ")" : "non valido")
+                    + " · scelta " + (Prefs.LIMIT_AUTO.equals(mode) ? "Automatico" : Prefs.LIMIT_SHOW.equals(mode) ? "Mostra" : "Nascondi")
+                    + " · " + (on ? "mostrato" : "nascosto");
+            if (!d.equals(limitDiag)) {
+                limitDiag = d;
+                com.mg4.launcher.svc.Diag.put("ricarica.limite", d);
+            }
+        }
+        return on;
+    }
+
+    /** 0.3.2 (punto 2): temperatura interna sotto l'esterna, se attivata nelle impostazioni (spenta di default). */
     private boolean showInside() {
-        return false;
+        return prefs.showInsideTemp();
     }
 
     private final long createdAt = System.currentTimeMillis();
@@ -444,7 +500,9 @@ public final class HomeView extends LinearLayout {
             if (socOk) socTv.setText(soc + "%");
         }
         if (socOk) battery.setValue(s.soc / 100f);
-        battery.setLimit(s.chargeLimit > 0 && s.chargeLimit < 100 ? s.chargeLimit / 100f : -1);
+        // 0.3.2 (punto 6d): limite di ricarica in automatico solo se l'auto supporta il comando (lettura valida)
+        boolean limitOn = showLimit(s);
+        battery.setLimit(limitOn && s.chargeLimit > 0 && s.chargeLimit < 100 ? s.chargeLimit / 100f : -1);
         // stato solo durante ricarica o scarica (tipo, potenza, tempo rimanente); a riposo lo spazio resta vuoto
         String st = chargeText(s);
         statusTv.setText(st);
@@ -457,15 +515,16 @@ public final class HomeView extends LinearLayout {
             tempTv.setText(tempLabel(acTemp));
         }
         boolean outOk = s.outsideTemp > -60 && s.outsideTemp < 70;
-        outIcon.setVisibility(outOk ? VISIBLE : GONE);
-        outTv.setText(outOk ? L.f(R.string.outside_temp, String.valueOf(Math.round(s.outsideTemp))) : "");
-        // temperatura interna (opzione): "—°" se l'auto non fornisce il dato, mai 0°
+        // 0.3.2 (punto 6a): solo numero e unità
+        outTv.setText(outOk ? Math.round(s.outsideTemp) + "°C" : "");
+        // 0.3.2 (punto 2): temperatura interna (opzione) solo da una fonte valida, mai l'esterna al suo posto: "--" se
+        // nessuna fonte è valida (vedi VehicleClient, diagnostica clima.tempInterna)
         boolean inShow = showInside();
-        boolean inOk = !Float.isNaN(s.insideTemp) && Math.round(s.insideTemp) != 0;
         inTv.setVisibility(inShow ? VISIBLE : GONE);
-        if (inShow) inTv.setText(L.f(R.string.inside_temp, inOk ? String.valueOf(Math.round(s.insideTemp)) : "—"));
-        if (inShow && !outOk) outIcon.setVisibility(VISIBLE);
+        if (inShow) inTv.setText(L.f(R.string.inside_temp, s.insideValid ? String.valueOf(Math.round(s.insideTemp)) : "--"));
         showTpms(s.tireBar, s.distUnit);
+        // 0.3.2 (punto 6b): fari accesi sul disegno (stessa lettura dei fari del tema automatico)
+        car.setLights(Boolean.TRUE.equals(s.lightsOn()));
         if (s.fanLevel >= 0 && SystemClock.uptimeMillis() > localFanUntil) {
             fanLevel = s.fanLevel;
             fanTv.setText(fanLabel(fanLevel));
@@ -575,11 +634,20 @@ public final class HomeView extends LinearLayout {
         tabMedia = addTab(c, tabs, L.s(R.string.tab_media), TAB_MEDIA);
         tabPhone = addTab(c, tabs, "CarPlay", TAB_PHONE);
         // 0.9.6: un solo tocco apre CarPlay / Android Auto (prima il primo tocco mostrava solo la scheda)
-        tabPhone.setOnClickListener(v -> {
-            selectTab(TAB_PHONE, true);
-            media.openProjection();
-        });
-        tabPhone.setVisibility(GONE);
+        // 0.3.2 (punto 7b): il pulsante si sceglie nelle impostazioni - CarPlay/Android Auto (predefinito), un'app, nessuno
+        quick = prefs.quickButton();
+        if (quick.startsWith(Prefs.QUICK_APP)) {
+            String pkg = quick.substring(Prefs.QUICK_APP.length());
+            tabPhone.setText(Cam360.label(c, pkg));
+            tabPhone.setOnClickListener(v -> host.launch(pkg, null));
+            tabPhone.setVisibility(host.canLaunch(pkg, null) ? VISIBLE : GONE);
+        } else {
+            tabPhone.setOnClickListener(v -> {
+                selectTab(TAB_PHONE, true);
+                media.openProjection();
+            });
+            tabPhone.setVisibility(GONE);
+        }
         // indicatori Bluetooth / Wi-Fi / 4G a sinistra delle schede
         LinearLayout topRight = Ui.row(c);
         topRight.setGravity(Gravity.CENTER_VERTICAL);
@@ -872,11 +940,45 @@ public final class HomeView extends LinearLayout {
         col.setPadding(dp(28), dp(20), dp(20), dp(20));
 
         // sorgenti: un pulsante per ciascuna (Radio, USB, Bluetooth, Online, + CarPlay/Android Auto se collegato)
+        // 0.3.2 (punto 8, issue SWI68 #25): sotto la riga delle sorgenti, attaccata al pulsante Radio con una linea, la
+        // scelta della banda (FM / DAB) come sotto-opzione: si legge sorgente → banda → stazioni, da sinistra a destra e
+        // dall'alto in basso. Se in futuro un'altra sorgente avrà sotto-opzioni, andranno nella stessa riga (subRow).
+        LinearLayout srcBox = Ui.column(c);
         srcRow = Ui.row(c);
         srcRow.setBackground(Ui.round(t.overlay, dp(16)));
         srcRow.setPadding(dp(6), dp(6), dp(6), dp(6));
-        // guida a destra con la spia luci: la riga sorgenti parte più a destra
-        col.addView(srcRow, Ui.margins(new LayoutParams(-2, tp(48) + dp(12)), rhd && sysIndicator ? dp(SYSTEM_LIGHT_INSET) : 0, 0, 0, 0));
+        srcBox.addView(srcRow, new LayoutParams(-2, tp(48) + dp(12)));
+        subLink = new View(c);
+        subLink.setBackground(Ui.round(t.text, dp(1)));
+        srcBox.addView(subLink, new LayoutParams(dp(2), dp(8)));
+        bandRow = Ui.row(c);
+        bandRow.setBackground(Ui.round(t.overlay, dp(14)));
+        bandRow.setPadding(dp(4), dp(4), dp(4), dp(4));
+        bandChips = new TextView[2];
+        String[] bands = {"FM", "DAB"};
+        int[] bandIds = {MediaClient.BAND_FM, MediaClient.BAND_DAB};
+        for (int i = 0; i < 2; i++) {
+            final int band = bandIds[i];
+            TextView b = Ui.text(c, bands[i], ts(16), t.sub, Ui.MEDIUM);
+            b.setGravity(Gravity.CENTER);
+            b.setMinWidth(tp(60));
+            b.setPadding(tp(14), 0, tp(14), 0);
+            b.setClickable(true);
+            b.setContentDescription(L.s(R.string.src_radio) + " " + bands[i]);
+            b.setOnClickListener(v -> {
+                pendingBand = band;
+                pendingBandUntil = SystemClock.uptimeMillis() + 4000;
+                styleBands(band);
+                media.switchBand(band);
+            });
+            bandRow.addView(b, Ui.margins(Ui.lp(-2, tp(40)), i == 0 ? 0 : dp(4), 0, 0, 0));
+            bandChips[i] = b;
+        }
+        srcBox.addView(bandRow, new LayoutParams(-2, -2));
+        // la linea e la banda seguono la posizione del pulsante Radio nella riga delle sorgenti
+        srcRow.addOnLayoutChangeListener((v, l, tp0, r, b, ol, ot, or, ob) -> placeSubOptions());
+        // guida a destra con la spia luci: la riga sorgenti parte più a destra (come prima)
+        col.addView(srcBox, Ui.margins(new LayoutParams(-2, -2), rhd && sysIndicator ? dp(SYSTEM_LIGHT_INSET) : 0, 0, 0, 0));
 
         // corpo: a sinistra copertina + comandi + preferiti, a destra (solo radio) l'elenco delle stazioni trovate
         LinearLayout body = Ui.row(c);
@@ -942,39 +1044,15 @@ public final class HomeView extends LinearLayout {
         progressRow.addView(times, Ui.margins(new LayoutParams(-1, -2), 0, dp(8), 0, 0));
         info.addView(progressRow, Ui.margins(new LayoutParams(-1, -2), 0, dp(16), 0, 0));
 
-        // comandi grandi + scelta della banda (FM / DAB) subito accanto
+        // comandi grandi; 0.3.2 (punto 8): la banda è salita sotto le sorgenti, qui i comandi hanno più aria
         LinearLayout ctr = Ui.row(c);
         ctr.setGravity(Gravity.CENTER_VERTICAL);
         ctr.addView(Ui.iconButton(c, t, R.drawable.ic_prev, t.text, t.chip, 64, 28, 32, L.s(R.string.previous), v -> media.skip(false)));
         FrameLayout play = Ui.iconButton(c, t, R.drawable.ic_pause, t.panel, t.text, 84, 36, 42, L.s(R.string.play_pause), v -> media.playPause());
         playIcon = (ImageView) play.getChildAt(0);
-        int gap = dp(Ui.K > 1 ? 12 : 16);
+        int gap = dp(Ui.K > 1 ? 18 : 26);
         ctr.addView(play, Ui.margins(Ui.lp(tp(84), tp(84)), gap, 0, gap, 0));
         ctr.addView(Ui.iconButton(c, t, R.drawable.ic_next, t.text, t.chip, 64, 28, 32, L.s(R.string.next), v -> media.skip(true)));
-        bandRow = Ui.row(c);
-        bandRow.setBackground(Ui.round(t.chip, dp(16)));
-        bandRow.setPadding(dp(5), dp(5), dp(5), dp(5));
-        bandChips = new TextView[2];
-        String[] bands = {"FM", "DAB"};
-        int[] bandIds = {MediaClient.BAND_FM, MediaClient.BAND_DAB};
-        for (int i = 0; i < 2; i++) {
-            final int band = bandIds[i];
-            TextView b = Ui.text(c, bands[i], ts(18), t.sub, Ui.MEDIUM);
-            b.setGravity(Gravity.CENTER);
-            b.setMinWidth(tp(64));
-            b.setPadding(tp(16), 0, tp(16), 0);
-            b.setClickable(true);
-            b.setContentDescription(L.s(R.string.src_radio) + " " + bands[i]);
-            b.setOnClickListener(v -> {
-                pendingBand = band;
-                pendingBandUntil = SystemClock.uptimeMillis() + 4000;
-                styleBands(band);
-                media.switchBand(band);
-            });
-            bandRow.addView(b, Ui.margins(Ui.lp(-2, tp(54)), i == 0 ? 0 : dp(4), 0, 0, 0));
-            bandChips[i] = b;
-        }
-        ctr.addView(bandRow, Ui.margins(Ui.lp(-2, tp(64)), dp(Ui.K > 1 ? 16 : 24), 0, 0, 0));
         info.addView(ctr, Ui.margins(new LayoutParams(-1, -2), 0, dp(20), 0, 0));
 
         // preferiti radio con i loghi (FM e DAB)
@@ -1024,6 +1102,19 @@ public final class HomeView extends LinearLayout {
         return col;
     }
 
+    /** Linea e banda sotto il pulsante della sorgente che ha sotto-opzioni (oggi solo la Radio). */
+    private void placeSubOptions() {
+        View chip = null;
+        for (int i = 0; i < srcRow.getChildCount(); i++) {
+            View v = srcRow.getChildAt(i);
+            if (Integer.valueOf(MediaClient.SRC_RADIO).equals(v.getTag())) chip = v;
+        }
+        if (chip == null) return;
+        float x = chip.getLeft();
+        bandRow.setTranslationX(x);
+        subLink.setTranslationX(x + chip.getWidth() / 2f - dp(1));
+    }
+
     private void styleBands(int band) {
         int sel = band == MediaClient.BAND_DAB ? 1 : band == MediaClient.BAND_FM ? 0 : -1;
         for (int i = 0; i < bandChips.length; i++) {
@@ -1052,7 +1143,7 @@ public final class HomeView extends LinearLayout {
         if (!sig.toString().equals(srcSignature)) {
             srcSignature = sig.toString();
             srcRow.removeAllViews();
-            boolean compact = m.sources.size() > 4;
+            boolean compact = compactSources(m.sources.size());
             for (int i = 0; i < m.sources.size(); i++) {
                 final int src = m.sources.get(i);
                 TextView b = Ui.text(c, sourceLabel(src), ts(17), t.sub, Ui.MEDIUM);
@@ -1075,6 +1166,14 @@ public final class HomeView extends LinearLayout {
         styleSources(shown);
     }
 
+    /**
+     * Pulsanti delle sorgenti senza scritta (tranne quello scelto) solo se sono tanti E il pulsante rapido in alto a
+     * destra occupa spazio. 0.3.2 (punto 7b): con il pulsante su "nessuno" le scritte restano sempre visibili.
+     */
+    private boolean compactSources(int count) {
+        return count > 4 && !Prefs.QUICK_NONE.equals(quick);
+    }
+
     private void styleSources(int selected) {
         for (int i = 0; i < srcRow.getChildCount(); i++) {
             TextView b = (TextView) srcRow.getChildAt(i);
@@ -1082,7 +1181,7 @@ public final class HomeView extends LinearLayout {
             boolean on = src == selected;
             b.setBackground(on ? Ui.round(t.text, dp(12)) : Ui.pressable(getContext(), 0, 12, t));
             b.setTextColor(on ? t.panel : t.sub);
-            boolean compact = srcRow.getChildCount() > 4;
+            boolean compact = compactSources(srcRow.getChildCount());
             b.setText(compact && !on ? "" : sourceLabel(src));
             b.setCompoundDrawablePadding(compact && !on ? 0 : dp(10));
             android.graphics.drawable.Drawable d = getContext().getDrawable(sourceIcon(src)).mutate();
@@ -1262,10 +1361,20 @@ public final class HomeView extends LinearLayout {
         mTitle.setText(m.title);
         mSub.setText(m.subtitle);
         boolean logo = radio && m.logo != null;
-        artLogo.setVisibility(logo ? VISIBLE : GONE);
-        if (logo) artLogo.setImageBitmap(m.logo);
+        // 0.3.2 (punto 9d): copertina del brano Bluetooth se il telefono la manda, altrimenti l'icona pulita
+        boolean cover = m.source == MediaClient.SRC_BT && m.cover != null;
+        artLogo.setVisibility(logo || cover ? VISIBLE : GONE);
+        if (cover) {
+            artLogo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            artLogo.setPadding(0, 0, 0, 0);
+            artLogo.setImageBitmap(m.cover);
+        } else if (logo) {
+            artLogo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            artLogo.setPadding(dp(20), dp(20), dp(20), dp(20));
+            artLogo.setImageBitmap(m.logo);
+        }
         artRadio.setVisibility(radio && !logo ? VISIBLE : GONE);
-        artIcon.setVisibility(radio ? GONE : VISIBLE);
+        artIcon.setVisibility(radio || cover ? GONE : VISIBLE);
         artIcon.setImageResource(sourceIcon(m.source));
         if (radio) {
             boolean dab = m.radioBand == MediaClient.BAND_DAB;
@@ -1281,7 +1390,9 @@ public final class HomeView extends LinearLayout {
         } else {
             mMeta.setText(sourceLabel(m.source).toUpperCase(L.locale()));
         }
-        bandRow.setVisibility(radio ? VISIBLE : GONE);
+        // la banda c'è solo con la Radio attiva; lo spazio resta riservato, così la scheda non salta cambiando sorgente
+        bandRow.setVisibility(radio ? VISIBLE : INVISIBLE);
+        subLink.setVisibility(radio ? VISIBLE : INVISIBLE);
         stationPanel.setVisibility(radio ? VISIBLE : GONE);
         if (radio) showStations(m);
         favScroll.setVisibility(radio && !m.favorites.isEmpty() ? VISIBLE : GONE);
@@ -1297,9 +1408,9 @@ public final class HomeView extends LinearLayout {
         miniPlayIcon.setImageResource(m.playing ? R.drawable.ic_pause : R.drawable.ic_play);
         miniTitle.setText(m.title);
         miniSub.setText(sourceLabel(m.source) + (m.subtitle.isEmpty() ? "" : " · " + m.subtitle));
-        if (radio && m.logo != null) {
+        if ((radio && m.logo != null) || cover) {
             miniArt.clearColorFilter();
-            miniArt.setImageBitmap(m.logo);
+            miniArt.setImageBitmap(cover ? m.cover : m.logo);
         } else {
             miniArt.setColorFilter(t.sub, android.graphics.PorterDuff.Mode.SRC_IN);
             miniArt.setImageResource(sourceIcon(m.source));
@@ -1308,12 +1419,13 @@ public final class HomeView extends LinearLayout {
         // CarPlay / Android Auto: la scheda compare solo con il telefono collegato
         boolean phone = m.deviceType != 0;
         if (phone != navWithPhone) buildNavWith(getContext(), phone);
-        tabPhone.setVisibility(phone ? VISIBLE : GONE);
+        boolean projTab = Prefs.QUICK_PROJ.equals(quick);
+        if (projTab) tabPhone.setVisibility(phone ? VISIBLE : GONE);
         if (projBtn != null) {
             projBtn.setVisibility(phone ? VISIBLE : GONE);
             projBtn.setContentDescription(m.deviceType == MediaClient.DEV_AAUTO ? "Android Auto" : "CarPlay");
         }
-        tabPhone.setText(m.deviceType == MediaClient.DEV_AAUTO ? "Android Auto" : "CarPlay");
+        if (projTab) tabPhone.setText(m.deviceType == MediaClient.DEV_AAUTO ? "Android Auto" : "CarPlay");
         if (!phone && tab == TAB_PHONE) selectTab(TAB_MEDIA, false);
         if (phone) {
             phoneTitle.setText(m.deviceName.isEmpty() ? L.s(R.string.phone_connected) : m.deviceName);
@@ -1550,7 +1662,11 @@ public final class HomeView extends LinearLayout {
         bar.addView(projBtn);
         bar.addView(shortcut(c, R.drawable.ic_phone, L.s(R.string.app_phone), "com.saicmotor.hmi.btcall", "com.saicmotor.hmi.btcall.BtCallActivity"));
         if (!big) bar.addView(shortcut(c, R.drawable.ic_radio, L.s(R.string.src_radio), "com.saicmotor.hmi.radio", "com.saicmotor.hmi.radio.app.RadioHomeActivity"));
-        bar.addView(shortcut(c, 0, L.s(R.string.app_camera), "com.saicmotor.hmi.aroundview", "com.saicmotor.hmi.aroundview.AVMActivity"));
+        // 0.3.2: il tasto 360 apre la 360 originale, MG4 360, un'altra app scelta, oppure è nascosto (come la SWI68);
+        // sempre con la scritta "360°" grande al posto dell'icona (punto 7c)
+        Cam360.Target cam = Cam360.resolve(c, prefs);
+        if (cam.kind != Cam360.HIDDEN)
+            bar.addView(shortcut(c, 0, cam.label.isEmpty() ? L.s(R.string.app_camera) : cam.label, cam.pkg, cam.cls));
         if (!big) bar.addView(shortcut(c, R.drawable.ic_gear, L.s(R.string.app_settings), "com.saicmotor.hmi.systemsettings", "com.saicmotor.hmi.systemsettings.SettingsActivity"));
         // le app si aprono scorrendo la home verso sinistra: niente pulsante dedicato
         if (rhd) mirrorRow(bar);
@@ -1576,16 +1692,17 @@ public final class HomeView extends LinearLayout {
         }
     }
 
-    /** Blocco TPMS: titolo piccolo (Anteriori / Posteriori) + "2,5 · 2,5 bar" (sinistra · destra). */
+    /**
+     * Blocco TPMS: "2,5 · 2,5 bar" (sinistra · destra). 0.3.2 (punto 7a): senza le scritte Anteriori/Posteriori
+     * (la posizione sotto le ruote del disegno lo dice già) e con i numeri più grandi nello spazio liberato.
+     */
     private LinearLayout tpmsBlock(Context c, String title) {
         LinearLayout b = Ui.column(c);
         b.setGravity(Gravity.CENTER_HORIZONTAL);
-        TextView tt = Ui.text(c, title.toUpperCase(L.locale()), 12, t.sub, Ui.MEDIUM);
-        tt.setLetterSpacing(0.08f);
-        b.addView(tt);
-        TextView v = Ui.oneLine(Ui.text(c, "— · — bar", 19, t.text, Ui.MEDIUM));
+        b.setContentDescription(title);
+        TextView v = Ui.oneLine(Ui.text(c, "— · — bar", 27, t.text, Ui.MEDIUM));
         v.setGravity(Gravity.CENTER);
-        b.addView(v, Ui.margins(new LayoutParams(-2, -2), 0, dp(2), 0, 0));
+        b.addView(v, new LayoutParams(-2, -2));
         return b;
     }
 
@@ -1619,11 +1736,25 @@ public final class HomeView extends LinearLayout {
     }
 
     private void setTpms(LinearLayout block, float left, float right, String unit) {
-        TextView v = (TextView) block.getChildAt(1);
-        v.setText(tyreValue(left, unit) + " · " + tyreValue(right, unit) + " " + tyreUnitLabel(unit));
-        // pressione bassa (sotto 2,0 bar): in ambra
-        boolean low = (!Float.isNaN(left) && left < 2.0f) || (!Float.isNaN(right) && right < 2.0f);
-        v.setTextColor(low ? 0xFFFFB020 : t.text);
+        TextView v = (TextView) block.getChildAt(0);
+        // pressione bassa (sotto 2,0 bar): il valore della gomma interessata in ambra; l'unità più piccola e grigia
+        android.text.SpannableStringBuilder sb = new android.text.SpannableStringBuilder();
+        tyreSpan(sb, left, unit);
+        sb.append(" · ");
+        tyreSpan(sb, right, unit);
+        int u = sb.length();
+        sb.append(" ").append(tyreUnitLabel(unit));
+        sb.setSpan(new android.text.style.RelativeSizeSpan(0.66f), u, sb.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new android.text.style.ForegroundColorSpan(t.sub), u, sb.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        v.setText(sb);
+        v.setTextColor(t.text);
+    }
+
+    private void tyreSpan(android.text.SpannableStringBuilder sb, float bar, String unit) {
+        int a = sb.length();
+        sb.append(tyreValue(bar, unit));
+        if (!Float.isNaN(bar) && bar < 2.0f)
+            sb.setSpan(new android.text.style.ForegroundColorSpan(0xFFFFB020), a, sb.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     /** Pulsante sedile riscaldato: icona (specchiata per il lato destro) + tre tacche per il livello. */
@@ -1760,7 +1891,7 @@ public final class HomeView extends LinearLayout {
         View.OnClickListener l = v -> host.launch(pkg, cls);
         View f;
         if (icon == 0) {
-            TextView tv = Ui.text(c, "360°", bt(22, 30), t.text, Ui.MEDIUM);
+            TextView tv = Ui.text(c, "360°", bt(25, 32), t.text, Ui.MEDIUM);   // 0.3.2: più grande
             tv.setGravity(Gravity.CENTER);
             tv.setLetterSpacing(-0.02f);
             tv.setBackground(Ui.pressable(c, 0, big ? 22 : 18 * Ui.K, t));

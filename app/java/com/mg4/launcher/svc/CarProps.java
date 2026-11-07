@@ -36,6 +36,14 @@ public final class CarProps {
     /** Proprietà negate per un permesso che l'auto non concede (SecurityException): non si rileggono più. */
     private final java.util.Set<Integer> denied = java.util.Collections.synchronizedSet(new java.util.HashSet<>());
 
+    // 0.3.2: luci e giorno/notte (proprietà vendor della SWI133, tabella segnali di vehiclesettingservice_my24_P)
+    /** Anabbaglianti (BOOLEAN), luci di posizione (INT32), posizione del comando luci (INT32). */
+    public static final int DIPPED_BEAM = 555782944, MAIN_BEAM = 555782943, SIDE_LIGHTS = 557880099, LIGHT_SWITCH = 557880119;
+    /** Giorno/notte del quadro (INT32) e livello di attenuazione (FLOAT) del FICM. */
+    public static final int FICM_DAY_NIGHT = 557873928, DIM_LEVEL = 559971102;
+    /** Validità della "ambient" del clima (0 = valida). */
+    public static final int HVAC_AMBIENT_VALID = 356525355;
+
     /** Velocità del veicolo (FLOAT, m/s) e permesso che la protegge. */
     public static final int PERF_VEHICLE_SPEED = 291504647;
     public static final String PERM_CAR_SPEED = "android.car.permission.CAR_SPEED";
@@ -112,7 +120,7 @@ public final class CarProps {
     }
 
     /** Area da usare per una proprietà (0 per le globali, la prima area configurata per le altre). */
-    private int area(int prop) {
+    private synchronized int area(int prop) {
         if (!areasRead) {
             areasRead = true;
             try {
@@ -162,6 +170,48 @@ public final class CarProps {
         } catch (Throwable e) {
             return Integer.MIN_VALUE;
         }
+    }
+
+    /** Booleano come 1/0, Integer.MIN_VALUE se non leggibile o assente (senza errori nella diagnostica). */
+    public int getBoolQuiet(int prop) {
+        if (unsupported.contains(prop) || denied.contains(prop)) return Integer.MIN_VALUE;
+        try {
+            Object p = pm();
+            if (p == null) return Integer.MIN_VALUE;
+            area(prop);
+            if (!areas.containsKey(prop)) return Integer.MIN_VALUE;
+            Method m = p.getClass().getMethod("getBooleanProperty", int.class, int.class);
+            return (Boolean) m.invoke(p, prop, area(prop)) ? 1 : 0;
+        } catch (Throwable e) {
+            Throwable c = e instanceof java.lang.reflect.InvocationTargetException && e.getCause() != null ? e.getCause() : e;
+            if (c instanceof SecurityException) denied.add(prop);
+            else if (c instanceof IllegalArgumentException) unsupported.add(prop);
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    /** Decimale o NaN, senza errori nella diagnostica (proprietà che potrebbero non esistere). */
+    public float getFloatQuiet(int prop) {
+        if (unsupported.contains(prop) || denied.contains(prop)) return Float.NaN;
+        try {
+            Object p = pm();
+            if (p == null) return Float.NaN;
+            area(prop);
+            if (!areas.containsKey(prop)) return Float.NaN;
+            Method m = p.getClass().getMethod("getFloatProperty", int.class, int.class);
+            return (Float) m.invoke(p, prop, area(prop));
+        } catch (Throwable e) {
+            Throwable c = e instanceof java.lang.reflect.InvocationTargetException && e.getCause() != null ? e.getCause() : e;
+            if (c instanceof SecurityException) denied.add(prop);
+            else if (c instanceof IllegalArgumentException) unsupported.add(prop);
+            return Float.NaN;
+        }
+    }
+
+    /** True se la proprietà è nell'elenco dell'auto. */
+    public boolean listed(int prop) {
+        area(prop);
+        return areas.containsKey(prop);
     }
 
     /** Decimale o NaN se non leggibile. Dopo il primo rifiuto dell'auto la proprietà non si rilegge più. */

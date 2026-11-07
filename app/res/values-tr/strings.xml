@@ -58,7 +58,7 @@
     <string name="set_diag_sub" formatted="false">Araçtan okunan değerler ve son hatalar</string>
     <string name="set_diag_title" formatted="false">Araç servisleri tanılaması</string>
     <string name="set_home_card" formatted="false">ARAÇ PANELİ</string>
-    <string name="set_inside_sub" formatted="false">Dış sıcaklığın altında · araç vermezse «— °»</string>
+    <string name="set_inside_sub" formatted="false">Dış sıcaklığın altında. Araç güvenilir bir değer göndermezse «--» görünür (yerine asla dış sıcaklık gösterilmez)</string>
     <string name="set_language" formatted="false">DİL</string>
     <string name="set_menu_title" formatted="false">Ayarlar</string>
     <string name="set_open_original" formatted="false">Orijinal MG ana ekranını aç</string>
@@ -395,4 +395,32 @@
     <string name="news_v098_1" formatted="false">Dongle yeniden başlatma: kabloyla bağlı telefonlar (iPhone, Android Auto) artık sıfırlanmaz, yalnızca gerçek kablosuz dongle\'lar</string>
     <string name="news_v098_2" formatted="false">Hız izni otomatik olarak verilir; logolar, güncellemeler ve günlükler için yeni Sectigo/USERTrust kök sertifikaları</string>
     <string name="news_v098_3" formatted="false">Android ilk kurulumu ana ekran olarak tanınır (MG ana ekranı değildir); telefonlardan ve emülatörlerden günlük gönderilmez</string>
+    <string name="opt_show" formatted="false">Göster</string>
+    <string name="opt_hide" formatted="false">Gizle</string>
+    <string name="set_charge_limit" formatted="false">Şarj sınırı</string>
+    <string name="set_charge_limit_sub" formatted="false">Batarya çubuğundaki işaret ve düğme. Otomatik: yalnızca araç komutu destekliyorsa</string>
+    <string name="set_retro_return" formatted="false">Geri vitesten sonra önceki uygulamaya dön</string>
+    <string name="set_retro_return_sub" formatted="false">Kamera kapandığında CarPlay, Android Auto, navigasyon veya açık olan uygulama yeniden açılır</string>
+    <string name="quick_none" formatted="false">Yok</string>
+    <string name="set_quick" formatted="false">Sağ üstteki düğme</string>
+    <string name="set_quick_sub" formatted="false">Harita ve Medya\'nın yanında. «Yok» seçilirse kaynak düğmelerinin adı her zaman görünür</string>
+    <string name="quick_pick_app" formatted="false">Sağ üst düğme için uygulama</string>
+    <string name="notice_title" formatted="false">Duyuru</string>
+    <string name="notice_important" formatted="false">Önemli duyuru</string>
+    <string name="upd_auto_failed" formatted="false">Şu anda güncellemeler denetlenemiyor: daha sonra yeniden denenecek</string>
+    <string name="cb_reserve" formatted="false">Zamanlı</string>
+    <string name="cb_reserve_title" formatted="false">Zamanlı şarj</string>
+    <string name="cb_reserve_msg" formatted="false">Aracın Enerji uygulamasındaki gibi: şarj yalnızca seçilen saat aralığında başlar</string>
+    <string name="cb_reserve_turn_on">Aç (%1$s)</string>
+    <string name="cb_reserve_turn_off" formatted="false">Kapat</string>
+    <string name="cb_reserve_start">Başlangıç: %1$s</string>
+    <string name="cb_reserve_stop">Bitiş: %1$s</string>
+    <string name="cb_reserve_pick_start" formatted="false">Başlangıç saati</string>
+    <string name="cb_reserve_pick_stop" formatted="false">Bitiş saati</string>
+    <string name="news_v032_1" formatted="false">Geri vitesten sonra launcher CarPlay, Android Auto veya önceki uygulamayı yeniden açar (kapatılabilir)</string>
+    <string name="news_v032_2" formatted="false">Medya: Radyo düğmesinin altında FM/DAB, açılışta son kaynağa devam ve daha güvenilir Bluetooth</string>
+    <string name="news_v032_3" formatted="false">Gündüz/gece teması farlara ve gün doğumu/batımına göre de; araç çiziminde yanan farlar</string>
+    <string name="news_v032_4" formatted="false">Kompakt dış sıcaklık, daha büyük lastik basınçları, daha net 360° simgeleri</string>
+    <string name="news_v032_5" formatted="false">Şarj sınırı ve zamanlı şarj yalnızca araç destekliyorsa; sağ üst düğme seçilebilir</string>
+    <string name="news_v032_6" formatted="false">Launcher güncellemeleri kendisi denetler ve önemli duyurular gösterebilir</string>
 </resources>

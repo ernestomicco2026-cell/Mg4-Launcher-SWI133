@@ -58,7 +58,7 @@
     <string name="set_diag_sub" formatted="false">Valores leídos del coche y errores recientes</string>
     <string name="set_diag_title" formatted="false">Diagnóstico de servicios del coche</string>
     <string name="set_home_card" formatted="false">PANEL DEL COCHE</string>
-    <string name="set_inside_sub" formatted="false">Debajo de la exterior · «— °» si el coche no la proporciona</string>
+    <string name="set_inside_sub" formatted="false">Bajo la exterior. Si el coche no envía un valor fiable se ve «--» (nunca la exterior en su lugar)</string>
     <string name="set_language" formatted="false">IDIOMA</string>
     <string name="set_menu_title" formatted="false">Ajustes</string>
     <string name="set_open_original" formatted="false">Abrir la pantalla de inicio original de MG</string>
@@ -395,4 +395,32 @@
     <string name="news_v098_1" formatted="false">Reinicio del dongle: los teléfonos conectados por cable (iPhone, Android Auto) ya no se reinician, solo los dongles inalámbricos reales</string>
     <string name="news_v098_2" formatted="false">Permiso de velocidad concedido automáticamente y nuevos certificados raíz Sectigo/USERTrust para logos, actualizaciones y registros</string>
     <string name="news_v098_3" formatted="false">Reconocida como inicio la configuración inicial de Android (no es el inicio MG); sin registros desde teléfonos y emuladores</string>
+    <string name="opt_show" formatted="false">Mostrar</string>
+    <string name="opt_hide" formatted="false">Ocultar</string>
+    <string name="set_charge_limit" formatted="false">Límite de carga</string>
+    <string name="set_charge_limit_sub" formatted="false">Marca en la barra de batería y botón. Automático: solo si el coche admite el comando</string>
+    <string name="set_retro_return" formatted="false">Tras la marcha atrás, volver a la app anterior</string>
+    <string name="set_retro_return_sub" formatted="false">Al cerrarse la cámara vuelve a abrir CarPlay, Android Auto, el navegador o la app que tenías delante</string>
+    <string name="quick_none" formatted="false">Ninguno</string>
+    <string name="set_quick" formatted="false">Botón arriba a la derecha</string>
+    <string name="set_quick_sub" formatted="false">Junto a Mapa y Media. Con «Ninguno» los botones de las fuentes siempre muestran su nombre</string>
+    <string name="quick_pick_app" formatted="false">App para el botón de arriba a la derecha</string>
+    <string name="notice_title" formatted="false">Aviso</string>
+    <string name="notice_important" formatted="false">Aviso importante</string>
+    <string name="upd_auto_failed" formatted="false">No puedo buscar actualizaciones ahora: lo reintentaré más tarde</string>
+    <string name="cb_reserve" formatted="false">Programada</string>
+    <string name="cb_reserve_title" formatted="false">Carga programada</string>
+    <string name="cb_reserve_msg" formatted="false">Como en la app Energía del coche: la carga solo empieza en la franja elegida</string>
+    <string name="cb_reserve_turn_on">Activar (%1$s)</string>
+    <string name="cb_reserve_turn_off" formatted="false">Desactivar</string>
+    <string name="cb_reserve_start">Inicio: %1$s</string>
+    <string name="cb_reserve_stop">Fin: %1$s</string>
+    <string name="cb_reserve_pick_start" formatted="false">Hora de inicio</string>
+    <string name="cb_reserve_pick_stop" formatted="false">Hora de fin</string>
+    <string name="news_v032_1" formatted="false">Tras la marcha atrás el launcher vuelve a abrir CarPlay, Android Auto o la app que tenías delante (se puede desactivar)</string>
+    <string name="news_v032_2" formatted="false">Media: FM/DAB bajo el botón Radio, se reanuda la última fuente al arrancar y Bluetooth más fiable</string>
+    <string name="news_v032_3" formatted="false">Tema día/noche también por los faros y el amanecer/atardecer; faros encendidos en el dibujo del coche</string>
+    <string name="news_v032_4" formatted="false">Temperatura exterior compacta, presión de neumáticos más grande, iconos 360° más claros</string>
+    <string name="news_v032_5" formatted="false">Límite y carga programada solo si el coche los admite; botón de arriba a la derecha a elegir</string>
+    <string name="news_v032_6" formatted="false">El launcher busca actualizaciones solo y puede mostrar avisos importantes</string>
 </resources>

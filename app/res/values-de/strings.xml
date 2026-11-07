@@ -58,7 +58,7 @@
     <string name="set_diag_sub" formatted="false">Vom Auto gelesene Werte und letzte Fehler</string>
     <string name="set_diag_title" formatted="false">Diagnose der Fahrzeugdienste</string>
     <string name="set_home_card" formatted="false">FAHRZEUGBEREICH</string>
-    <string name="set_inside_sub" formatted="false">Unter der Außentemperatur · „— °“, wenn das Auto sie nicht liefert</string>
+    <string name="set_inside_sub" formatted="false">Unter der Außentemperatur. Ohne verlässlichen Wert vom Auto steht dort «--» (nie die Außentemperatur)</string>
     <string name="set_language" formatted="false">SPRACHE</string>
     <string name="set_menu_title" formatted="false">Einstellungen</string>
     <string name="set_open_original" formatted="false">Original-MG-Startbildschirm öffnen</string>
@@ -395,4 +395,32 @@
     <string name="news_v098_1" formatted="false">Dongle-Neustart: per Kabel verbundene Telefone (iPhone, Android Auto) werden nicht mehr zurückgesetzt, nur echte kabellose Dongles</string>
     <string name="news_v098_2" formatted="false">Geschwindigkeitsberechtigung automatisch erteilt und neue Sectigo/USERTrust-Stammzertifikate für Logos, Updates und Protokolle</string>
     <string name="news_v098_3" formatted="false">Android-Ersteinrichtung als Startbildschirm erkannt (nicht der MG-Startbildschirm); keine Protokolle von Telefonen und Emulatoren</string>
+    <string name="opt_show" formatted="false">Anzeigen</string>
+    <string name="opt_hide" formatted="false">Ausblenden</string>
+    <string name="set_charge_limit" formatted="false">Ladelimit</string>
+    <string name="set_charge_limit_sub" formatted="false">Markierung auf dem Batteriebalken und Taste. Automatisch: nur wenn das Auto den Befehl unterstützt</string>
+    <string name="set_retro_return" formatted="false">Nach dem Rückwärtsfahren zur vorherigen App zurück</string>
+    <string name="set_retro_return_sub" formatted="false">Wenn die Kamera schließt, öffnet es CarPlay, Android Auto, das Navi oder die vorherige App wieder</string>
+    <string name="quick_none" formatted="false">Keine</string>
+    <string name="set_quick" formatted="false">Taste oben rechts</string>
+    <string name="set_quick_sub" formatted="false">Neben Karte und Medien. Mit «Keine» behalten die Quellentasten immer ihre Beschriftung</string>
+    <string name="quick_pick_app" formatted="false">App für die Taste oben rechts</string>
+    <string name="notice_title" formatted="false">Hinweis</string>
+    <string name="notice_important" formatted="false">Wichtiger Hinweis</string>
+    <string name="upd_auto_failed" formatted="false">Updates können gerade nicht geprüft werden: neuer Versuch später</string>
+    <string name="cb_reserve" formatted="false">Geplant</string>
+    <string name="cb_reserve_title" formatted="false">Geplantes Laden</string>
+    <string name="cb_reserve_msg" formatted="false">Wie in der Energie-App des Autos: geladen wird nur im gewählten Zeitfenster</string>
+    <string name="cb_reserve_turn_on">Einschalten (%1$s)</string>
+    <string name="cb_reserve_turn_off" formatted="false">Ausschalten</string>
+    <string name="cb_reserve_start">Beginn: %1$s</string>
+    <string name="cb_reserve_stop">Ende: %1$s</string>
+    <string name="cb_reserve_pick_start" formatted="false">Startzeit</string>
+    <string name="cb_reserve_pick_stop" formatted="false">Endzeit</string>
+    <string name="news_v032_1" formatted="false">Nach dem Rückwärtsfahren öffnet der Launcher CarPlay, Android Auto oder die vorherige App wieder (abschaltbar)</string>
+    <string name="news_v032_2" formatted="false">Medien: FM/DAB unter der Radio-Taste, letzte Quelle beim Start fortgesetzt und zuverlässigeres Bluetooth</string>
+    <string name="news_v032_3" formatted="false">Tag/Nacht-Design auch nach Scheinwerfern und Sonnenauf-/-untergang; Scheinwerfer auf der Autozeichnung</string>
+    <string name="news_v032_4" formatted="false">Kompakte Außentemperatur, größerer Reifendruck, klarere 360°-Symbole</string>
+    <string name="news_v032_5" formatted="false">Ladelimit und geplantes Laden nur, wenn das Auto sie unterstützt; Taste oben rechts frei wählbar</string>
+    <string name="news_v032_6" formatted="false">Der Launcher sucht selbst nach Updates und kann wichtige Hinweise zeigen</string>
 </resources>

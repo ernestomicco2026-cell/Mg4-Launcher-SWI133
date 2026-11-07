@@ -31,9 +31,6 @@ public final class Theme {
     public static Theme resolve(Context c, Prefs p) {
         String mode = p.themeMode();
         boolean day;
-        // segnale dell'auto: il sistema passa giorno/notte con la configurazione (uiMode), come per le app originali
-        int night = c.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        String read = night == Configuration.UI_MODE_NIGHT_YES ? "notte" : night == Configuration.UI_MODE_NIGHT_NO ? "giorno" : "non definito";
         String source;
         if (Prefs.THEME_DAY.equals(mode)) {
             day = true;
@@ -42,23 +39,20 @@ public final class Theme {
             day = false;
             source = "scelta Notte";
         } else {
-            day = night == Configuration.UI_MODE_NIGHT_NO;
-            source = "automatico (uiMode di sistema)";
+            // 0.3.2 (punto 1): catena di fonti uiMode → fari → alba/tramonto, con 60 s di conferma (svc.DayNight)
+            day = com.mg4.launcher.svc.DayNight.appliedDay(c);
+            source = "automatico";
         }
         if (lastDay == null || lastDay != day) {
             lastChange = new java.text.SimpleDateFormat("dd/MM HH:mm:ss", java.util.Locale.ITALY).format(new java.util.Date());
             lastDay = day;
         }
-        String mgr = "?";
-        try {
-            android.app.UiModeManager um = (android.app.UiModeManager) c.getSystemService(Context.UI_MODE_SERVICE);
-            int m = um.getNightMode();
-            mgr = m == android.app.UiModeManager.MODE_NIGHT_YES ? "notte" : m == android.app.UiModeManager.MODE_NIGHT_NO ? "giorno"
-                    : m == android.app.UiModeManager.MODE_NIGHT_AUTO ? "auto" : String.valueOf(m);
-        } catch (Throwable ignored) {
-        }
-        com.mg4.launcher.svc.Diag.put("tema.stato", source + " · letto " + read + " (UiModeManager " + mgr + ") · applicato "
-                + (day ? "giorno" : "notte") + " · ultimo cambio " + lastChange);
+        int night = c.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        String read = night == Configuration.UI_MODE_NIGHT_YES ? "notte" : night == Configuration.UI_MODE_NIGHT_NO ? "giorno" : "non definito";
+        Boolean lights = com.mg4.launcher.svc.VehicleClient.lightsNow();
+        com.mg4.launcher.svc.Diag.put("tema.stato", source + " · " + com.mg4.launcher.svc.DayNight.describe() + " · uiMode " + read
+                + " · fari " + (lights == null ? "non leggibili" : lights ? "accesi" : "spenti")
+                + " · applicato " + (day ? "giorno" : "notte") + " · ultimo cambio " + lastChange);
         return new Theme(day);
     }
 
@@ -67,8 +61,7 @@ public final class Theme {
         String mode = p.themeMode();
         if (Prefs.THEME_DAY.equals(mode)) return true;
         if (Prefs.THEME_NIGHT.equals(mode)) return false;
-        int night = c.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        return night == Configuration.UI_MODE_NIGHT_NO;
+        return com.mg4.launcher.svc.DayNight.appliedDay(c);
     }
 
     private static double luminance(int c) {

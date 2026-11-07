@@ -58,7 +58,7 @@
     <string name="set_diag_sub" formatted="false">Valeurs lues dans la voiture et erreurs récentes</string>
     <string name="set_diag_title" formatted="false">Diagnostic des services du véhicule</string>
     <string name="set_home_card" formatted="false">PANNEAU VOITURE</string>
-    <string name="set_inside_sub" formatted="false">Sous la température extérieure · « — ° » si la voiture ne la fournit pas</string>
+    <string name="set_inside_sub" formatted="false">Sous la température extérieure. Sans valeur fiable de la voiture, «--» s\'affiche (jamais l\'extérieure à sa place)</string>
     <string name="set_language" formatted="false">LANGUE</string>
     <string name="set_menu_title" formatted="false">Réglages</string>
     <string name="set_open_original" formatted="false">Ouvrir l\'accueil MG d\'origine</string>
@@ -395,4 +395,32 @@
     <string name="news_v098_1" formatted="false">Redémarrage du dongle : les téléphones branchés par câble (iPhone, Android Auto) ne sont plus réinitialisés, seulement les vrais dongles sans fil</string>
     <string name="news_v098_2" formatted="false">Autorisation de vitesse accordée automatiquement et nouveaux certificats racine Sectigo/USERTrust pour logos, mises à jour et journaux</string>
     <string name="news_v098_3" formatted="false">Configuration initiale d\'Android reconnue comme accueil (ce n\'est pas l\'accueil MG) ; aucun journal depuis les téléphones et émulateurs</string>
+    <string name="opt_show" formatted="false">Afficher</string>
+    <string name="opt_hide" formatted="false">Masquer</string>
+    <string name="set_charge_limit" formatted="false">Limite de charge</string>
+    <string name="set_charge_limit_sub" formatted="false">Repère sur la barre de batterie et bouton. Automatique : seulement si la voiture prend en charge la commande</string>
+    <string name="set_retro_return" formatted="false">Après la marche arrière, revenir à l\'appli précédente</string>
+    <string name="set_retro_return_sub" formatted="false">Quand la caméra se ferme, rouvre CarPlay, Android Auto, le navigateur ou l\'appli que vous aviez ouverte</string>
+    <string name="quick_none" formatted="false">Aucun</string>
+    <string name="set_quick" formatted="false">Bouton en haut à droite</string>
+    <string name="set_quick_sub" formatted="false">À côté de Carte et Média. Avec «Aucun», les boutons des sources gardent toujours leur nom</string>
+    <string name="quick_pick_app" formatted="false">Appli pour le bouton en haut à droite</string>
+    <string name="notice_title" formatted="false">Avis</string>
+    <string name="notice_important" formatted="false">Avis important</string>
+    <string name="upd_auto_failed" formatted="false">Impossible de vérifier les mises à jour pour l\'instant : nouvel essai plus tard</string>
+    <string name="cb_reserve" formatted="false">Programmée</string>
+    <string name="cb_reserve_title" formatted="false">Charge programmée</string>
+    <string name="cb_reserve_msg" formatted="false">Comme dans l\'appli Énergie de la voiture : la charge ne démarre que dans la plage choisie</string>
+    <string name="cb_reserve_turn_on">Activer (%1$s)</string>
+    <string name="cb_reserve_turn_off" formatted="false">Désactiver</string>
+    <string name="cb_reserve_start">Début : %1$s</string>
+    <string name="cb_reserve_stop">Fin : %1$s</string>
+    <string name="cb_reserve_pick_start" formatted="false">Heure de début</string>
+    <string name="cb_reserve_pick_stop" formatted="false">Heure de fin</string>
+    <string name="news_v032_1" formatted="false">Après la marche arrière, le launcher rouvre CarPlay, Android Auto ou l\'appli ouverte avant (désactivable)</string>
+    <string name="news_v032_2" formatted="false">Média : FM/DAB sous le bouton Radio, reprise de la dernière source au démarrage et Bluetooth plus fiable</string>
+    <string name="news_v032_3" formatted="false">Thème jour/nuit aussi selon les phares et le lever/coucher du soleil ; phares allumés sur le dessin</string>
+    <string name="news_v032_4" formatted="false">Température extérieure compacte, pression des pneus plus grande, icônes 360° plus claires</string>
+    <string name="news_v032_5" formatted="false">Limite et charge programmée seulement si la voiture les gère ; bouton en haut à droite au choix</string>
+    <string name="news_v032_6" formatted="false">Le launcher vérifie seul les mises à jour et peut afficher des avis importants</string>
 </resources>

@@ -58,7 +58,7 @@
     <string name="set_diag_sub" formatted="false">Values read from the car and recent errors</string>
     <string name="set_diag_title" formatted="false">Car services diagnostics</string>
     <string name="set_home_card" formatted="false">CAR PANEL</string>
-    <string name="set_inside_sub" formatted="false">Below the outside one · «— °» if the car does not provide it</string>
+    <string name="set_inside_sub" formatted="false">Below the outside one. If the car sends no reliable value it shows «--» (never the outside one instead)</string>
     <string name="set_language" formatted="false">LANGUAGE</string>
     <string name="set_menu_title" formatted="false">Settings</string>
     <string name="set_open_original" formatted="false">Open the original MG home</string>
@@ -395,4 +395,32 @@
     <string name="news_v098_1" formatted="false">Dongle restart: phones connected with a cable (iPhone, Android Auto) are no longer reset, only real wireless dongles</string>
     <string name="news_v098_2" formatted="false">Speed permission granted automatically, and new Sectigo/USERTrust root certificates for logos, updates and logs</string>
     <string name="news_v098_3" formatted="false">Android first-time setup recognized as home (not the MG home); no logs sent from phones and emulators</string>
+    <string name="opt_show" formatted="false">Show</string>
+    <string name="opt_hide" formatted="false">Hide</string>
+    <string name="set_charge_limit" formatted="false">Charge limit</string>
+    <string name="set_charge_limit_sub" formatted="false">Mark on the battery bar and button. Automatic: only if the car supports the command</string>
+    <string name="set_retro_return" formatted="false">After reversing, go back to the previous app</string>
+    <string name="set_retro_return_sub" formatted="false">When the camera closes it reopens CarPlay, Android Auto, the navigator or the app you had open</string>
+    <string name="quick_none" formatted="false">None</string>
+    <string name="set_quick" formatted="false">Top-right button</string>
+    <string name="set_quick_sub" formatted="false">Next to Map and Media. With «None» the source buttons always keep their label</string>
+    <string name="quick_pick_app" formatted="false">App for the top-right button</string>
+    <string name="notice_title" formatted="false">Notice</string>
+    <string name="notice_important" formatted="false">Important notice</string>
+    <string name="upd_auto_failed" formatted="false">Can\'t check for updates right now: will retry later</string>
+    <string name="cb_reserve" formatted="false">Scheduled</string>
+    <string name="cb_reserve_title" formatted="false">Scheduled charging</string>
+    <string name="cb_reserve_msg" formatted="false">As in the car\'s Energy app: charging only starts in the chosen time window</string>
+    <string name="cb_reserve_turn_on">Turn on (%1$s)</string>
+    <string name="cb_reserve_turn_off" formatted="false">Turn off</string>
+    <string name="cb_reserve_start">Start: %1$s</string>
+    <string name="cb_reserve_stop">End: %1$s</string>
+    <string name="cb_reserve_pick_start" formatted="false">Start time</string>
+    <string name="cb_reserve_pick_stop" formatted="false">End time</string>
+    <string name="news_v032_1" formatted="false">After reversing the launcher reopens CarPlay, Android Auto or the app you had open (can be turned off)</string>
+    <string name="news_v032_2" formatted="false">Media: FM/DAB under the Radio button, last source resumed at start-up and more reliable Bluetooth</string>
+    <string name="news_v032_3" formatted="false">Day/night theme also from the headlights and sunrise/sunset; headlights shown on the car drawing</string>
+    <string name="news_v032_4" formatted="false">Compact outside temperature, bigger tyre pressures, clearer 360° icons</string>
+    <string name="news_v032_5" formatted="false">Charge limit and scheduled charging only if the car supports them; top-right button of your choice</string>
+    <string name="news_v032_6" formatted="false">The launcher checks for updates by itself and can show important notices</string>
 </resources>

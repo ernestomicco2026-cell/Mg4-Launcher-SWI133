@@ -58,7 +58,7 @@
     <string name="set_diag_sub" formatted="false">Valori letti dall\'auto ed errori recenti</string>
     <string name="set_diag_title" formatted="false">Diagnostica servizi auto</string>
     <string name="set_home_card" formatted="false">RIQUADRO AUTO</string>
-    <string name="set_inside_sub" formatted="false">Sotto quella esterna · «— °» se l\'auto non la fornisce</string>
+    <string name="set_inside_sub" formatted="false">Sotto l\'esterna. Se l\'auto non manda un valore affidabile si vede «--» (mai l\'esterna al suo posto)</string>
     <string name="set_language" formatted="false">LINGUA</string>
     <string name="set_menu_title" formatted="false">Impostazioni</string>
     <string name="set_open_original" formatted="false">Apri la home originale MG</string>
@@ -395,4 +395,32 @@
     <string name="news_v098_1" formatted="false">Riavvio del dongle: i telefoni collegati col cavo (iPhone, Android Auto) non vengono più resettati, solo i dongle wireless veri</string>
     <string name="news_v098_2" formatted="false">Permesso della velocità concesso in automatico e nuovi certificati radice Sectigo/USERTrust per loghi, aggiornamenti e log</string>
     <string name="news_v098_3" formatted="false">Riconosciuta come home la prima configurazione di Android (non è la home MG); niente log da telefoni ed emulatori</string>
+    <string name="opt_show" formatted="false">Mostra</string>
+    <string name="opt_hide" formatted="false">Nascondi</string>
+    <string name="set_charge_limit" formatted="false">Limite di ricarica</string>
+    <string name="set_charge_limit_sub" formatted="false">Segno sulla barra della batteria e pulsante. Automatico: solo se l\'auto supporta il comando</string>
+    <string name="set_retro_return" formatted="false">Dopo la retromarcia torna all\'app di prima</string>
+    <string name="set_retro_return_sub" formatted="false">Quando la telecamera si chiude riapre CarPlay, Android Auto, il navigatore o l\'app che avevi davanti</string>
+    <string name="quick_none" formatted="false">Nessuno</string>
+    <string name="set_quick" formatted="false">Pulsante in alto a destra</string>
+    <string name="set_quick_sub" formatted="false">Accanto a Mappa e Media. Con «Nessuno» i pulsanti delle sorgenti restano sempre con la scritta</string>
+    <string name="quick_pick_app" formatted="false">App per il pulsante in alto a destra</string>
+    <string name="notice_title" formatted="false">Avviso</string>
+    <string name="notice_important" formatted="false">Avviso importante</string>
+    <string name="upd_auto_failed" formatted="false">Non riesco a controllare gli aggiornamenti adesso: riprovo più tardi</string>
+    <string name="cb_reserve" formatted="false">Programmata</string>
+    <string name="cb_reserve_title" formatted="false">Ricarica programmata</string>
+    <string name="cb_reserve_msg" formatted="false">Come nell\'app Energia dell\'auto: la ricarica parte solo nella fascia oraria scelta</string>
+    <string name="cb_reserve_turn_on">Attiva (%1$s)</string>
+    <string name="cb_reserve_turn_off" formatted="false">Disattiva</string>
+    <string name="cb_reserve_start">Inizio: %1$s</string>
+    <string name="cb_reserve_stop">Fine: %1$s</string>
+    <string name="cb_reserve_pick_start" formatted="false">Ora di inizio</string>
+    <string name="cb_reserve_pick_stop" formatted="false">Ora di fine</string>
+    <string name="news_v032_1" formatted="false">Dopo la retromarcia il launcher riapre CarPlay, Android Auto o l\'app che avevi davanti (si può spegnere)</string>
+    <string name="news_v032_2" formatted="false">Media: FM/DAB sotto il pulsante Radio, ripresa dell\'ultima sorgente all\'accensione e Bluetooth più affidabile</string>
+    <string name="news_v032_3" formatted="false">Tema giorno/notte anche dai fari e da alba/tramonto; fari accesi sul disegno dell\'auto</string>
+    <string name="news_v032_4" formatted="false">Temperatura esterna compatta, pressione gomme più grande, icone 360° più chiare</string>
+    <string name="news_v032_5" formatted="false">Limite e ricarica programmata solo se l\'auto li supporta; pulsante in alto a destra a scelta</string>
+    <string name="news_v032_6" formatted="false">Il launcher controlla da solo gli aggiornamenti e può mostrare avvisi importanti</string>
 </resources>

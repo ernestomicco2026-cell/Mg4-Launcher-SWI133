@@ -467,8 +467,21 @@ public final class SettingsView extends FrameLayout {
                     host.settingsChanged(true);
                     showSection(SEC_HOME);
                 }), false));
-        // temperatura interna (tolta nella 0.9.5): l'auto non la manda allo schermo, si spiega perché
-        card.addView(row(c, L.s(R.string.set_show_inside_temp), L.s(R.string.set_inside_none), spacer0(c), true));
+        // 0.3.2 (punto 2): temperatura interna di nuovo attivabile; senza una fonte valida mostra "--", mai l'esterna
+        card.addView(row(c, L.s(R.string.set_show_inside_temp), L.s(R.string.set_inside_sub),
+                toggle(c, prefs.showInsideTemp(), on -> {
+                    prefs.setShowInsideTemp(on);
+                    host.settingsChanged(true);
+                }), false));
+        // 0.3.2 (punto 6d): limite di ricarica sulla barra della batteria
+        String[] limVals = {Prefs.LIMIT_AUTO, Prefs.LIMIT_SHOW, Prefs.LIMIT_HIDE};
+        String[] limNames = {L.s(R.string.unit_auto), L.s(R.string.opt_show), L.s(R.string.opt_hide)};
+        card.addView(row(c, L.s(R.string.set_charge_limit), L.s(R.string.set_charge_limit_sub),
+                choices(c, limNames, java.util.Arrays.asList(limVals).indexOf(prefs.chargeLimitMode()), i -> {
+                    prefs.setChargeLimitMode(limVals[i]);
+                    host.settingsChanged(true);
+                    showSection(SEC_HOME);
+                }), true));
         col.addView(card, topFull(14));
 
         // 0.3.0 (punto 11): riquadro mappa/media/CarPlay/AA - il navigatore che si apre dal riquadro di casa
@@ -537,8 +550,48 @@ public final class SettingsView extends FrameLayout {
             if (!on) ch.setBackground(Ui.pressable(c, t.panel, 16 * Ui.K, t));
             camRow.addView(ch, Ui.margins(new LinearLayout.LayoutParams(-2, tp(60)), i == 0 ? 0 : dp(8), 0, 0, 0));
         }
-        card.addView(row(c, L.s(R.string.set_cam360), L.s(R.string.set_cam360_sub), camRow, true));
+        card.addView(row(c, L.s(R.string.set_cam360), L.s(R.string.set_cam360_sub), camRow, false));
+        // 0.3.2 (punto 7b): pulsante in alto a destra del riquadro media: CarPlay/Android Auto, un'app a scelta, nessuno
+        String q = prefs.quickButton();
+        boolean qApp = q.startsWith(Prefs.QUICK_APP);
+        String qLabel = qApp ? com.mg4.launcher.ui.Cam360.label(c, q.substring(Prefs.QUICK_APP.length())) : L.s(R.string.cam360_app);
+        String[] qNames = {"CarPlay / Android Auto", qLabel, L.s(R.string.quick_none)};
+        int qSel = Prefs.QUICK_NONE.equals(q) ? 2 : qApp ? 1 : 0;
+        LinearLayout qRow = Ui.row(c);
+        for (int i = 0; i < qNames.length; i++) {
+            final int idx = i;
+            boolean on = i == qSel;
+            TextView ch = choice(c, qNames[i], on, v -> {
+                if (idx == 1) { pickQuickApp(); return; }   // apre sempre l'elenco delle app
+                if (idx == qSel) return;
+                prefs.setQuickButton(idx == 0 ? Prefs.QUICK_PROJ : Prefs.QUICK_NONE);
+                host.settingsChanged(true);
+                showSection(SEC_BAR);
+            });
+            ch.setPadding(tp(20), 0, tp(20), 0);
+            if (!on) ch.setBackground(Ui.pressable(c, t.panel, 16 * Ui.K, t));
+            qRow.addView(ch, Ui.margins(new LinearLayout.LayoutParams(-2, tp(60)), i == 0 ? 0 : dp(8), 0, 0, 0));
+        }
+        card.addView(row(c, L.s(R.string.set_quick), L.s(R.string.set_quick_sub), qRow, true));
         col.addView(card, topFull(14));
+    }
+
+    /** Elenco delle app installate per il pulsante in alto a destra (0.3.2, punto 7b). */
+    private void pickQuickApp() {
+        java.util.List<com.mg4.launcher.apps.AppCatalog.App> apps = host.allLaunchableApps();
+        String[] names = new String[apps.size()];
+        for (int i = 0; i < apps.size(); i++) names[i] = apps.get(i).label;
+        String cur = prefs.quickButton();
+        int sel = -1;
+        if (cur.startsWith(Prefs.QUICK_APP)) {
+            String pkg = cur.substring(Prefs.QUICK_APP.length());
+            for (int i = 0; i < apps.size(); i++) if (apps.get(i).packageName.equals(pkg)) sel = i;
+        }
+        Confirm.pick(this, t, L.s(R.string.quick_pick_app), "", names, sel, L.s(R.string.btn_cancel), i -> {
+            prefs.setQuickButton(Prefs.QUICK_APP + apps.get(i).packageName);
+            host.settingsChanged(true);
+            showSection(SEC_BAR);
+        });
     }
 
     /** Elenco delle app installate (escluso noi) per scegliere "un'altra app" per il tasto 360. */
@@ -777,6 +830,9 @@ public final class SettingsView extends FrameLayout {
                 postDelayed(() -> showSection(SEC_LAUNCH), 400);
             }), false));
         }
+        // 0.3.2 (punto 5): dopo la retromarcia torna all'app di prima (CarPlay, Android Auto, navigatore…)
+        hc.addView(row(c, L.s(R.string.set_retro_return), L.s(R.string.set_retro_return_sub),
+                toggle(c, prefs.retroReturn(), on -> prefs.setRetroReturn(on)), false));
         java.util.List<String> others = com.mg4.launcher.svc.HomeLock.otherLaunchers(app);
         if (!others.isEmpty()) {
             TextView warn = Ui.text(c, "⚠", 26, 0xFFFFB020, Ui.MEDIUM);

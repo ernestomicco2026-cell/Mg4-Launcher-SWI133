@@ -343,4 +343,42 @@ public final class Prefs {
     public void setCam360(String v) {
         sp.edit().putString("tasto360", v == null ? "" : v).apply();
     }
+
+    // --- 0.3.2 ---
+
+    /** Limite di ricarica (barra della batteria e pulsante): "auto" = solo se l'auto supporta il comando. */
+    public static final String LIMIT_AUTO = "auto", LIMIT_SHOW = "mostra", LIMIT_HIDE = "nascondi";
+
+    public String chargeLimitMode() {
+        String v = sp.getString("limiteRicarica", LIMIT_AUTO);
+        return LIMIT_SHOW.equals(v) || LIMIT_HIDE.equals(v) ? v : LIMIT_AUTO;
+    }
+
+    public void setChargeLimitMode(String v) {
+        sp.edit().putString("limiteRicarica", v).apply();
+    }
+
+    /**
+     * Pulsante in alto a destra del riquadro media/mappa: "proj" = CarPlay/Android Auto (predefinito, come prima),
+     * "app:pacchetto" = un'app a scelta, "nessuno".
+     */
+    public static final String QUICK_PROJ = "proj", QUICK_APP = "app:", QUICK_NONE = "nessuno";
+
+    public String quickButton() {
+        String v = sp.getString("pulsanteRapido", QUICK_PROJ);
+        return QUICK_NONE.equals(v) || v.startsWith(QUICK_APP) ? v : QUICK_PROJ;
+    }
+
+    public void setQuickButton(String v) {
+        sp.edit().putString("pulsanteRapido", v == null ? QUICK_PROJ : v).apply();
+    }
+
+    /** Dopo la retromarcia (telecamera chiusa) riapre l'app che era davanti: CarPlay, Android Auto, navigatore… */
+    public boolean retroReturn() {
+        return sp.getBoolean("retroRitorno", true);
+    }
+
+    public void setRetroReturn(boolean b) {
+        sp.edit().putBoolean("retroRitorno", b).apply();
+    }
 }

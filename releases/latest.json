@@ -1,6 +1,6 @@
 {
-  "version": "0.3.1",
-  "apk": "releases/MG4Launcher-SWI133-0.3.1.apk",
-  "size": 678401,
-  "notes": "Il menu delle impostazioni scorre di nuovo e la sezione aggiornamenti è sempre raggiungibile."
+  "version": "0.3.2",
+  "apk": "releases/MG4Launcher-SWI133-0.3.2.apk",
+  "size": 723457,
+  "notes": "Ritorno a CarPlay/Android Auto dopo la retromarcia, ripresa della sorgente audio all'accensione, FM/DAB sotto Radio, tema giorno/notte più robusto, ricarica programmata e aggiornamenti automatici."
 }
