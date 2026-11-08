@@ -41,6 +41,13 @@ public final class VehicleClient {
     private static final int CHG_DISCHARGE_LIMIT = 43;                                  // limite di scarica: (codice + 1) × 10 %
     private static final int CHG_GET_DISCHARGE_CONTROL = 46, CHG_SET_DISCHARGE_CONTROL = 47;   // 1 avvia, 2 ferma, 3 in preparazione
     private static final int CHG_DIST_UNIT = 82;                                         // unità del quadro: 0 km, 1 miglia
+    // 1.0.2: ricarica programmata, verificata nell'app Energia originale (vehiclesettings eh32_eu_P,
+    // ChargePointManagementViewModel): stato 1 = programmata attiva, 3 = attiva + "continua a caricare", 2/0 = spenta;
+    // la si accende con 1 e la si spegne con 2; orari in ore (0..23) e minuti (0..59), di serie 22:00-06:00.
+    private static final int CHG_GET_RESERVE = 19, CHG_SET_RESERVE = 20;
+    private static final int CHG_GET_RES_START_H = 21, CHG_SET_RES_START_H = 22, CHG_GET_RES_START_M = 23, CHG_SET_RES_START_M = 24;
+    private static final int CHG_GET_RES_STOP_H = 25, CHG_SET_RES_STOP_H = 26, CHG_GET_RES_STOP_M = 27, CHG_SET_RES_STOP_M = 28;
+    public static final int RESERVE_ON = 1, RESERVE_OFF = 2, RESERVE_ON_CONTINUE = 3;
     public static final int CTRL_START = 1, CTRL_STOP = 2, CTRL_PREPARING = 3;
     /** Correnti di ricarica AC ammesse dall'auto (codici 1..4). */
     public static final String[] CURRENT_LABELS = {"6 A", "8 A", "16 A", "Max"};
@@ -71,14 +78,9 @@ public final class VehicleClient {
     // SWI133 (vehiclesettingservice_my24_P): non esistono né la configurazione né il comando dei fendinebbia anteriori
     // (sulla SWI68: condizione 45, impostazioni 187/188), quindi il pulsante resta nascosto.
     private static final String COND = "com.saicmotor.sdk.vehiclesettings.IVehicleConditionService";
-    // 0.3.2: velocità e marcia dal servizio veicolo (vehiclesettingservice_my24_P: getCarSpeed 3, getCarGear 5, getCarGearV 57)
-    private static final int COND_CAR_SPEED = 3, COND_CAR_GEAR = 5, COND_CAR_GEAR_V = 57;
-    // 0.3.2 (punto 6d): ricarica programmata, come l'app Gestione ricarica (chargesettings_my24_P):
-    // controllo 1 = attiva, 3 = attiva e continua dopo l'ora di fine, 0/2 = spenta, -1 = non disponibile; ore 0..23, minuti 0..59
-    private static final int CHG_GET_RESERVE = 19, CHG_SET_RESERVE = 20, CHG_GET_RES_START_H = 21, CHG_SET_RES_START_H = 22,
-            CHG_GET_RES_START_M = 23, CHG_SET_RES_START_M = 24, CHG_GET_RES_STOP_H = 25, CHG_SET_RES_STOP_H = 26,
-            CHG_GET_RES_STOP_M = 27, CHG_SET_RES_STOP_M = 28;
     private static final int COND_BMS_AVAILABLE = 52;      // 1 = batteria (BMS) pronta a ricevere comandi (SWI133: 52, SWI68: 56)
+    // velocità e marcia dal servizio veicolo (vehiclesettingservice_my24_P: getCarSpeed 3, getCarGear 5, come la SWI68)
+    private static final int COND_SPEED = 3, COND_GEAR = 5;
     // assistenza alla guida, come l'app Impostazioni veicolo originale (sicurezza / guida); stessi codici verificati su
     // vehiclesettingservice_my24_P della SWI133 (getLaneKeepingAsstMode 83, getSignalPedal 163, getLdwsConfigCode 31…)
     // assistente di guida (ACC/TJA) e pedale del freno, stesse proprietà dell'auto su tutti i firmware (0.9.5)
@@ -139,27 +141,19 @@ public final class VehicleClient {
         public int fanLevel = -1;         // 0 spenta, 1..max, 15 auto
         public int fanMin = 1, fanMax = 11;
         public float outsideTemp = -10000f;   // °C
-        // 0.3.2 (punto 2): temperatura interna solo da una fonte valida (mai l'esterna)
-        public boolean insideValid;
+        // ---- 1.0.2 ----
+        /** Fonte della temperatura interna ("" = nessuna valida: si mostra "--"). */
         public String insideSource = "";
-        // 0.3.2 (punti 1 e 6b): luci dell'auto (1 accese, 0 spente, -1 non leggibili)
-        public int lowBeam = -1, sideLights = -1;
-        // 0.3.2 (punto 6d): ricarica programmata (-1 = non supportata)
-        public int reserveCtrl = -1, reserveStartH = -1, reserveStartM = -1, reserveStopH = -1, reserveStopM = -1;
-
-        /** Fari accesi (anabbaglianti o luci di posizione)? null se non si legge. */
-        public Boolean lightsOn() {
-            if (lowBeam < 0 && sideLights < 0) return null;
-            return lowBeam == 1 || sideLights == 1;
-        }
-
-        public boolean reserveSupported() {
-            return reserveCtrl >= 0 && reserveCtrl <= 3;
-        }
-
-        public boolean reserveOn() {
-            return reserveCtrl == 1 || reserveCtrl == 3;
-        }
+        /** Fari: 1 anabbaglianti/posizione accesi, 0 spenti, -1 non leggibile. */
+        public int lights = -1;
+        /** Velocità dal servizio veicolo (grezza, NaN se non letta) e marcia (valore grezzo, MIN_VALUE se non letta). */
+        public float speedRaw = Float.NaN;
+        public int gearRaw = Integer.MIN_VALUE;
+        /** Limite di ricarica: l'auto risponde con un valore valido (comando supportato). */
+        public boolean limitSupported;
+        /** Ricarica programmata: stato (1 attiva, 3 attiva + continua, 2/0 spenta, -1 non letta) e orari. */
+        public int reserve = -1, reserveStartH = -1, reserveStartM = -1, reserveStopH = -1, reserveStopM = -1;
+        public boolean reserveSupported;
     }
 
     public interface Listener {
@@ -182,11 +176,8 @@ public final class VehicleClient {
 
     private final Context ctx;
 
-    private static volatile VehicleClient instance;
-
     public VehicleClient(Context ctx) {
         this.ctx = ctx.getApplicationContext();
-        instance = this;
         hub = new ServiceLink(ctx, "veicolo", ServiceLink.byAction(PKG, ACTION));
         hub.setOnConnected(() -> {
             synchronized (subs) {
@@ -311,6 +302,9 @@ public final class VehicleClient {
                     Diag.put("veicolo.minutiRicarica", s.predictMinutes);
                     Diag.putQuiet("veicolo.correnteA/tensioneV", amps + " / " + volts);
                     Diag.put("veicolo.limiteRicarica", "codice " + limitCode + " = " + s.chargeLimit + "%");
+                    s.limitSupported = limitCode >= 1 && limitCode <= 7;
+                    if (s.limitSupported) limitEverSupported = true;
+                    s.limitSupported |= limitEverSupported;
                     Diag.put("veicolo.statoScarica(V2L)", s.dischargeStatus);
                 }
             } catch (Exception e) {
@@ -400,6 +394,19 @@ public final class VehicleClient {
                     int bms = Rpc.callInt(cnd2, COND, COND_BMS_AVAILABLE);
                     s.bmsAvailable = bms == 1;
                     Diag.put("ricarica.bmsDisponibile", bms);
+                    try {
+                        s.speedRaw = Rpc.callFloat(cnd2, COND, COND_SPEED);
+                        s.gearRaw = Rpc.callInt(cnd2, COND, COND_GEAR);
+                        lastSpeedRaw = s.speedRaw;
+                        lastGearRaw = s.gearRaw;
+                        long t = android.os.SystemClock.elapsedRealtime();
+                        lastMotionAt = t;
+                        if (Float.isNaN(s.speedRaw) || Math.abs(s.speedRaw) >= 0.5f) stoppedSince = -1;
+                        else if (stoppedSince < 0) stoppedSince = t;
+                        Diag.putQuiet("auto.velocità/marcia", s.speedRaw + " / " + s.gearRaw);
+                    } catch (Exception e) {
+                        Diag.putQuiet("auto.velocità/marcia", "non leggibili: " + e.getClass().getSimpleName());
+                    }
                 }
                 IBinder st = sub("vehiclesetting");
                 if (st != null) {
@@ -421,79 +428,6 @@ public final class VehicleClient {
         last = s;
         main.post(() -> {
             if (listener != null) listener.onVehicleState(s);
-        });
-    }
-
-    private String reserveDiag = "";
-
-    /** Ricarica programmata: stato e orari (0.3.2, punto 6d). Il valore appena impostato prevale per qualche secondo. */
-    private void readReserve(IBinder c, State s, long now) {
-        try {
-            int ctrl = Rpc.callInt(c, CHG, CHG_GET_RESERVE);
-            s.reserveCtrl = held(CHG_GET_RESERVE, ctrl >= 0 && ctrl <= 3 ? ctrl : -1, now);
-            if (s.reserveCtrl >= 0) {
-                s.reserveStartH = held(CHG_GET_RES_START_H, range(Rpc.callInt(c, CHG, CHG_GET_RES_START_H), 23), now);
-                s.reserveStartM = held(CHG_GET_RES_START_M, range(Rpc.callInt(c, CHG, CHG_GET_RES_START_M), 59), now);
-                s.reserveStopH = held(CHG_GET_RES_STOP_H, range(Rpc.callInt(c, CHG, CHG_GET_RES_STOP_H), 23), now);
-                s.reserveStopM = held(CHG_GET_RES_STOP_M, range(Rpc.callInt(c, CHG, CHG_GET_RES_STOP_M), 59), now);
-            }
-            String d = "controllo " + ctrl + (s.reserveCtrl < 0 ? " (non supportata)" : s.reserveOn() ? " (attiva" + (s.reserveCtrl == 3 ? ", continua dopo la fine)" : ")") : " (spenta)")
-                    + " · " + s.reserveStartH + ":" + s.reserveStartM + " → " + s.reserveStopH + ":" + s.reserveStopM;
-            if (!d.equals(reserveDiag)) {
-                reserveDiag = d;
-                Diag.put("ricarica.programmata", d);
-            }
-        } catch (Exception e) {
-            s.reserveCtrl = -1;
-            Diag.put("ricarica.programmata", "non leggibile: " + e.getClass().getSimpleName());
-        }
-    }
-
-    private static int range(int v, int max) {
-        return v >= 0 && v <= max ? v : -1;
-    }
-
-    /** Accende/spegne la ricarica programmata (1 attiva, 2 spenta), mantenendo "continua dopo la fine" se c'era. */
-    public void setReserve(boolean on) {
-        int cur = last.reserveCtrl;
-        int v = on ? (cur == 3 ? 3 : 1) : 2;
-        hold(CHG_GET_RESERVE, v);
-        sendCharging("ricarica.programmata", CHG_SET_RESERVE, v);
-    }
-
-    /** Orario di inizio (start = true) o di fine della ricarica programmata; come l'originale, poi si riconferma lo stato. */
-    public void setReserveTime(boolean start, int hour, int minute) {
-        int ctrl = last.reserveCtrl;
-        hold(start ? CHG_GET_RES_START_H : CHG_GET_RES_STOP_H, hour);
-        hold(start ? CHG_GET_RES_START_M : CHG_GET_RES_STOP_M, minute);
-        if (bg == null) return;
-        bg.post(() -> {
-            try {
-                IBinder c = sub("vehiclecharging");
-                if (c == null) return;
-                Rpc.call(c, CHG, start ? CHG_SET_RES_START_H : CHG_SET_RES_STOP_H, p -> p.writeInt(hour));
-                Rpc.call(c, CHG, start ? CHG_SET_RES_START_M : CHG_SET_RES_STOP_M, p -> p.writeInt(minute));
-                if (ctrl == 1 || ctrl == 3) Rpc.call(c, CHG, CHG_SET_RESERVE, p -> p.writeInt(ctrl));
-                Diag.put("comando.ultimo", "ricarica.programmata · " + (start ? "inizio " : "fine ") + hour + ":" + minute);
-            } catch (Exception e) {
-                Diag.error("ricarica.programmata", e.toString());
-            }
-            poll();
-        });
-    }
-
-    private void sendCharging(String what, int code, int value) {
-        if (bg == null) return;
-        bg.post(() -> {
-            try {
-                IBinder c = sub("vehiclecharging");
-                if (c == null) return;
-                Rpc.call(c, CHG, code, p -> p.writeInt(value));
-                Diag.put("comando.ultimo", what + " · " + value);
-            } catch (Exception e) {
-                Diag.error(what, e.toString());
-            }
-            poll();
         });
     }
 
@@ -581,126 +515,189 @@ public final class VehicleClient {
             Diag.put("pneumatici (grezzo AS/AD/PS/PD)", raw);
             // 0.9.3: temperatura esterna, validità (0 valida, 1 non valida)
             outValid = props.getIntQuiet(CarProps.HVAC_TEMPERATURE_OUTCARV);
+            readInside(s.outsideTemp);
             readLights();
-            readInside();
         }
         System.arraycopy(tireCache, 0, s.tireBar, 0, 4);
-        s.lowBeam = lowBeam;
-        s.sideLights = sideLights;
-        s.insideTemp = insideTemp;
-        s.insideValid = insideOk;
+        s.insideTemp = insideCache;
         s.insideSource = insideSrc;
+        s.lights = lightsState;
     }
 
-    // ---- 0.3.2: luci dell'auto (tema automatico, fari sul disegno) -------------------------------------
+    // ---- 1.0.2 (issue #8): temperatura interna --------------------------------------------------
+    // L'app clima originale (hvac_eh32_eu_P) non legge mai la temperatura dell'abitacolo e il servizio veicolo, lato
+    // clima, espone solo la temperatura esterna (getOutCarTemp). Resta la proprietà standard HVAC_TEMPERATURE_CURRENT
+    // (su molte auto vale sempre 0). HVAC_AMBIENT_TEMPERATURE è la temperatura esterna: non si usa MAI come interna.
+    // Un valore vale solo se è nell'intervallo, non è 0 e almeno una volta si è staccato dall'esterna (una proprietà
+    // che copia l'esterna non passa); altrimenti si mostra "--".
+    private volatile float insideCache = Float.NaN;
+    private volatile String insideSrc = "";
+    private boolean insideDiffSeen;
 
-    private static volatile int lowBeam = -1, sideLights = -1;
-    private static volatile String lightsRaw = "non lette";
-
-    /** Ultimo stato letto: anabbaglianti o luci di posizione accesi? null se non si legge (per il tema automatico). */
-    public static Boolean lightsNow() {
-        if (lowBeam < 0 && sideLights < 0) return null;
-        return lowBeam == 1 || sideLights == 1;
+    private void readInside(float outside) {
+        boolean outOk = outside > -60 && outside < 70;
+        java.util.Map<Integer, Float> cur = props.floatsAllAreas(CarProps.HVAC_TEMPERATURE_CURRENT);
+        java.util.Map<Integer, Float> amb = props.floatsAllAreas(CarProps.HVAC_AMBIENT_TEMPERATURE);
+        float best = Float.NaN;
+        int bestArea = 0;
+        StringBuilder read = new StringBuilder();
+        for (java.util.Map.Entry<Integer, Float> e : cur.entrySet()) {
+            float v = e.getValue() == null ? Float.NaN : e.getValue();
+            read.append(read.length() == 0 ? "" : ", ").append(v).append(" (area ").append(e.getKey()).append(')');
+            if (Float.isNaN(best) && valid(v) && v > -30 && v < 60) {
+                best = v;
+                bestArea = e.getKey();
+            }
+        }
+        if (!Float.isNaN(best) && outOk && Math.abs(best - outside) >= 1f) insideDiffSeen = true;
+        String why;
+        boolean ok;
+        if (cur.isEmpty()) {
+            ok = false;
+            why = "proprietà assente";
+        } else if (Float.isNaN(best)) {
+            ok = false;
+            why = "nessun valore valido (0 o fuori scala)";
+        } else if (outOk && !insideDiffSeen) {
+            ok = false;
+            why = "uguale all'esterna finora: non attendibile";
+        } else {
+            ok = true;
+            why = "ok";
+        }
+        // 1.0.3: proprietà assente su questa auto (elenco già letto) → l'opzione si nasconde da sola
+        if (props.ready()) {
+            boolean missing = !props.has(CarProps.HVAC_TEMPERATURE_CURRENT);
+            android.content.SharedPreferences sp = ctx.getSharedPreferences("mg4launcher", Context.MODE_PRIVATE);
+            if (sp.getBoolean("tempInternaAssente", false) != missing) sp.edit().putBoolean("tempInternaAssente", missing).apply();
+        }
+        insideCache = ok ? best : Float.NaN;
+        insideSrc = ok ? "HVAC_TEMPERATURE_CURRENT area " + bestArea : "";
+        StringBuilder a = new StringBuilder();
+        for (Float v : amb.values()) a.append(a.length() == 0 ? "" : ", ").append(v);
+        Diag.put("clima.tempInterna", "letto " + (read.length() == 0 ? "—" : read) + " · fonte "
+                + (ok ? insideSrc : "nessuna (si mostra --)") + " · valida " + (ok ? "sì" : "no: " + why)
+                + " · esterna " + (outOk ? String.valueOf(outside) : "—")
+                + (outOk && !Float.isNaN(best) ? " (differenza " + String.format(java.util.Locale.ROOT, "%.1f", best - outside) + ")" : "")
+                + " · ambient " + (a.length() == 0 ? "—" : a) + " (è l'esterna: mai usata come interna)");
     }
 
-    public static String lightsRaw() {
-        return lightsRaw;
+    // ---- 1.0.2: fari (auto disegnata e tema giorno/notte) ----------------------------------------
+    private static volatile int lightsState = -1;
+    private static volatile String lightsDesc = "non letti";
+
+    /** Fari accesi (anabbaglianti o posizione): 1 sì, 0 no, -1 non leggibili. */
+    public static int lights() {
+        return lightsState;
+    }
+
+    public static String lightsDescription() {
+        return lightsDesc;
     }
 
     private void readLights() {
-        int dip = props.getBoolQuiet(CarProps.DIPPED_BEAM);
-        int side = props.getIntQuiet(CarProps.SIDE_LIGHTS);
-        int sw = props.getIntQuiet(CarProps.LIGHT_SWITCH);
-        int main = props.getBoolQuiet(CarProps.MAIN_BEAM);
-        lowBeam = dip == Integer.MIN_VALUE ? -1 : dip;
-        // luci di posizione: valore grezzo non documentato, si considera acceso 1 (0 spente); altro = non affidabile
-        sideLights = side == 0 || side == 1 ? side : -1;
-        int ficm = props.getIntQuiet(CarProps.FICM_DAY_NIGHT);
-        float dim = props.getFloatQuiet(CarProps.DIM_LEVEL);
-        lightsRaw = "anabbaglianti " + q(dip) + " · posizione " + q(side) + " · comando luci " + q(sw) + " · abbaglianti " + q(main)
-                + " · quadro giorno/notte " + q(ficm) + " · attenuazione " + (Float.isNaN(dim) ? "?" : String.valueOf(dim));
-        Diag.put("luci.stato", lightsRaw);
+        int st = props.getIntSafe(CarProps.HEADLIGHTS_STATE);
+        int sw = props.getIntSafe(CarProps.HEADLIGHTS_SWITCH);
+        // SWI133: prima i segnali SAIC (anabbaglianti, luci di posizione), poi le proprietà standard come sulla SWI68
+        int dip = props.getBoolQuiet(CarProps.SAIC_DIPPED_BEAM);
+        int side = props.getIntQuiet(CarProps.SAIC_SIDE_LIGHTS);
+        int v;
+        if (dip == 1 || side == 1) v = 1;
+        else if (dip == 0 && (side == 0 || side == Integer.MIN_VALUE)) v = 0;
+        else if (st == 1) v = 1;
+        else if (st == 0 || st == 2) v = 0;
+        else if (sw == 1) v = 1;
+        else if (sw == 0 || sw == 2) v = 0;
+        else v = -1;   // leva su "automatico" (3) senza stato dei fari: non si sa
+        lightsState = v;
+        lightsDesc = "anabbaglianti SAIC " + (dip == Integer.MIN_VALUE ? "?" : String.valueOf(dip)) + " · posizione SAIC "
+                + (side == Integer.MIN_VALUE ? "?" : String.valueOf(side)) + " · stato " + (st == Integer.MIN_VALUE ? "?" : String.valueOf(st)) + " · leva "
+                + (sw == Integer.MIN_VALUE ? "?" : String.valueOf(sw)) + " → " + (v == 1 ? "accesi" : v == 0 ? "spenti" : "non leggibili");
+        Diag.put("luci.fari", lightsDesc);
     }
 
-    private static String q(int v) {
-        return v == Integer.MIN_VALUE ? "?" : String.valueOf(v);
-    }
-
-    // ---- 0.3.2 (punto 2): temperatura interna -----------------------------------------------------------
-    // Come sulla SWI68: HVAC_TEMPERATURE_CURRENT vale sempre 0 e "ambient" ha un numero che spesso è l'esterna.
-    // Si mostra solo una fonte valida: la corrente se diversa da 0, altrimenti "ambient" solo se valida e diversa
-    // dall'esterna (o già vista diversa in questa accensione). Mai l'esterna al posto dell'interna.
-
-    private volatile float insideTemp = Float.NaN;
-    private volatile boolean insideOk;
-    private volatile String insideSrc = "";
-    private boolean ambientSeenDifferent;
-
-    private void readInside() {
-        float cur = props.getFloatQuiet(CarProps.HVAC_TEMPERATURE_CURRENT);
-        float amb = props.getFloatQuiet(CarProps.HVAC_AMBIENT_TEMPERATURE);
-        int ambV = props.getIntQuiet(CarProps.HVAC_AMBIENT_VALID);
-        float out = lastOutside;
-        boolean curOk = !Float.isNaN(cur) && cur > -30 && cur < 70 && cur != 0f;
-        boolean ambRange = !Float.isNaN(amb) && amb > -30 && amb < 70 && amb != 0f && ambV != 1;
-        float diff = Float.isNaN(out) || Float.isNaN(amb) ? Float.NaN : Math.abs(amb - out);
-        if (ambRange && !Float.isNaN(diff) && diff >= 1.5f) ambientSeenDifferent = true;
-        String why;
-        if (curOk) {
-            insideTemp = cur;
-            insideOk = true;
-            insideSrc = "corrente (HVAC_TEMPERATURE_CURRENT)";
-            why = "valida";
-        } else if (ambRange && (Float.isNaN(out) || diff >= 0.6f || ambientSeenDifferent)) {
-            insideTemp = amb;
-            insideOk = true;
-            insideSrc = "ambient del clima";
-            why = Float.isNaN(out) ? "valida (esterna non letta)" : "valida (diversa dall'esterna)";
-        } else {
-            insideTemp = Float.NaN;
-            insideOk = false;
-            insideSrc = "nessuna";
-            why = !ambRange ? "nessuna fonte valida" : "ambient uguale all'esterna: non mostrata";
-        }
-        Diag.put("clima.tempInterna", (insideOk ? insideTemp + " °C" : "--") + " · fonte " + insideSrc + " · " + why
-                + " · corrente " + cur + " · ambient " + amb + " (validità " + q(ambV) + ") · esterna " + out
-                + (Float.isNaN(diff) ? "" : " (differenza " + String.format(java.util.Locale.ROOT, "%.1f", diff) + ")"));
-    }
-
-    // ---- 0.3.2: velocità e marcia per l'aggiornamento forzato e la retromarcia ----------------------------
+    // ---- 1.0.2: velocità per l'aggiornamento forzato (solo ad auto ferma) -------------------------
+    private static volatile float lastSpeedRaw = Float.NaN;
+    private static volatile int lastGearRaw = Integer.MIN_VALUE;
+    private static volatile long lastMotionAt, stoppedSince = -1;
+    /** Ferma da almeno 2 minuti di fila (non un semaforo): solo così si forza un aggiornamento. */
+    private static final long STOPPED_FOR_MS = 2 * 60_000L;
 
     /**
-     * Velocità dal servizio veicolo SAIC (getCarSpeed), che non chiede il permesso CAR_SPEED. NaN se non leggibile.
-     * Da un thread qualsiasi (chiamata breve al servizio di sistema).
+     * Auto ferma da almeno 2 minuti secondo letture recenti della velocità (servizio veicolo e, se c'è, CarService)?
+     * null se la velocità del servizio veicolo non si legge: in quel caso l'aggiornamento non si forza mai.
      */
-    public static float saicSpeed() {
-        VehicleClient v = instance;
-        if (v == null || !v.hub.isConnected()) return Float.NaN;
+    public static Boolean surelyStopped() {
+        float a = lastSpeedRaw;
+        long now = android.os.SystemClock.elapsedRealtime();
+        boolean fresh = now - lastMotionAt < 15_000;
+        if (!fresh || Float.isNaN(a)) return null;
+        float b = speedKmh();
+        if (!Float.isNaN(b) && b >= 1f) return false;
+        long since = stoppedSince;
+        return since >= 0 && now - since >= STOPPED_FOR_MS;
+    }
+
+    public static String motionDescription() {
+        return "velocità " + (Float.isNaN(lastSpeedRaw) ? "?" : String.valueOf(lastSpeedRaw)) + " · CarService "
+                + (Float.isNaN(speedKmh()) ? "?" : String.format(java.util.Locale.ROOT, "%.1f km/h", speedKmh()))
+                + " · marcia " + (lastGearRaw == Integer.MIN_VALUE ? "?" : String.valueOf(lastGearRaw))
+                + " · ferma da " + (stoppedSince < 0 ? "—" : ((android.os.SystemClock.elapsedRealtime() - stoppedSince) / 1000) + " s");
+    }
+
+    // ---- 1.0.2: limite e ricarica programmata ------------------------------------------------------
+    private boolean limitEverSupported, reserveEverSupported;
+    private int reserveOkReads;
+
+    private void readReserve(IBinder c, State s, long now) {
         try {
-            IBinder cnd = v.sub("vehiclecondition");
-            if (cnd == null) return Float.NaN;
-            float f = Rpc.callFloat(cnd, COND, COND_CAR_SPEED);
-            return Float.isNaN(f) || f < 0 || f > 300 ? Float.NaN : f;
+            int ctl = Rpc.callInt(c, CHG, CHG_GET_RESERVE);
+            int sh = Rpc.callInt(c, CHG, CHG_GET_RES_START_H), sm = Rpc.callInt(c, CHG, CHG_GET_RES_START_M);
+            int eh = Rpc.callInt(c, CHG, CHG_GET_RES_STOP_H), em = Rpc.callInt(c, CHG, CHG_GET_RES_STOP_M);
+            s.reserve = held(CHG_GET_RESERVE, ctl >= 0 && ctl <= 3 ? ctl : -1, now);
+            s.reserveStartH = held(CHG_GET_RES_START_H, sh >= 0 && sh <= 23 ? sh : -1, now);
+            s.reserveStartM = held(CHG_GET_RES_START_M, sm >= 0 && sm <= 59 ? sm : -1, now);
+            s.reserveStopH = held(CHG_GET_RES_STOP_H, eh >= 0 && eh <= 23 ? eh : -1, now);
+            s.reserveStopM = held(CHG_GET_RES_STOP_M, em >= 0 && em <= 59 ? em : -1, now);
+            // supportata: stato e orari letti con valori validi (sulle auto senza la funzione arrivano -1 o valori fuori scala)
+            boolean ranges = s.reserve >= 0 && s.reserveStartH >= 0 && s.reserveStartM >= 0 && s.reserveStopH >= 0 && s.reserveStopM >= 0;
+            boolean real = s.reserve >= 1 || s.reserveStartH + s.reserveStartM + s.reserveStopH + s.reserveStopM > 0;
+            reserveOkReads = ranges && real ? reserveOkReads + 1 : 0;
+            if (reserveOkReads >= 2) reserveEverSupported = true;
+            s.reserveSupported = reserveEverSupported;
+            Diag.put("ricarica.programmata", "stato " + ctl + " · inizio " + sh + ":" + sm + " · fine " + eh + ":" + em
+                    + " · supportata " + (s.reserveSupported ? "sì" : "no"));
         } catch (Exception e) {
-            return Float.NaN;
+            Diag.put("ricarica.programmata", "non leggibile: " + e.getClass().getSimpleName());
         }
     }
 
-    /** Marcia grezza dal servizio veicolo (segnale GearSts 0..11; 15 o -1 = sconosciuta). Il significato di ogni numero
-     * non è nel firmware: si registra nella diagnostica (retro.ritorno, auto.marcia) per ricavarlo dai log. */
-    public static int gearRaw() {
-        VehicleClient v = instance;
-        if (v == null || !v.hub.isConnected()) return -1;
-        try {
-            IBinder cnd = v.sub("vehiclecondition");
-            if (cnd == null) return -1;
-            int g = Rpc.callInt(cnd, COND, COND_CAR_GEAR);
-            int ok = Rpc.callInt(cnd, COND, COND_CAR_GEAR_V);
-            Diag.put("auto.marcia", "grezza " + g + " · validità " + ok);
-            return g >= 0 && g <= 11 ? g : -1;
-        } catch (Exception e) {
-            return -1;
-        }
+    /** Ricarica programmata accesa/spenta, come l'interruttore dell'app Energia (1 accende, 2 spegne). */
+    public void setReserve(boolean on) {
+        chargeCommand(CHG_GET_RESERVE, on ? RESERVE_ON : RESERVE_OFF, CHG_SET_RESERVE, on ? RESERVE_ON : RESERVE_OFF,
+                "ricarica.programmata → " + (on ? "attiva" : "spenta"));
+    }
+
+    /** Orario di inizio (start = true) o di fine della ricarica programmata. */
+    public void setReserveTime(boolean start, int hour, int minute) {
+        if (bg == null || hour < 0 || hour > 23 || minute < 0 || minute > 59) return;
+        int gh = start ? CHG_GET_RES_START_H : CHG_GET_RES_STOP_H, gm = start ? CHG_GET_RES_START_M : CHG_GET_RES_STOP_M;
+        int shc = start ? CHG_SET_RES_START_H : CHG_SET_RES_STOP_H, smc = start ? CHG_SET_RES_START_M : CHG_SET_RES_STOP_M;
+        hold(gh, hour);
+        hold(gm, minute);
+        bg.post(() -> {
+            try {
+                IBinder c = sub("vehiclecharging");
+                if (c == null) throw new RemoteException("servizio ricarica non collegato");
+                Rpc.call(c, CHG, shc, p -> p.writeInt(hour));
+                Rpc.call(c, CHG, smc, p -> p.writeInt(minute));
+                Diag.put("ricarica.ultimoComando", "ricarica.programmata " + (start ? "inizio" : "fine") + " → "
+                        + String.format(java.util.Locale.ROOT, "%02d:%02d", hour, minute) + " · inviato");
+            } catch (Exception e) {
+                Diag.error("ricarica.programmata", e.toString());
+            }
+            poll();
+        });
     }
 
     /** Temperatura interna leggibile? true / false, null finché non si sa (CarService non ancora pronto). */
@@ -786,10 +783,9 @@ public final class VehicleClient {
     /** Velocità in km/h dal CarService (NaN se non leggibile). */
     public static float speedKmh() {
         CarProps p = shared;
-        if (p == null) return saicSpeed();
+        if (p == null) return Float.NaN;
         float v = p.getFloat(CarProps.PERF_VEHICLE_SPEED);   // m/s; NaN se l'auto non concede CAR_SPEED (letta una volta sola)
-        if (Float.isNaN(v)) return saicSpeed();               // 0.3.2: riserva dal servizio veicolo SAIC
-        return Math.abs(v) * 3.6f;
+        return Float.isNaN(v) ? Float.NaN : Math.abs(v) * 3.6f;
     }
 
     /** Si cambiano solo ad auto ferma (sopra 3 km/h no): sono impostazioni della guida. */

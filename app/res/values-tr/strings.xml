@@ -28,17 +28,13 @@
     <string name="log_upload_off" formatted="false">Günlük gönderimi kapalı</string>
     <string name="log_upload_nokey" formatted="false">Bu sürümde günlük gönderimi yok</string>
     <string name="sec_car" formatted="false">ARAÇ</string>
-    <string name="sec_car_sub" formatted="false">Renk, jantlar, tavan</string>
+    <string name="sec_car_sub" formatted="false">Renk, jantlar, tavan, sürüş yönü</string>
     <string name="sec_home" formatted="false">Ana ekran</string>
-    <string name="sec_home_sub" formatted="false">Batarya, lastikler, sıcaklıklar</string>
+    <string name="sec_home_sub" formatted="false">Tarih, batarya, mesafe, lastikler</string>
     <string name="sec_look" formatted="false">Görünüm</string>
     <string name="sec_look_sub" formatted="false">Tema, boyut, dil</string>
-    <string name="sec_bar" formatted="false">Çubuk ve düğmeler</string>
-    <string name="sec_bar_sub" formatted="false">Çubuk, gruplu düğmeler, 360 düğmesi</string>
-    <string name="sec_logos" formatted="false">Radyo ve logolar</string>
-    <string name="sec_logos_sub" formatted="false">Logo ülkesi, paketler, kişisel klasör</string>
-    <string name="sec_launch" formatted="false">Başlangıç ve uygulamalar</string>
-    <string name="sec_launch_sub" formatted="false">Güvenli başlangıç, diğer launcher\'lar, dongle</string>
+    <string name="sec_drive" formatted="false">Sürüş</string>
+    <string name="sec_drive_sub" formatted="false">Direksiyon konumu, MG ana ekranı</string>
     <string name="sec_system" formatted="false">Sistem</string>
     <string name="sec_system_sub" formatted="false">Güncellemeler, günlükler, tanılama</string>
     <string name="btn_back" formatted="false">Geri</string>
@@ -58,7 +54,7 @@
     <string name="set_diag_sub" formatted="false">Araçtan okunan değerler ve son hatalar</string>
     <string name="set_diag_title" formatted="false">Araç servisleri tanılaması</string>
     <string name="set_home_card" formatted="false">ARAÇ PANELİ</string>
-    <string name="set_inside_sub" formatted="false">Dış sıcaklığın altında. Araç güvenilir bir değer göndermezse «--» görünür (yerine asla dış sıcaklık gösterilmez)</string>
+    <string name="set_inside_sub" formatted="false">Dış sıcaklığın altında; araç vermiyorsa -- görünür</string>
     <string name="set_language" formatted="false">DİL</string>
     <string name="set_menu_title" formatted="false">Ayarlar</string>
     <string name="set_open_original" formatted="false">Orijinal MG ana ekranını aç</string>
@@ -222,12 +218,6 @@
     <string name="cb_limit" formatted="false">Şarj sınırı</string>
     <string name="cb_current" formatted="false">AC akımı</string>
     <string name="cb_charge" formatted="false">Şarj</string>
-    <string name="cb_unlock" formatted="false">Soketi kilidini aç</string>
-    <string name="cb_unlock_title" formatted="false">Şarj soketinin kilidi açılsın mı?</string>
-    <string name="cb_unlock_msg" formatted="false">Komut, Şarj yönetimi sayfasındaki düğme gibi araca gönderilir.</string>
-    <string name="cb_unlock_wait" formatted="false">Araç henüz soket durumunu göndermedi: kısa süre sonra tekrar dene.</string>
-    <string name="cb_unlock_locked" formatted="false">Kilitli</string>
-    <string name="cb_unlock_unlocked" formatted="false">Kilidi açık</string>
     <string name="cb_v2l" formatted="false">V2L (harici priz)</string>
     <string name="cb_start" formatted="false">Başlat</string>
     <string name="cb_stop" formatted="false">Durdur</string>
@@ -262,11 +252,11 @@
     <string name="set_rear_fog_sub" formatted="false">Araçta zaten fiziksel düğme varsa veya sistem çubuğu gösteriyorsa kapatın</string>
     <string name="set_auto_home" formatted="false">Açılıştan sonra Ana ekrana otomatik bas</string>
     <string name="set_auto_home_sub" formatted="false">Bir kez, bu saniyelerden sonra, yalnızca MG ana ekranı açıksa (kamera, 360°, CarPlay veya arama sırasında asla)</string>
+    <string name="fw_swi69_title" formatted="false">Bu sürüm SWI68 yazılımı içindir</string>
+    <string name="fw_swi69_msg" formatted="false">Aracınızda SWI69 yazılımı var: araç hizmetleri farklı ve bu sürüm bağlanamaz. SWI69 için MG4 Launcher\'ı buradan yükleyin:</string>
     <string name="fw_other_title" formatted="false">Araç tanınmadı</string>
     <string name="fw_other_msg">%1$s yazılımının MG uygulamaları bulunamadı: MG4 Launcher yalnızca MG4 bilgi-eğlence sisteminde çalışır. Tüm sürümler (SWI68, SWI69, SWI132, SWI133) burada:</string>
     <string name="fw_open_original" formatted="false">Orijinal ana ekranı aç</string>
-    <string name="fw_wrong_title">Bu sürüm %1$s yazılımı içindir</string>
-    <string name="fw_wrong_msg">Aracınızda %2$s yazılımı var: araç hizmetleri farklı ve bu sürüm (%1$s) bağlanamıyor. %2$s için MG4 Launcher\'ı buradan yükleyin:</string>
     <string name="news_title">MG4 Launcher %1$s yenilikleri</string>
     <string name="news_sub" formatted="false">Yeni seçenekler ayarlarda (araç paneline uzun basın).</string>
     <string name="news_1" formatted="false">Şarj düğmeleri: sınır, AC akımı ve şarjı veya V2L\'yi başlat/durdur</string>
@@ -276,7 +266,14 @@
     <string name="news_5" formatted="false">Saatin yanında tarih, basınç birimi ve isteğe bağlı arka sis düğmesi</string>
     <string name="news_6" formatted="false">«Açılıştan sonra Ana ekrana otomatik bas» seçeneği ve Lehçe dili</string>
     <string name="radio_protected" formatted="false">Bu yazılımın radyo hizmeti launcher\'a yanıt vermiyor: Radyo uygulamasını kullanın</string>
+    <string name="radio_waiting" formatted="false">Radyo başlatılıyor: Radyo uygulamasını açmak için dokunun</string>
+    <string name="radio_repairing" formatted="false">Radyo onarılıyor, birkaç dakika bekleyin</string>
     <string name="news_7" formatted="false">Açılışta sabit ana ekran ve günlüklerden birçok düzeltme</string>
+    <string name="news9_1" formatted="false">Ana ekran açılışta kendiliğinden açılır, çökme olmadan</string>
+    <string name="news9_2" formatted="false">Eski yazılımlarda daha kararlı radyo, otomatik onarımla</string>
+    <string name="news9_3" formatted="false">Çevrimiçi müzikte Amazon Music</string>
+    <string name="news9_4" formatted="false">Büyük batarya yüzdesi (seçenek) ve daha okunaklı sıcaklık</string>
+    <string name="news9_5" formatted="false">Launcher\'ı ayarlardan kaldırma</string>
     <string name="btn_change" formatted="false">Değiştir</string>
     <string name="btn_update" formatted="false">Güncelle</string>
     <string name="btn_delete" formatted="false">Sil</string>
@@ -325,15 +322,16 @@
     <string name="tile_on_m" formatted="false">Açık</string>
     <string name="tile_off_m" formatted="false">Kapalı</string>
     <string name="tile_level">Seviye %d</string>
+    <string name="news92_1" formatted="false">Eski radyo (3A111): otomatik onarım artık bilgi-eğlence sisteminin sürekli yeniden başlamasını da durduruyor</string>
     <string name="set_wheels" formatted="false">Jantlar</string>
     <string name="wheel_16" formatted="false">16″ siyah jant kapakları</string>
     <string name="wheel_17" formatted="false">17″ Aero çift renkli</string>
     <string name="wheel_18_lux" formatted="false">18″ Luxury / Trophy</string>
     <string name="wheel_18_xpower" formatted="false">18″ XPOWER</string>
-    <string name="newsv_1" formatted="false">Ayarlarda, rengin altında jant seçimi: 16″, 17″ Aero, 18″ Luxury/Trophy, 18″ XPOWER</string>
-    <string name="newsv_2" formatted="false">Daha güvenilir dış sıcaklık: geçersiz değerler (ör. -40°) artık gösterilmiyor</string>
-    <string name="newsv_3" formatted="false">İç sıcaklık gizlendi: araç bunu sağlamıyor (dış sıcaklığı gösteriyordu); kayıtlarda arıyoruz</string>
-    <string name="newsv_4" formatted="false">iPhone olarak görünen CarPlay/Android Auto adaptörleri artık tanınıyor ve başlamazsa yeniden başlatılıyor</string>
+    <string name="news93_1" formatted="false">Ayarlarda, rengin altında jant seçimi: 16″, 17″ Aero, 18″ Luxury/Trophy, 18″ XPOWER</string>
+    <string name="news93_2" formatted="false">Daha güvenilir dış sıcaklık: geçersiz değerler (ör. -40°) artık gösterilmiyor</string>
+    <string name="news93_3" formatted="false">İç sıcaklık gizlendi: araç bunu sağlamıyor (dış sıcaklığı gösteriyordu); kayıtlarda arıyoruz</string>
+    <string name="news93_4" formatted="false">iPhone olarak görünen CarPlay/Android Auto adaptörleri artık tanınıyor ve başlamazsa yeniden başlatılıyor</string>
     <string name="newsf_1" formatted="false">Fan KAPALI konumunda artık klimayı gerçekten kapatıyor (önceden 1\'e dönüyordu)</string>
     <string name="group_guida" formatted="false">Sürüş</string>
     <string name="tile_lka" formatted="false">Şerit</string>
@@ -364,6 +362,20 @@
     <string name="newsh_5" formatted="false">CarPlay / Android Auto: tek dokunuşla açılır ve telefon bağlıyken çubukta kendi simgesi olur</string>
     <string name="newsh_6" formatted="false">Ayarlar: Araç paneli ile Alt çubuk arasındaki boşluk kaldırıldı</string>
     <string name="newsh_7" formatted="false">MG4 Clima açıkken sistem klima paneli sistemin kendi komutuyla kendiliğinden kapanır</string>
+    <string name="set_apps_size" formatted="false">UYGULAMA BOYUTU</string>
+    <string name="news_v097_1" formatted="false">Uygulama ekranı için ayrı boyut: ayarlardan seçilir (daha büyük simge ve metin)</string>
+    <string name="news_v097_2" formatted="false">Dongle: günlük artık sıfırlamadan sonra dongle\'ın tekrar görünüp görünmediğini kaydeder</string>
+    <string name="news_v097_3" formatted="false">Sectigo/USERTrust güvenlik sertifikaları eklendi</string>
+    <string name="news_v098_1" formatted="false">Dongle yeniden başlatma: kabloyla bağlı telefonlar (iPhone, Android Auto) artık sıfırlanmaz, yalnızca gerçek kablosuz dongle\'lar</string>
+    <string name="news_v098_2" formatted="false">Hız izni otomatik olarak verilir; logolar, güncellemeler ve günlükler için yeni Sectigo/USERTrust kök sertifikaları</string>
+    <string name="news_v098_3" formatted="false">Android ilk kurulumu ana ekran olarak tanınır (MG ana ekranı değildir); telefonlardan ve emülatörlerden günlük gönderilmez</string>
+    <string name="tap_to_open" formatted="false">Açmak için dokun</string>
+    <string name="sec_bar" formatted="false">Çubuk ve düğmeler</string>
+    <string name="sec_bar_sub" formatted="false">Çubuk, gruplu düğmeler, 360 düğmesi</string>
+    <string name="sec_logos" formatted="false">Radyo ve logolar</string>
+    <string name="sec_logos_sub" formatted="false">Logo ülkesi, paketler, kişisel klasör</string>
+    <string name="sec_launch" formatted="false">Başlangıç ve uygulamalar</string>
+    <string name="sec_launch_sub" formatted="false">Güvenli başlangıç, diğer launcher\'lar, dongle</string>
     <string name="set_dist_unit" formatted="false">Mesafe birimi</string>
     <string name="set_dist_unit_sub" formatted="false">Menzil ve mesafelerin nasıl gösterileceği: otomatik (gösterge paneli gibi), km veya mil</string>
     <string name="set_cam360" formatted="false">360 düğmesi şunu açar</string>
@@ -379,8 +391,104 @@
     <string name="set_nav_default_sub" formatted="false">\"Git\"e dokunduğunda harita paneli neyi açar; CarPlay/Android Auto bağlıyken bir seçenek olarak da görünür</string>
     <string name="nav_default_mg" formatted="false">MG navigasyon</string>
     <string name="nav_default_phone" formatted="false">CarPlay / Android Auto</string>
+    <string name="cb_unlock" formatted="false">Soketi kilidini aç</string>
+    <string name="cb_unlock_title" formatted="false">Şarj soketinin kilidi açılsın mı?</string>
+    <string name="cb_unlock_msg" formatted="false">Komut, Şarj yönetimi sayfasındaki düğme gibi araca gönderilir.</string>
+    <string name="cb_unlock_wait" formatted="false">Araç henüz soket durumunu göndermedi: kısa süre sonra tekrar dene.</string>
+    <string name="cb_unlock_locked" formatted="false">Kilitli</string>
+    <string name="cb_unlock_unlocked" formatted="false">Kilidi açık</string>
     <string name="tile_defrost_front" formatted="false">Ön buğu giderme</string>
-    <string name="tap_to_open" formatted="false">Açmak için dokun</string>
+    <string name="news_v100_1" formatted="false">Ekrandaki Ana Sayfa düğmesi artık her zaman başlatıcıya döner, araç Ayarlarından veya başka bir uygulamadan bile</string>
+    <string name="news_v100_2" formatted="false">Şarj çubuğunda yeni \"Soketi kilidini aç\" düğmesi, göndermeden önce onay ister</string>
+    <string name="news_v100_3" formatted="false">Klima için yeni resmi simgeler (A/C, AUTO, resirkülasyon, koltuk ve direksiyon ısıtma), duruma göre renk ve arka planla, ve Ön buğu giderme kutusu</string>
+    <string name="news_v100_4" formatted="false">Yeniden düzenlenmiş ayarlar, mesafe birimi, yapılandırılabilir 360 düğmesi, kişisel logo klasörü ve varsayılan navigasyon</string>
+    <string name="notice_title" formatted="false">Duyuru</string>
+    <string name="cb_reserve" formatted="false">Zamanlı</string>
+    <string name="cb_reserve_off" formatted="false">Kapalı</string>
+    <string name="cb_reserve_enable" formatted="false">Zamanlı şarjı aç</string>
+    <string name="cb_reserve_disable" formatted="false">Zamanlı şarjı kapat</string>
+    <string name="cb_reserve_start">Başlangıç: %1$s</string>
+    <string name="cb_reserve_end">Bitiş: %1$s</string>
+    <string name="cb_reserve_title" formatted="false">Zamanlı şarj</string>
+    <string name="cb_reserve_msg" formatted="false">Kablo takılıyken araç yalnızca seçilen saat aralığında şarj olur (Şarj yönetimi sayfasındaki gibi).</string>
+    <string name="cb_reserve_pick_start" formatted="false">Başlangıç saati</string>
+    <string name="cb_reserve_pick_end" formatted="false">Bitiş saati</string>
+    <string name="set_retro_label" formatted="false">GERİ VİTES</string>
+    <string name="set_retro_return" formatted="false">Geri vitesten sonra önceki uygulamaya dön</string>
+    <string name="set_retro_return_sub" formatted="false">Kameradan önce açık olan CarPlay, Android Auto veya navigasyonu yeniden açar</string>
+    <string name="set_charge_limit" formatted="false">Şarj sınırı</string>
+    <string name="set_charge_limit_sub" formatted="false">Batarya çubuğunda ve şarj düğmelerinde; otomatikte yalnızca araç komutu destekliyorsa</string>
+    <string name="limit_auto" formatted="false">Otomatik</string>
+    <string name="limit_show" formatted="false">Göster</string>
+    <string name="limit_hide" formatted="false">Gizle</string>
+    <string name="set_top_button" formatted="false">Sağ üst düğme</string>
+    <string name="set_top_button_sub" formatted="false">Harita/Medya panelinde. \"Hiçbiri\" seçilince medya kaynakları adlarıyla görünür</string>
+    <string name="top_app" formatted="false">Bir uygulama…</string>
+    <string name="top_none" formatted="false">Hiçbiri</string>
+    <string name="top_pick_app" formatted="false">Sağ üst düğmenin uygulaması</string>
+    <string name="news_v102_1" formatted="false">Her araçta daha güvenilir gündüz/gece teması: sistem, farlar veya gün doğumu ve batımı; değişmeden önce bir dakika bekler (tünelde yanıp sönmez)</string>
+    <string name="news_v102_2" formatted="false">Geri vitesten sonra otomatik olarak CarPlay, Android Auto veya navigasyona dönülür</string>
+    <string name="news_v102_3" formatted="false">Daha güvenilir radyo ve Bluetooth: açılışta son kaynak devam eder, medya kartında Bluetooth kontrolleri ve kapak</string>
+    <string name="news_v102_4" formatted="false">Görünüm: Radyo altında FM/DAB, daha büyük lastik basıncı, \"360°\" yazısı, araçta yanan farlar, kompakt dış sıcaklık, araç destekliyorsa şarj sınırı ve zamanlı şarj</string>
+    <string name="news_v102_5" formatted="false">Launcher güncellemeleri kendisi denetler ve önemli duyurular gösterebilir; Güncelle düğmesi ana ekranda da çalışır</string>
+    <string name="set_tile" formatted="false">Klimanın yanındaki alan</string>
+    <string name="set_tile_sub" formatted="false">Alt çubukta: müzik, telefon favorileri veya uygulamaların</string>
+    <string name="tile_media" formatted="false">Medya (şimdiki gibi)</string>
+    <string name="tile_phone" formatted="false">Telefon favorileri</string>
+    <string name="tile_apps" formatted="false">Uygulama kısayolları</string>
+    <string name="tile_connect_phone" formatted="false">Telefonu bağla</string>
+    <string name="tile_hint_contacts" formatted="false">Favorileri ayarlardan seç</string>
+    <string name="tile_hint_apps" formatted="false">Uygulamaları ayarlardan seç</string>
+    <string name="tile_call_failed" formatted="false">Arama yapılamadı</string>
+    <string name="tile_no_contacts" formatted="false">Rehber boş: telefonu bağla ve eşitlenmesini bekle</string>
+    <string name="tile_pick_contacts" formatted="false">Telefon favorileri</string>
+    <string name="tile_pick_contacts_sub" formatted="false">En fazla 6 kişi: çubukta bir dokunuşla arama başlar</string>
+    <string name="tile_pick_apps" formatted="false">Uygulama kısayolları</string>
+    <string name="tile_pick_apps_sub" formatted="false">En fazla 6 uygulama, dokunduğun sırayla</string>
+    <string name="check_title" formatted="false">İşlev kontrolü</string>
+    <string name="check_sub" formatted="false">Bu araçta neyin çalıştığını yalnızca okuyarak kontrol eder: komut gönderilmez</string>
+    <string name="check_start" formatted="false">Başlat</string>
+    <string name="check_running" formatted="false">Kontrol ediliyor…</string>
+    <string name="check_ok" formatted="false">Çalışıyor</string>
+    <string name="check_fail" formatted="false">Çalışmıyor</string>
+    <string name="check_absent" formatted="false">Bu araçta yok</string>
+    <string name="check_skipped" formatted="false">Atlandı</string>
+    <string name="check_press_keys">Direksiyonda ileri veya geri tuşuna bas (%s sn)</string>
+    <string name="check_summary">%1$s tamam · %2$s hata · %3$s yok</string>
+    <string name="check_send_log" formatted="false">Günlüğü gönder</string>
+    <string name="check_log_sent" formatted="false">Günlük gönderiliyor</string>
+    <string name="chk_vehicle" formatted="false">Araç hizmeti</string>
+    <string name="chk_climate" formatted="false">Klima</string>
+    <string name="chk_radio" formatted="false">Radyo hizmeti</string>
+    <string name="chk_media" formatted="false">Medya hizmeti</string>
+    <string name="chk_bms" formatted="false">Batarya (BMS)</string>
+    <string name="chk_projection" formatted="false">CarPlay / Android Auto</string>
+    <string name="chk_out_temp" formatted="false">Dış sıcaklık</string>
+    <string name="chk_in_temp" formatted="false">İç sıcaklık</string>
+    <string name="chk_theme" formatted="false">Gündüz/gece teması</string>
+    <string name="chk_usb" formatted="false">USB bağlantı noktaları</string>
+    <string name="chk_bt" formatted="false">Bluetooth ve şarkı adları</string>
+    <string name="chk_stations" formatted="false">İstasyon listesi</string>
+    <string name="chk_keys" formatted="false">Direksiyon tuşları</string>
+    <string name="chk_sys_button" formatted="false">Klima düğmesi</string>
+    <string name="chk_comfort" formatted="false">Isıtmalı koltuk ve direksiyon</string>
+    <string name="chk_update" formatted="false">Güncellemelere erişiliyor</string>
+    <string name="chk_logs" formatted="false">Günlük gönderimi</string>
+    <string name="chk_notices" formatted="false">Uzaktan duyurular</string>
+    <string name="set_top_order" formatted="false">Üstteki sıra</string>
+    <string name="set_top_order_sub" formatted="false">Sağ paneldeki üst kontrollerin sırası</string>
+    <string name="top_order_current" formatted="false">Kaynaklar, sonra Harita/Medya (şimdiki)</string>
+    <string name="top_order_swapped" formatted="false">Harita/Medya, sonra Kaynaklar</string>
+    <string name="news_v103_1" formatted="false">Gündüz/gece teması: sistemi \"gece\"de takılı kalan araçlarda artık gündüz gece teması yok</string>
+    <string name="news_v103_2" formatted="false">FM/DAB daha büyük ve yeniden radyo kontrollerinin yanında; Harita/Medya’yı kaynaklardan önce koyma seçeneği</string>
+    <string name="news_v103_3" formatted="false">Klimanın yanındaki alan telefon favorilerini veya uygulamalarını gösterebilir</string>
+    <string name="news_v103_4" formatted="false">İstasyon listesi her zaman güncel, Bluetooth yalnızca telefon bağlıyken başlar, araç vermiyorsa iç sıcaklık gizlenir</string>
+    <string name="news_v103_5" formatted="false">Ayarlar → Sistem içinde yeni \"İşlev kontrolü\": bu araçta neyin çalıştığını gösterir</string>
+    <string name="fw_wrong_msg">Aracınızda %2$s yazılımı var: araç hizmetleri farklı ve bu sürüm (%1$s) bağlanamıyor. %2$s için MG4 Launcher\'ı buradan yükleyin:</string>
+    <string name="fw_wrong_title">Bu sürüm %1$s yazılımı içindir</string>
+    <string name="news_v027_1" formatted="false">Uygulama ekranı için ayrı boyut: ayarlardan seçilir (daha büyük simge ve metin)</string>
+    <string name="news_v027_2" formatted="false">Dongle: günlük artık sıfırlamadan sonra dongle\'ın tekrar görünüp görünmediğini kaydeder</string>
+    <string name="news_v027_3" formatted="false">Sectigo/USERTrust güvenlik sertifikaları eklendi</string>
     <string name="news_v030_1" formatted="false">Ekranın dokunmatik Ana Sayfa düğmesi: düzeltildi, artık her zaman başlatıcıya döner</string>
     <string name="news_v030_2" formatted="false">Fiziksel Ana Sayfa düğmesi: artık açık pencereleri (ayarlar, uygulamalar) ana ekranın üstünde bırakmak yerine kapatıyor</string>
     <string name="news_v030_3" formatted="false">Menzil ve navigasyon mesafeleri için yapılandırılabilir mesafe birimi (otomatik, km veya mil)</string>
@@ -388,39 +496,8 @@
     <string name="news_v030_5" formatted="false">CarPlay / Android Auto: artık sadece düğme değil, tüm kart açılıyor</string>
     <string name="news_v030_6" formatted="false">Yeniden düzenlenmiş ayarlar, yapılandırılabilir 360 düğmesi, kişisel logo klasörü ve varsayılan navigasyon</string>
     <string name="news_v030_7" formatted="false">Şarj çubuğunda yeni \"Soketi kilidini aç\" düğmesi, göndermeden önce onay ister</string>
-    <string name="set_apps_size" formatted="false">UYGULAMA BOYUTU</string>
-    <string name="news_v027_1" formatted="false">Uygulama ekranı için ayrı boyut: ayarlardan seçilir (daha büyük simge ve metin)</string>
-    <string name="news_v027_2" formatted="false">Dongle: günlük artık sıfırlamadan sonra dongle\'ın tekrar görünüp görünmediğini kaydeder</string>
-    <string name="news_v027_3" formatted="false">Sectigo/USERTrust güvenlik sertifikaları eklendi</string>
-    <string name="news_v098_1" formatted="false">Dongle yeniden başlatma: kabloyla bağlı telefonlar (iPhone, Android Auto) artık sıfırlanmaz, yalnızca gerçek kablosuz dongle\'lar</string>
-    <string name="news_v098_2" formatted="false">Hız izni otomatik olarak verilir; logolar, güncellemeler ve günlükler için yeni Sectigo/USERTrust kök sertifikaları</string>
-    <string name="news_v098_3" formatted="false">Android ilk kurulumu ana ekran olarak tanınır (MG ana ekranı değildir); telefonlardan ve emülatörlerden günlük gönderilmez</string>
-    <string name="opt_show" formatted="false">Göster</string>
-    <string name="opt_hide" formatted="false">Gizle</string>
-    <string name="set_charge_limit" formatted="false">Şarj sınırı</string>
-    <string name="set_charge_limit_sub" formatted="false">Batarya çubuğundaki işaret ve düğme. Otomatik: yalnızca araç komutu destekliyorsa</string>
-    <string name="set_retro_return" formatted="false">Geri vitesten sonra önceki uygulamaya dön</string>
-    <string name="set_retro_return_sub" formatted="false">Kamera kapandığında CarPlay, Android Auto, navigasyon veya açık olan uygulama yeniden açılır</string>
-    <string name="quick_none" formatted="false">Yok</string>
-    <string name="set_quick" formatted="false">Sağ üstteki düğme</string>
-    <string name="set_quick_sub" formatted="false">Harita ve Medya\'nın yanında. «Yok» seçilirse kaynak düğmelerinin adı her zaman görünür</string>
-    <string name="quick_pick_app" formatted="false">Sağ üst düğme için uygulama</string>
-    <string name="notice_title" formatted="false">Duyuru</string>
-    <string name="notice_important" formatted="false">Önemli duyuru</string>
-    <string name="upd_auto_failed" formatted="false">Şu anda güncellemeler denetlenemiyor: daha sonra yeniden denenecek</string>
-    <string name="cb_reserve" formatted="false">Zamanlı</string>
-    <string name="cb_reserve_title" formatted="false">Zamanlı şarj</string>
-    <string name="cb_reserve_msg" formatted="false">Aracın Enerji uygulamasındaki gibi: şarj yalnızca seçilen saat aralığında başlar</string>
-    <string name="cb_reserve_turn_on">Aç (%1$s)</string>
-    <string name="cb_reserve_turn_off" formatted="false">Kapat</string>
-    <string name="cb_reserve_start">Başlangıç: %1$s</string>
-    <string name="cb_reserve_stop">Bitiş: %1$s</string>
-    <string name="cb_reserve_pick_start" formatted="false">Başlangıç saati</string>
-    <string name="cb_reserve_pick_stop" formatted="false">Bitiş saati</string>
-    <string name="news_v032_1" formatted="false">Geri vitesten sonra launcher CarPlay, Android Auto veya önceki uygulamayı yeniden açar (kapatılabilir)</string>
-    <string name="news_v032_2" formatted="false">Medya: Radyo düğmesinin altında FM/DAB, açılışta son kaynağa devam ve daha güvenilir Bluetooth</string>
-    <string name="news_v032_3" formatted="false">Gündüz/gece teması farlara ve gün doğumu/batımına göre de; araç çiziminde yanan farlar</string>
-    <string name="news_v032_4" formatted="false">Kompakt dış sıcaklık, daha büyük lastik basınçları, daha net 360° simgeleri</string>
-    <string name="news_v032_5" formatted="false">Şarj sınırı ve zamanlı şarj yalnızca araç destekliyorsa; sağ üst düğme seçilebilir</string>
-    <string name="news_v032_6" formatted="false">Launcher güncellemeleri kendisi denetler ve önemli duyurular gösterebilir</string>
+    <string name="newsv_1" formatted="false">Ayarlarda, rengin altında jant seçimi: 16″, 17″ Aero, 18″ Luxury/Trophy, 18″ XPOWER</string>
+    <string name="newsv_2" formatted="false">Daha güvenilir dış sıcaklık: geçersiz değerler (ör. -40°) artık gösterilmiyor</string>
+    <string name="newsv_3" formatted="false">İç sıcaklık gizlendi: araç bunu sağlamıyor (dış sıcaklığı gösteriyordu); kayıtlarda arıyoruz</string>
+    <string name="newsv_4" formatted="false">iPhone olarak görünen CarPlay/Android Auto adaptörleri artık tanınıyor ve başlamazsa yeniden başlatılıyor</string>
 </resources>

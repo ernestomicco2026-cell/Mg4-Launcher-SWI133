@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-<a href="releases/MG4Launcher-SWI133-0.3.2.apk"><img alt="Scarica / Download 0.3.2" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.3.2-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
+<a href="releases/MG4Launcher-SWI133-0.3.3.apk"><img alt="Scarica / Download 0.3.3" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.3.3-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
 <a href="https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT"><img alt="Sostieni il progetto con PayPal · Support the project with PayPal" src="https://img.shields.io/badge/Sostieni%20%2F%20Support-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white"></a> <img alt="sperimentale / experimental" src="https://img.shields.io/badge/sperimentale%20%2F%20experimental-orange?style=for-the-badge">
 </p>
 
@@ -191,7 +191,7 @@ Si installa come una normale app: non serve per forza un computer. Ci sono due m
 
 #### Metodo 1 — Da chiavetta USB (senza computer)
 
-1. Copia `MG4Launcher-SWI133-0.3.2.apk` su una chiavetta USB formattata **FAT32** o **exFAT**.
+1. Copia `MG4Launcher-SWI133-0.3.3.apk` su una chiavetta USB formattata **FAT32** o **exFAT**.
 2. Inserisci la chiavetta nell'auto, apri il file manager e tocca l'APK.
 3. Se Android avvisa che non può installare app da questa fonte: tocca **Impostazioni**, attiva
    **Consenti da questa fonte** per il file manager e torna indietro.
@@ -207,7 +207,7 @@ Il firmware MG può bloccare l'installazione normale delle app: l'opzione `-f` l
 
 1. Installa:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.3.2.apk
+   adb install -r -f MG4Launcher-SWI133-0.3.3.apk
    ```
 2. Rendilo la home predefinita:
    ```bash
@@ -287,6 +287,28 @@ Anche solo **2 €** sono un aiuto prezioso per continuare a sviluppare e provar
 [![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
 
 ### Versioni
+
+#### 0.3.3
+- **Tema giorno/notte**: sulle auto dove il sistema resta sempre su "notte" il launcher se ne accorge (uiMode che non
+  cambia da 12 ore di accensione e contraddice il sole) e segue i fari e l'alba/tramonto. Niente più tema notte in
+  pieno giorno. La scelta manuale Giorno/Notte ha sempre la precedenza.
+- **FM/DAB** di nuovo accanto ai comandi della radio, come prima, e più grande.
+- **Ordine dei comandi in alto** nel riquadro destro, nuova opzione in Impostazioni → Home: "Sorgenti, poi Mappa/Media"
+  (come prima) oppure "Mappa/Media, poi Sorgenti", comodo per chi usa lo schermo con la mano destra.
+- **Riquadro accanto al clima** configurabile (Barra e pulsanti): Media come prima, fino a 6 preferiti del telefono da
+  chiamare con un tocco, oppure fino a 6 scorciatoie alle app.
+- **Radio**: l'elenco delle stazioni si aggiorna da solo dopo una ricerca e tornando dall'app Radio; se è vuoto si
+  vedono i preferiti.
+- **Bluetooth all'accensione**: la musica riparte solo quando il telefono è collegato davvero (fino a 30 s di attesa);
+  titolo e artista arrivano prima dal telefono, poi dal sistema.
+- **Temperatura interna**: Automatico / Mostra / Nascondi; se l'auto non la fornisce l'opzione sparisce da sola.
+- **Aggiornamenti**: se all'accensione la rete non c'è ancora, il controllo riparte appena arriva (o dopo 2 minuti),
+  non più dopo 6 ore.
+- **Controllo funzioni** in Impostazioni → Sistema: prova in sola lettura cosa funziona su questa auto (servizi,
+  temperature, tema, USB, Bluetooth, stazioni, tasti al volante, pannello clima, aggiornamenti, log) e permette di
+  inviare il log.
+- Corretto un arresto all'apertura di un'app senza nome di attività; se l'app scelta per un pulsante non c'è più torna
+  il pulsante predefinito.
 
 #### 0.3.2
 - **Dopo la retromarcia** il launcher riapre l'app che avevi davanti: CarPlay, Android Auto (anche da box o dongle),
@@ -560,7 +582,7 @@ It installs like a normal app, so a computer isn't required. There are two ways:
 
 #### Method 1 — From a USB stick (no computer)
 
-1. Copy `MG4Launcher-SWI133-0.3.2.apk` to a USB stick formatted as **FAT32** or **exFAT**.
+1. Copy `MG4Launcher-SWI133-0.3.3.apk` to a USB stick formatted as **FAT32** or **exFAT**.
 2. Plug it into the car, open the file manager and tap the APK.
 3. If Android says it cannot install apps from this source: tap **Settings**, enable
    **Allow from this source** for the file manager and go back.
@@ -576,7 +598,7 @@ The MG firmware may block normal app installs; the `-f` option allows it.
 
 1. Install it:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.3.2.apk
+   adb install -r -f MG4Launcher-SWI133-0.3.3.apk
    ```
 2. Make it the default home:
    ```bash
@@ -657,6 +679,27 @@ Even just **€2** is a great help to keep developing and testing new versions i
 [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
 
 ### Changelog
+
+#### 0.3.3
+- **Day/night theme**: on cars where the system is always stuck on "night" the launcher now notices (uiMode that hasn't
+  changed for 12 hours of power-on and contradicts the sun) and follows the headlights and sunrise/sunset. No more
+  night theme in broad daylight. The manual Day/Night choice still takes priority.
+- **FM/DAB** back next to the radio controls, as before, and bigger.
+- **Order of the controls at the top** of the right panel, new option in Settings → Home: "Sources, then Map/Media" (as
+  before) or "Map/Media, then Sources", handy if you use the screen with your right hand.
+- **Panel next to the climate** can be configured (Bar and buttons): Media as before, up to 6 phone favourites to call
+  with one tap, or up to 6 app shortcuts.
+- **Radio**: the station list updates by itself after a search and when you come back from the Radio app; if it's
+  empty, favourites are shown.
+- **Bluetooth at start-up**: music restarts only once the phone is really connected (up to 30 s wait); title and artist
+  come from the phone first, then from the system.
+- **Inside temperature**: Automatic / Show / Hide; if the car doesn't provide it the option disappears by itself.
+- **Updates**: if there's no network yet at start-up, the check runs again as soon as it arrives (or after 2 minutes),
+  no longer after 6 hours.
+- **Feature check** in Settings → System: checks, read-only, what works on this car (services, temperatures, theme,
+  USB, Bluetooth, stations, steering wheel buttons, climate panel, updates, logs) and lets you send the log.
+- Fixed a crash when opening an app without an activity name; if the app chosen for a button is gone, the default
+  button comes back.
 
 #### 0.3.2
 - **After reversing** the launcher reopens the app you had open: CarPlay, Android Auto (also through a box or

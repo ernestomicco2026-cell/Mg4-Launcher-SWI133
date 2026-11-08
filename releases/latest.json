@@ -1,6 +1,6 @@
 {
-  "version": "0.3.2",
-  "apk": "releases/MG4Launcher-SWI133-0.3.2.apk",
-  "size": 723457,
-  "notes": "Ritorno a CarPlay/Android Auto dopo la retromarcia, ripresa della sorgente audio all'accensione, FM/DAB sotto Radio, tema giorno/notte più robusto, ricarica programmata e aggiornamenti automatici."
+  "version": "0.3.3",
+  "apk": "releases/MG4Launcher-SWI133-0.3.3.apk",
+  "size": 797185,
+  "notes": "Tema giorno/notte non più bloccato su notte, crash delle app corretto, Bluetooth che aspetta il telefono all'accensione, elenco stazioni completo, riquadro accanto al clima (media, preferiti telefono, scorciatoie), ordine in alto, FM/DAB accanto ai comandi, Controllo funzioni, aggiornamenti che riprovano quando torna la rete."
 }

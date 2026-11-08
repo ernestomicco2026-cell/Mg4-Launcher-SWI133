@@ -28,17 +28,13 @@
     <string name="log_upload_off" formatted="false">Wysyłanie logów wyłączone</string>
     <string name="log_upload_nokey" formatted="false">Wysyłanie logów niedostępne w tej wersji</string>
     <string name="sec_car" formatted="false">SAMOCHÓD</string>
-    <string name="sec_car_sub" formatted="false">Kolor, felgi, dach</string>
+    <string name="sec_car_sub" formatted="false">Kolor, felgi, dach, strona kierownicy</string>
     <string name="sec_home" formatted="false">Ekran główny</string>
-    <string name="sec_home_sub" formatted="false">Bateria, opony, temperatury</string>
+    <string name="sec_home_sub" formatted="false">Data, bateria, odległość, opony</string>
     <string name="sec_look" formatted="false">Wygląd</string>
     <string name="sec_look_sub" formatted="false">Motyw, rozmiar, język</string>
-    <string name="sec_bar" formatted="false">Bar and buttons</string>
-    <string name="sec_bar_sub" formatted="false">Bar, grouped buttons, 360 button</string>
-    <string name="sec_logos" formatted="false">Radio and logos</string>
-    <string name="sec_logos_sub" formatted="false">Logo country, packs, personal folder</string>
-    <string name="sec_launch" formatted="false">Startup and apps</string>
-    <string name="sec_launch_sub" formatted="false">Safe start, other launchers, dongle</string>
+    <string name="sec_drive" formatted="false">Jazda</string>
+    <string name="sec_drive_sub" formatted="false">Strona kierownicy, ekran MG</string>
     <string name="sec_system" formatted="false">System</string>
     <string name="sec_system_sub" formatted="false">Aktualizacje, logi, diagnostyka</string>
     <string name="btn_back" formatted="false">Wstecz</string>
@@ -58,7 +54,7 @@
     <string name="set_diag_sub" formatted="false">Wartości odczytane z samochodu i ostatnie błędy</string>
     <string name="set_diag_title" formatted="false">Diagnostyka usług samochodu</string>
     <string name="set_home_card" formatted="false">PANEL SAMOCHODU</string>
-    <string name="set_inside_sub" formatted="false">Pod zewnętrzną. Jeśli auto nie podaje wiarygodnej wartości, widać «--» (nigdy zewnętrznej zamiast niej)</string>
+    <string name="set_inside_sub" formatted="false">Pod zewnętrzną; jeśli auto jej nie podaje, widać --</string>
     <string name="set_language" formatted="false">JĘZYK</string>
     <string name="set_menu_title" formatted="false">Ustawienia</string>
     <string name="set_open_original" formatted="false">Otwórz oryginalny ekran MG</string>
@@ -222,12 +218,6 @@
     <string name="cb_limit" formatted="false">Limit ładowania</string>
     <string name="cb_current" formatted="false">Prąd AC</string>
     <string name="cb_charge" formatted="false">Ładowanie</string>
-    <string name="cb_unlock" formatted="false">Unlock socket</string>
-    <string name="cb_unlock_title" formatted="false">Unlock the charging socket?</string>
-    <string name="cb_unlock_msg" formatted="false">The command goes to the car as from the button on the Charge management page.</string>
-    <string name="cb_unlock_wait" formatted="false">The car hasn\'t sent the socket status yet: try again shortly.</string>
-    <string name="cb_unlock_locked" formatted="false">Locked</string>
-    <string name="cb_unlock_unlocked" formatted="false">Unlocked</string>
     <string name="cb_v2l" formatted="false">V2L (gniazdo zewnętrzne)</string>
     <string name="cb_start" formatted="false">Start</string>
     <string name="cb_stop" formatted="false">Stop</string>
@@ -262,11 +252,11 @@
     <string name="set_rear_fog_sub" formatted="false">Wyłącz, jeśli samochód ma już fizyczny przycisk lub pokazuje go pasek systemowy</string>
     <string name="set_auto_home" formatted="false">Naciśnij Home sam po włączeniu</string>
     <string name="set_auto_home_sub" formatted="false">Raz, po tylu sekundach, tylko gdy widać ekran MG (nigdy na kamerze, 360°, CarPlay ani podczas rozmowy)</string>
+    <string name="fw_swi69_title" formatted="false">Ta wersja jest dla oprogramowania SWI68</string>
+    <string name="fw_swi69_msg" formatted="false">Twój samochód ma oprogramowanie SWI69: usługi samochodu są inne i ta wersja nie może się połączyć. Zainstaluj MG4 Launcher dla SWI69 ze strony:</string>
     <string name="fw_other_title" formatted="false">Nie rozpoznano samochodu</string>
     <string name="fw_other_msg">Nie znaleziono aplikacji MG oprogramowania %1$s: MG4 Launcher działa tylko w systemie multimedialnym MG4. Wszystkie wersje (SWI68, SWI69, SWI132, SWI133) są tutaj:</string>
     <string name="fw_open_original" formatted="false">Otwórz oryginalny ekran</string>
-    <string name="fw_wrong_title">Ta wersja jest dla oprogramowania %1$s</string>
-    <string name="fw_wrong_msg">Twój samochód ma oprogramowanie %2$s: usługi samochodu są inne i ta wersja (%1$s) nie może się połączyć. Zainstaluj MG4 Launcher dla %2$s z:</string>
     <string name="news_title">Nowości w MG4 Launcher %1$s</string>
     <string name="news_sub" formatted="false">Nowe opcje są w ustawieniach (przytrzymaj panel samochodu).</string>
     <string name="news_1" formatted="false">Przyciski ładowania: limit, prąd AC oraz start/stop ładowania lub V2L</string>
@@ -276,7 +266,14 @@
     <string name="news_5" formatted="false">Data obok godziny, jednostka ciśnienia i przycisk tylnego światła przeciwmgłowego do wyboru</string>
     <string name="news_6" formatted="false">Opcja «Naciśnij Home sam po włączeniu» i język polski</string>
     <string name="radio_protected" formatted="false">Usługa radia w tym oprogramowaniu nie odpowiada launcherowi: użyj aplikacji Radio</string>
+    <string name="radio_waiting" formatted="false">Radio się uruchamia: dotknij, aby otworzyć aplikację Radio</string>
+    <string name="radio_repairing" formatted="false">Naprawa radia, poczekaj kilka minut</string>
     <string name="news_7" formatted="false">Stabilny ekran przy starcie i wiele poprawek z logów</string>
+    <string name="news9_1" formatted="false">Ekran główny otwiera się sam po uruchomieniu, bez awarii</string>
+    <string name="news9_2" formatted="false">Stabilniejsze radio na starszym oprogramowaniu, z automatyczną naprawą</string>
+    <string name="news9_3" formatted="false">Amazon Music w muzyce online</string>
+    <string name="news9_4" formatted="false">Duży procent baterii (opcja) i czytelniejsza temperatura</string>
+    <string name="news9_5" formatted="false">Odinstalowanie launchera w ustawieniach</string>
     <string name="btn_change" formatted="false">Zmień</string>
     <string name="btn_update" formatted="false">Aktualizuj</string>
     <string name="btn_delete" formatted="false">Usuń</string>
@@ -325,15 +322,16 @@
     <string name="tile_on_m" formatted="false">Włączony</string>
     <string name="tile_off_m" formatted="false">Wyłączony</string>
     <string name="tile_level">Poziom %d</string>
+    <string name="news92_1" formatted="false">Starsze radio (3A111): automatyczna naprawa zatrzymuje teraz także ciągłe restarty systemu multimedialnego</string>
     <string name="set_wheels" formatted="false">Felgi</string>
     <string name="wheel_16" formatted="false">16″ czarne kołpaki</string>
     <string name="wheel_17" formatted="false">17″ Aero dwukolorowe</string>
     <string name="wheel_18_lux" formatted="false">18″ Luxury / Trophy</string>
     <string name="wheel_18_xpower" formatted="false">18″ XPOWER</string>
-    <string name="newsv_1" formatted="false">Wybór felg w ustawieniach, pod kolorem: 16″, 17″ Aero, 18″ Luxury/Trophy, 18″ XPOWER</string>
-    <string name="newsv_2" formatted="false">Bardziej wiarygodna temperatura zewnętrzna: nieprawidłowe wartości (np. -40°) nie są już pokazywane</string>
-    <string name="newsv_3" formatted="false">Temperatura wewnętrzna ukryta: auto jej nie podaje (pokazywała zewnętrzną); szukamy jej w logach</string>
-    <string name="newsv_4" formatted="false">Dongle CarPlay/Android Auto widoczne jako iPhone są teraz rozpoznawane i restartowane, gdy nie startują</string>
+    <string name="news93_1" formatted="false">Wybór felg w ustawieniach, pod kolorem: 16″, 17″ Aero, 18″ Luxury/Trophy, 18″ XPOWER</string>
+    <string name="news93_2" formatted="false">Bardziej wiarygodna temperatura zewnętrzna: nieprawidłowe wartości (np. -40°) nie są już pokazywane</string>
+    <string name="news93_3" formatted="false">Temperatura wewnętrzna ukryta: auto jej nie podaje (pokazywała zewnętrzną); szukamy jej w logach</string>
+    <string name="news93_4" formatted="false">Dongle CarPlay/Android Auto widoczne jako iPhone są teraz rozpoznawane i restartowane, gdy nie startują</string>
     <string name="newsf_1" formatted="false">Wentylator na OFF teraz naprawdę wyłącza klimatyzację (wcześniej wracał do 1)</string>
     <string name="group_guida" formatted="false">Jazda</string>
     <string name="tile_lka" formatted="false">Pas ruchu</string>
@@ -364,63 +362,142 @@
     <string name="newsh_5" formatted="false">CarPlay / Android Auto: otwiera się jednym dotknięciem i ma własną ikonę na pasku, gdy telefon jest podłączony</string>
     <string name="newsh_6" formatted="false">Ustawienia: usunięto puste miejsce między Panelem auta a Dolnym paskiem</string>
     <string name="newsh_7" formatted="false">Przy otwartym MG4 Clima systemowy panel klimatyzacji zamyka się sam poleceniem systemu</string>
-    <string name="set_dist_unit" formatted="false">Distance unit</string>
-    <string name="set_dist_unit_sub" formatted="false">How to show range and distances: automatic (like the instrument cluster), km or miles</string>
-    <string name="set_cam360" formatted="false">The 360 button opens</string>
-    <string name="set_cam360_sub" formatted="false">What happens when you tap the 360 camera button in the bar</string>
-    <string name="cam360_original" formatted="false">Original 360</string>
+    <string name="set_apps_size" formatted="false">ROZMIAR APLIKACJI</string>
+    <string name="news_v097_1" formatted="false">Osobny rozmiar ekranu aplikacji: ustawiasz go w ustawieniach (większe ikony i tekst)</string>
+    <string name="news_v097_2" formatted="false">Dongle: dziennik zapisuje teraz, czy dongle pojawia się ponownie po resecie</string>
+    <string name="news_v097_3" formatted="false">Dodano certyfikaty bezpieczeństwa Sectigo/USERTrust</string>
+    <string name="news_v098_1" formatted="false">Restart dongla: telefony podłączone kablem (iPhone, Android Auto) nie są już resetowane, tylko prawdziwe dongle bezprzewodowe</string>
+    <string name="news_v098_2" formatted="false">Uprawnienie do prędkości nadawane automatycznie i nowe certyfikaty główne Sectigo/USERTrust dla logo, aktualizacji i dzienników</string>
+    <string name="news_v098_3" formatted="false">Pierwsza konfiguracja Androida rozpoznana jako ekran główny (to nie ekran MG); brak dzienników z telefonów i emulatorów</string>
+    <string name="tap_to_open" formatted="false">Dotknij, aby otworzyć</string>
+    <string name="sec_bar" formatted="false">Pasek i przyciski</string>
+    <string name="sec_bar_sub" formatted="false">Pasek, pogrupowane przyciski, przycisk 360</string>
+    <string name="sec_logos" formatted="false">Radio i logo</string>
+    <string name="sec_logos_sub" formatted="false">Kraj logo, pakiety, folder osobisty</string>
+    <string name="sec_launch" formatted="false">Uruchamianie i aplikacje</string>
+    <string name="sec_launch_sub" formatted="false">Bezpieczny start, inne launchery, dongle</string>
+    <string name="set_dist_unit" formatted="false">Jednostka odległości</string>
+    <string name="set_dist_unit_sub" formatted="false">Jak pokazywać zasięg i odległości: automatycznie (jak zestaw wskaźników), km lub mile</string>
+    <string name="set_cam360" formatted="false">Przycisk 360 otwiera</string>
+    <string name="set_cam360_sub" formatted="false">Co się dzieje po dotknięciu przycisku kamery 360 na pasku</string>
+    <string name="cam360_original" formatted="false">Oryginalny 360</string>
     <string name="cam360_mg4" formatted="false">MG4 360</string>
-    <string name="cam360_app" formatted="false">Another app</string>
-    <string name="cam360_hidden" formatted="false">Hidden</string>
-    <string name="cam360_pick_app" formatted="false">Choose the app</string>
-    <string name="set_logos_usb" formatted="false">Personal logos folder</string>
-    <string name="set_logos_usb_sub" formatted="false">Put MG4Launcher/loghi/&lt;country code&gt;.zip on a USB stick: it installs by itself, without internet</string>
-    <string name="set_nav_default" formatted="false">Default navigator</string>
-    <string name="set_nav_default_sub" formatted="false">What the map panel opens when you tap \"Go\"; with CarPlay/Android Auto connected it also appears as a choice</string>
-    <string name="nav_default_mg" formatted="false">MG navigator</string>
+    <string name="cam360_app" formatted="false">Inna aplikacja</string>
+    <string name="cam360_hidden" formatted="false">Skryty</string>
+    <string name="cam360_pick_app" formatted="false">Wybierz aplikację</string>
+    <string name="set_logos_usb" formatted="false">Folder osobistych logo</string>
+    <string name="set_logos_usb_sub" formatted="false">Umieść MG4Launcher/loghi/&lt;kod kraju&gt;.zip na pamięci USB: instaluje się sam, bez internetu</string>
+    <string name="set_nav_default" formatted="false">Domyślna nawigacja</string>
+    <string name="set_nav_default_sub" formatted="false">Co otwiera panel mapy po dotknięciu „Jedź\"; po podłączeniu CarPlay/Android Auto pojawia się też jako opcja</string>
+    <string name="nav_default_mg" formatted="false">Nawigacja MG</string>
     <string name="nav_default_phone" formatted="false">CarPlay / Android Auto</string>
-    <string name="tile_defrost_front" formatted="false">Front defrost</string>
-    <string name="tap_to_open" formatted="false">Tap to open</string>
-    <string name="news_v030_1" formatted="false">Screen\'s touch Home button: fixed, now always returns to the launcher</string>
-    <string name="news_v030_2" formatted="false">Physical Home button: now closes any open window (settings, apps) instead of leaving it on top of the home</string>
-    <string name="news_v030_3" formatted="false">Configurable distance unit (automatic, km or miles) for range and navigator distances</string>
-    <string name="news_v030_4" formatted="false">New official climate icons (A/C, AUTO, recirculation, heated seats and steering wheel) with color and background by state, and a Front defrost tile</string>
-    <string name="news_v030_5" formatted="false">CarPlay / Android Auto: the whole card now opens it, not just the button</string>
-    <string name="news_v030_6" formatted="false">Reorganized settings, configurable 360 button, personal logos folder and default navigator</string>
-    <string name="news_v030_7" formatted="false">New \"Unlock socket\" button on the charging bar, with confirmation before sending it</string>
-    <string name="set_apps_size" formatted="false">APP SIZE</string>
-    <string name="news_v027_1" formatted="false">Separate size for the App screen: choose it in settings (larger icons and text)</string>
-    <string name="news_v027_2" formatted="false">Dongle: the log now records whether the dongle reappears after the reset</string>
-    <string name="news_v027_3" formatted="false">Sectigo/USERTrust security certificates added</string>
-    <string name="news_v098_1" formatted="false">Dongle restart: phones connected with a cable (iPhone, Android Auto) are no longer reset, only real wireless dongles</string>
-    <string name="news_v098_2" formatted="false">Speed permission granted automatically, and new Sectigo/USERTrust root certificates for logos, updates and logs</string>
-    <string name="news_v098_3" formatted="false">Android first-time setup recognized as home (not the MG home); no logs sent from phones and emulators</string>
-    <string name="opt_show" formatted="false">Pokaż</string>
-    <string name="opt_hide" formatted="false">Ukryj</string>
-    <string name="set_charge_limit" formatted="false">Limit ładowania</string>
-    <string name="set_charge_limit_sub" formatted="false">Znacznik na pasku baterii i przycisk. Automatycznie: tylko gdy auto obsługuje polecenie</string>
-    <string name="set_retro_return" formatted="false">Po cofaniu wróć do poprzedniej aplikacji</string>
-    <string name="set_retro_return_sub" formatted="false">Gdy kamera się zamyka, ponownie otwiera CarPlay, Android Auto, nawigację lub otwartą aplikację</string>
-    <string name="quick_none" formatted="false">Brak</string>
-    <string name="set_quick" formatted="false">Przycisk w prawym górnym rogu</string>
-    <string name="set_quick_sub" formatted="false">Obok Mapy i Mediów. Przy «Brak» przyciski źródeł zawsze mają podpis</string>
-    <string name="quick_pick_app" formatted="false">Aplikacja dla przycisku w prawym górnym rogu</string>
+    <string name="cb_unlock" formatted="false">Odblokuj gniazdo</string>
+    <string name="cb_unlock_title" formatted="false">Odblokować gniazdo ładowania?</string>
+    <string name="cb_unlock_msg" formatted="false">Komenda trafia do samochodu jak z przycisku na stronie Zarządzanie ładowaniem.</string>
+    <string name="cb_unlock_wait" formatted="false">Samochód jeszcze nie przesłał stanu gniazda: spróbuj ponownie za chwilę.</string>
+    <string name="cb_unlock_locked" formatted="false">Zablokowane</string>
+    <string name="cb_unlock_unlocked" formatted="false">Odblokowane</string>
+    <string name="tile_defrost_front" formatted="false">Odmrażanie przedniej szyby</string>
+    <string name="news_v100_1" formatted="false">Przycisk Home na ekranie zawsze wraca teraz do launchera, nawet z Ustawień samochodu lub innej aplikacji</string>
+    <string name="news_v100_2" formatted="false">Nowy przycisk \"Odblokuj gniazdo\" na pasku ładowania, z potwierdzeniem przed wysłaniem</string>
+    <string name="news_v100_3" formatted="false">Nowe oficjalne ikony klimatyzacji (A/C, AUTO, recyrkulacja, ogrzewane fotele i kierownica) z kolorem i tłem według stanu, oraz kafelek odmrażania przedniej szyby</string>
+    <string name="news_v100_4" formatted="false">Przeorganizowane ustawienia, jednostka odległości, konfigurowalny przycisk 360, folder osobistych logo i domyślna nawigacja</string>
     <string name="notice_title" formatted="false">Komunikat</string>
-    <string name="notice_important" formatted="false">Ważny komunikat</string>
-    <string name="upd_auto_failed" formatted="false">Nie można teraz sprawdzić aktualizacji: ponowna próba później</string>
-    <string name="cb_reserve" formatted="false">Zaplanowane</string>
-    <string name="cb_reserve_title" formatted="false">Ładowanie zaplanowane</string>
-    <string name="cb_reserve_msg" formatted="false">Jak w aplikacji Energia auta: ładowanie startuje tylko w wybranym przedziale godzin</string>
-    <string name="cb_reserve_turn_on">Włącz (%1$s)</string>
-    <string name="cb_reserve_turn_off" formatted="false">Wyłącz</string>
+    <string name="cb_reserve" formatted="false">Harmonogram</string>
+    <string name="cb_reserve_off" formatted="false">Wył.</string>
+    <string name="cb_reserve_enable" formatted="false">Włącz ładowanie według harmonogramu</string>
+    <string name="cb_reserve_disable" formatted="false">Wyłącz ładowanie według harmonogramu</string>
     <string name="cb_reserve_start">Początek: %1$s</string>
-    <string name="cb_reserve_stop">Koniec: %1$s</string>
+    <string name="cb_reserve_end">Koniec: %1$s</string>
+    <string name="cb_reserve_title" formatted="false">Ładowanie według harmonogramu</string>
+    <string name="cb_reserve_msg" formatted="false">Po podłączeniu kabla auto ładuje się tylko w wybranych godzinach, jak na stronie Zarządzanie ładowaniem.</string>
     <string name="cb_reserve_pick_start" formatted="false">Godzina rozpoczęcia</string>
-    <string name="cb_reserve_pick_stop" formatted="false">Godzina zakończenia</string>
-    <string name="news_v032_1" formatted="false">Po cofaniu launcher ponownie otwiera CarPlay, Android Auto lub poprzednią aplikację (można wyłączyć)</string>
-    <string name="news_v032_2" formatted="false">Media: FM/DAB pod przyciskiem Radio, wznowienie ostatniego źródła po uruchomieniu i pewniejszy Bluetooth</string>
-    <string name="news_v032_3" formatted="false">Motyw dzień/noc także według świateł i wschodu/zachodu słońca; zapalone światła na rysunku auta</string>
-    <string name="news_v032_4" formatted="false">Zwięzła temperatura zewnętrzna, większe ciśnienie opon, czytelniejsze ikony 360°</string>
-    <string name="news_v032_5" formatted="false">Limit i ładowanie zaplanowane tylko, gdy auto je obsługuje; przycisk w prawym górnym rogu do wyboru</string>
-    <string name="news_v032_6" formatted="false">Launcher sam sprawdza aktualizacje i może wyświetlać ważne komunikaty</string>
+    <string name="cb_reserve_pick_end" formatted="false">Godzina zakończenia</string>
+    <string name="set_retro_label" formatted="false">BIEG WSTECZNY</string>
+    <string name="set_retro_return" formatted="false">Po cofaniu wróć do poprzedniej aplikacji</string>
+    <string name="set_retro_return_sub" formatted="false">Otwiera ponownie CarPlay, Android Auto lub nawigację otwarte przed kamerą</string>
+    <string name="set_charge_limit" formatted="false">Limit ładowania</string>
+    <string name="set_charge_limit_sub" formatted="false">Na pasku baterii i wśród przycisków ładowania; w trybie automatycznym tylko, jeśli auto obsługuje to polecenie</string>
+    <string name="limit_auto" formatted="false">Automatycznie</string>
+    <string name="limit_show" formatted="false">Pokaż</string>
+    <string name="limit_hide" formatted="false">Ukryj</string>
+    <string name="set_top_button" formatted="false">Przycisk w prawym górnym rogu</string>
+    <string name="set_top_button_sub" formatted="false">W panelu Mapa/Multimedia. Przy „Brak” źródła multimediów zawsze mają podpis</string>
+    <string name="top_app" formatted="false">Aplikacja…</string>
+    <string name="top_none" formatted="false">Brak</string>
+    <string name="top_pick_app" formatted="false">Aplikacja przycisku w prawym górnym rogu</string>
+    <string name="news_v102_1" formatted="false">Bardziej niezawodny motyw dzień/noc w każdym aucie: system, światła lub wschód i zachód słońca, z minutą oczekiwania przed zmianą (bez migania w tunelach)</string>
+    <string name="news_v102_2" formatted="false">Po cofaniu automatyczny powrót do CarPlay, Android Auto lub nawigacji</string>
+    <string name="news_v102_3" formatted="false">Bardziej niezawodne radio i Bluetooth: po uruchomieniu wraca ostatnie źródło, sterowanie i okładka Bluetooth w karcie multimediów</string>
+    <string name="news_v102_4" formatted="false">Wygląd: FM/DAB pod Radiem, większe ciśnienie opon, napis „360°”, światła na aucie, zwięzła temperatura zewnętrzna, limit i harmonogram ładowania, jeśli auto je obsługuje</string>
+    <string name="news_v102_5" formatted="false">Launcher sam sprawdza aktualizacje i może pokazywać ważne komunikaty; przycisk Aktualizuj działa też na ekranie głównym</string>
+    <string name="set_tile" formatted="false">Pole obok klimatyzacji</string>
+    <string name="set_tile_sub" formatted="false">Na dolnym pasku: muzyka, ulubione z telefonu lub twoje aplikacje</string>
+    <string name="tile_media" formatted="false">Media (jak teraz)</string>
+    <string name="tile_phone" formatted="false">Ulubione z telefonu</string>
+    <string name="tile_apps" formatted="false">Skróty aplikacji</string>
+    <string name="tile_connect_phone" formatted="false">Połącz telefon</string>
+    <string name="tile_hint_contacts" formatted="false">Wybierz ulubione w ustawieniach</string>
+    <string name="tile_hint_apps" formatted="false">Wybierz aplikacje w ustawieniach</string>
+    <string name="tile_call_failed" formatted="false">Nie udało się zadzwonić</string>
+    <string name="tile_no_contacts" formatted="false">Książka telefoniczna pusta: połącz telefon i poczekaj na synchronizację</string>
+    <string name="tile_pick_contacts" formatted="false">Ulubione z telefonu</string>
+    <string name="tile_pick_contacts_sub" formatted="false">Do 6 kontaktów: jedno dotknięcie na pasku i rusza połączenie</string>
+    <string name="tile_pick_apps" formatted="false">Skróty aplikacji</string>
+    <string name="tile_pick_apps_sub" formatted="false">Do 6 aplikacji, w kolejności dotykania</string>
+    <string name="check_title" formatted="false">Kontrola funkcji</string>
+    <string name="check_sub" formatted="false">Sprawdza, co działa w tym aucie, tylko odczytując: żadne polecenia nie są wysyłane</string>
+    <string name="check_start" formatted="false">Rozpocznij</string>
+    <string name="check_running" formatted="false">Trwa sprawdzanie…</string>
+    <string name="check_ok" formatted="false">Działa</string>
+    <string name="check_fail" formatted="false">Nie działa</string>
+    <string name="check_absent" formatted="false">Brak w tym aucie</string>
+    <string name="check_skipped" formatted="false">Pominięto</string>
+    <string name="check_press_keys">Naciśnij dalej lub wstecz na kierownicy (%s s)</string>
+    <string name="check_summary">%1$s ok · %2$s błędów · %3$s brak</string>
+    <string name="check_send_log" formatted="false">Wyślij dziennik</string>
+    <string name="check_log_sent" formatted="false">Wysyłanie dziennika</string>
+    <string name="chk_vehicle" formatted="false">Usługa pojazdu</string>
+    <string name="chk_climate" formatted="false">Klimatyzacja</string>
+    <string name="chk_radio" formatted="false">Usługa radia</string>
+    <string name="chk_media" formatted="false">Usługa multimediów</string>
+    <string name="chk_bms" formatted="false">Bateria (BMS)</string>
+    <string name="chk_projection" formatted="false">CarPlay / Android Auto</string>
+    <string name="chk_out_temp" formatted="false">Temperatura zewnętrzna</string>
+    <string name="chk_in_temp" formatted="false">Temperatura wewnętrzna</string>
+    <string name="chk_theme" formatted="false">Motyw dzień/noc</string>
+    <string name="chk_usb" formatted="false">Porty USB</string>
+    <string name="chk_bt" formatted="false">Bluetooth i tytuły utworów</string>
+    <string name="chk_stations" formatted="false">Lista stacji</string>
+    <string name="chk_keys" formatted="false">Przyciski na kierownicy</string>
+    <string name="chk_sys_button" formatted="false">Przycisk klimatyzacji</string>
+    <string name="chk_comfort" formatted="false">Podgrzewane fotele i kierownica</string>
+    <string name="chk_update" formatted="false">Aktualizacje dostępne</string>
+    <string name="chk_logs" formatted="false">Wysyłanie dzienników</string>
+    <string name="chk_notices" formatted="false">Komunikaty zdalne</string>
+    <string name="set_top_order" formatted="false">Kolejność u góry</string>
+    <string name="set_top_order_sub" formatted="false">Kolejność przycisków u góry prawego panelu</string>
+    <string name="top_order_current" formatted="false">Źródła, potem Mapa/Media (obecnie)</string>
+    <string name="top_order_swapped" formatted="false">Mapa/Media, potem Źródła</string>
+    <string name="news_v103_1" formatted="false">Motyw dzień/noc: koniec z motywem nocnym w biały dzień w autach, w których system utknął na „noc”</string>
+    <string name="news_v103_2" formatted="false">FM/DAB większe i znów obok przycisków radia; nowa opcja, by Mapa/Media była przed źródłami</string>
+    <string name="news_v103_3" formatted="false">Pole obok klimatyzacji może pokazywać ulubione z telefonu lub twoje aplikacje</string>
+    <string name="news_v103_4" formatted="false">Lista stacji zawsze aktualna, Bluetooth startuje dopiero przy połączonym telefonie, temperatura wewnętrzna ukryta, jeśli auto jej nie podaje</string>
+    <string name="news_v103_5" formatted="false">Nowa „Kontrola funkcji” w Ustawienia → System: pokazuje, co działa w tym aucie</string>
+    <string name="fw_wrong_msg">Twój samochód ma oprogramowanie %2$s: usługi samochodu są inne i ta wersja (%1$s) nie może się połączyć. Zainstaluj MG4 Launcher dla %2$s z:</string>
+    <string name="fw_wrong_title">Ta wersja jest dla oprogramowania %1$s</string>
+    <string name="news_v027_1" formatted="false">Osobny rozmiar ekranu aplikacji: ustawiasz go w ustawieniach (większe ikony i tekst)</string>
+    <string name="news_v027_2" formatted="false">Dongle: dziennik zapisuje teraz, czy dongle pojawia się ponownie po resecie</string>
+    <string name="news_v027_3" formatted="false">Dodano certyfikaty bezpieczeństwa Sectigo/USERTrust</string>
+    <string name="news_v030_1" formatted="false">Dotykowy przycisk Home na ekranie: poprawiony, zawsze wraca do launchera</string>
+    <string name="news_v030_2" formatted="false">Fizyczny przycisk Home: zamyka otwarte okna (ustawienia, aplikacje) zamiast zostawiać je nad ekranem głównym</string>
+    <string name="news_v030_3" formatted="false">Konfigurowalna jednostka odległości (automatycznie, km lub mile) dla zasięgu i odległości nawigacji</string>
+    <string name="news_v030_4" formatted="false">Nowe oficjalne ikony klimatyzacji (A/C, AUTO, obieg, podgrzewanie foteli i kierownicy) z kolorem i tłem zależnym od stanu oraz kafelek odmrażania przedniej szyby</string>
+    <string name="news_v030_5" formatted="false">CarPlay / Android Auto: cała karta otwiera połączenie, nie tylko przycisk</string>
+    <string name="news_v030_6" formatted="false">Przeorganizowane ustawienia, konfigurowalny przycisk 360, folder własnych logo i domyślna nawigacja</string>
+    <string name="news_v030_7" formatted="false">Nowy przycisk „Odblokuj gniazdo” na pasku ładowania, z potwierdzeniem przed wysłaniem</string>
+    <string name="newsv_1" formatted="false">Wybór felg w ustawieniach, pod kolorem: 16″, 17″ Aero, 18″ Luxury/Trophy, 18″ XPOWER</string>
+    <string name="newsv_2" formatted="false">Bardziej wiarygodna temperatura zewnętrzna: nieprawidłowe wartości (np. -40°) nie są już pokazywane</string>
+    <string name="newsv_3" formatted="false">Temperatura wewnętrzna ukryta: auto jej nie podaje (pokazywała zewnętrzną); szukamy jej w logach</string>
+    <string name="newsv_4" formatted="false">Dongle CarPlay/Android Auto widoczne jako iPhone są teraz rozpoznawane i restartowane, gdy nie startują</string>
 </resources>

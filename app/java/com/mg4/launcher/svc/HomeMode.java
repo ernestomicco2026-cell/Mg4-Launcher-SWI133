@@ -129,7 +129,6 @@ public final class HomeMode {
     }
 
     public static void openOurs(Context c) {
-        RetroReturn.noteBroughtBy("HomeMode.openOurs (avvio sicuro / ripresa all'accensione)");
         try {
             c.startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(HomeDefault.ours(c))
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));

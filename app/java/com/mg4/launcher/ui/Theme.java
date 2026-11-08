@@ -1,7 +1,6 @@
 package com.mg4.launcher.ui;
 
 import android.content.Context;
-import android.content.res.Configuration;
 
 /** Colori del launcher (stessi valori del mockup approvato). */
 public final class Theme {
@@ -24,35 +23,23 @@ public final class Theme {
         onAccent = luminance(accent) > 0.6 ? 0xFF111318 : 0xFFFFFFFF;
     }
 
-    /** 0.3.0: ultimo tema applicato e quando è cambiato (per la diagnostica tema.stato). */
+    /** 1.0.0: ultimo tema applicato e quando è cambiato. */
     private static Boolean lastDay;
     private static String lastChange = "—";
 
+    /**
+     * Tema da usare. La scelta manuale Giorno/Notte ha sempre la precedenza; in automatico decide DayNight (1.0.2:
+     * sistema se affidabile, poi fari, poi alba/tramonto, con 60 s di conferma prima di ogni cambio).
+     */
     public static Theme resolve(Context c, Prefs p) {
+        boolean day = wouldBeDay(c, p);
         String mode = p.themeMode();
-        boolean day;
-        String source;
-        if (Prefs.THEME_DAY.equals(mode)) {
-            day = true;
-            source = "scelta Giorno";
-        } else if (Prefs.THEME_NIGHT.equals(mode)) {
-            day = false;
-            source = "scelta Notte";
-        } else {
-            // 0.3.2 (punto 1): catena di fonti uiMode → fari → alba/tramonto, con 60 s di conferma (svc.DayNight)
-            day = com.mg4.launcher.svc.DayNight.appliedDay(c);
-            source = "automatico";
-        }
         if (lastDay == null || lastDay != day) {
             lastChange = new java.text.SimpleDateFormat("dd/MM HH:mm:ss", java.util.Locale.ITALY).format(new java.util.Date());
             lastDay = day;
         }
-        int night = c.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        String read = night == Configuration.UI_MODE_NIGHT_YES ? "notte" : night == Configuration.UI_MODE_NIGHT_NO ? "giorno" : "non definito";
-        Boolean lights = com.mg4.launcher.svc.VehicleClient.lightsNow();
-        com.mg4.launcher.svc.Diag.put("tema.stato", source + " · " + com.mg4.launcher.svc.DayNight.describe() + " · uiMode " + read
-                + " · fari " + (lights == null ? "non leggibili" : lights ? "accesi" : "spenti")
-                + " · applicato " + (day ? "giorno" : "notte") + " · ultimo cambio " + lastChange);
+        com.mg4.launcher.svc.Diag.put("tema.scelta", (Prefs.THEME_DAY.equals(mode) ? "scelta Giorno" : Prefs.THEME_NIGHT.equals(mode)
+                ? "scelta Notte" : "automatico") + " · applicato " + (day ? "giorno" : "notte") + " · ricostruito " + lastChange);
         return new Theme(day);
     }
 
@@ -61,7 +48,7 @@ public final class Theme {
         String mode = p.themeMode();
         if (Prefs.THEME_DAY.equals(mode)) return true;
         if (Prefs.THEME_NIGHT.equals(mode)) return false;
-        return com.mg4.launcher.svc.DayNight.appliedDay(c);
+        return com.mg4.launcher.svc.DayNight.get(c).isDay();
     }
 
     private static double luminance(int c) {

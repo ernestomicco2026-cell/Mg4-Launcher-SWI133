@@ -86,14 +86,6 @@ public final class BootAccessibility extends AccessibilityService {
         }
     };
 
-    /** 0.3.2: l'AVM annuncia la chiusura della telecamera (com.saicmotor.360camera.close), come la riceve la home MG. */
-    private final BroadcastReceiver cameraClose = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context c, Intent i) {
-            RetroReturn.cameraClosedBroadcast();
-        }
-    };
-
     // ---- "Premi Home da solo dopo l'accensione" (opzione) ---------------------------------------
 
     private final Runnable autoHome = this::autoHomeNow;
@@ -132,7 +124,6 @@ public final class BootAccessibility extends AccessibilityService {
             }
             result = "non serviva (launcher già davanti)";
         } else if (BootWatcher.MG_HOME.equals(top)) {
-            RetroReturn.noteBroughtBy("\"Premi Home dopo l'accensione\" (c'era la home MG)");
             boolean ok = performGlobalAction(GLOBAL_ACTION_HOME);
             result = ok ? "premuto Home (c'era la home MG)" : "Home non riuscito";
         } else {
@@ -200,10 +191,6 @@ public final class BootAccessibility extends AccessibilityService {
             registerReceiver(screenOn, new IntentFilter(Intent.ACTION_SCREEN_ON));
         } catch (Throwable ignored) {
         }
-        try {
-            registerReceiver(cameraClose, new IntentFilter(RetroReturn.CAMERA_CLOSE));
-        } catch (Throwable ignored) {
-        }
         h.postDelayed(expiry, EXPIRY_CHECK_MS);
         // 0.9.6: avvio sicuro riconfermato a ogni accensione; se la home MG non compare, si apre comunque il launcher
         new Thread(() -> HomeLock.apply(this, "accensione"), "mg4-homelock").start();
@@ -222,13 +209,8 @@ public final class BootAccessibility extends AccessibilityService {
         if (e.getEventType() != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return;
         if (!started || !StartGuard.a11yConnected) return;   // firmware sbagliato o utente non ancora sbloccato
         String pkg = e.getPackageName().toString();
+        RetroReturn.onForeground(this, pkg);   // 1.0.2: prima di StartGuard, che altrimenti riaprirebbe il launcher
         StartGuard.onForeground(this, pkg);
-        // 0.3.2 (punto 5): telecamera della retromarcia aperta/chiusa → ritorno all'app di prima
-        try {
-            RetroReturn.onForeground(this, pkg, e.getClassName() == null ? null : e.getClassName().toString());
-        } catch (Throwable t) {
-            Diag.error("retro.ritorno", t.toString());
-        }
         // il nostro launcher deve restare in primo piano 5 s: si ricontrolla senza aspettare un altro evento
         if (getPackageName().equals(pkg) && StartGuard.windowOpen()) {
             h.postDelayed(() -> StartGuard.onForeground(this, StartGuard.topPackage(this)), 5200);
@@ -264,8 +246,7 @@ public final class BootAccessibility extends AccessibilityService {
         if (!SYSTEMUI_PKG.equals(e.getPackageName().toString())) return;
         String label = dockHomeLabel();
         if (label == null || e.getText() == null || e.getText().isEmpty() || !label.contentEquals(e.getText().get(0))) return;
-        RetroReturn.homePressed();   // 0.3.2: l'utente vuole la home, niente ritorno automatico dopo la telecamera
-        RetroReturn.noteBroughtBy("casetta del dock (tasto Home)");
+        RetroReturn.userPressedHome("casetta del dock");
         if (getPackageName().equals(StartGuard.topPackage(this))) return;   // siamo già davanti, niente da fare
         h.postDelayed(() -> {
             if (getPackageName().equals(StartGuard.topPackage(this))) return;
@@ -286,10 +267,6 @@ public final class BootAccessibility extends AccessibilityService {
         if (started) {
             try {
                 unregisterReceiver(screenOn);
-            } catch (Throwable ignored) {
-            }
-            try {
-                unregisterReceiver(cameraClose);
             } catch (Throwable ignored) {
             }
         }

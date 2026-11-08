@@ -13,11 +13,6 @@ public final class Confirm {
     private Confirm() {}
 
     public static void show(FrameLayout root, Theme t, String title, String msg, String cancel, String ok, Runnable onOk) {
-        show(root, t, title, msg, cancel, ok, onOk, null);
-    }
-
-    /** Come sopra; onCancel (facoltativo) quando si preme il primo pulsante. ok null = un solo pulsante. */
-    public static void show(FrameLayout root, Theme t, String title, String msg, String cancel, String ok, Runnable onOk, Runnable onCancel) {
         Context c = root.getContext();
         FrameLayout dim = new FrameLayout(c);
         dim.setBackgroundColor(t.day ? 0x66000000 : 0xB3000000);
@@ -32,14 +27,46 @@ public final class Confirm {
         card.addView(m, Ui.margins(new LinearLayout.LayoutParams(-1, -2), 0, Ui.dp(c, 16), 0, 0));
         LinearLayout btns = Ui.row(c);
         btns.setGravity(Gravity.END);
-        btns.addView(button(c, t, cancel, ok == null, v -> {
-            ((ViewGroup) dim.getParent()).removeView(dim);
-            if (onCancel != null) onCancel.run();
-        }), Ui.lp(-2, Ui.tp(c, 60)));
-        if (ok != null) btns.addView(button(c, t, ok, true, v -> {
+        btns.addView(button(c, t, cancel, false, v -> ((ViewGroup) dim.getParent()).removeView(dim)), Ui.lp(-2, Ui.tp(c, 60)));
+        btns.addView(button(c, t, ok, true, v -> {
             ((ViewGroup) dim.getParent()).removeView(dim);
             onOk.run();
         }), Ui.margins(Ui.lp(-2, Ui.tp(c, 60)), Ui.dp(c, 12), 0, 0, 0));
+        card.addView(btns, Ui.margins(new LinearLayout.LayoutParams(-1, -2), 0, Ui.dp(c, 28), 0, 0));
+        dim.addView(card, new FrameLayout.LayoutParams(Ui.dp(c, 980), -2, Gravity.CENTER));
+        root.addView(dim, new FrameLayout.LayoutParams(-1, -1));
+    }
+
+    /**
+     * 1.0.2: come show, ma con un'azione anche sul primo pulsante (es. avvisi da remoto: "OK" conferma la lettura).
+     * second = null: un solo pulsante.
+     */
+    public static void show2(FrameLayout root, Theme t, String title, String msg, String first, Runnable onFirst,
+                             String second, Runnable onSecond) {
+        Context c = root.getContext();
+        FrameLayout dim = new FrameLayout(c);
+        dim.setBackgroundColor(t.day ? 0x66000000 : 0xB3000000);
+        dim.setClickable(true);
+        LinearLayout card = Ui.column(c);
+        card.setBackground(Ui.round(t.panel, Ui.dp(c, 28)));
+        card.setPadding(Ui.dp(c, 40), Ui.dp(c, 34), Ui.dp(c, 40), Ui.dp(c, 30));
+        card.setClickable(true);
+        card.addView(Ui.text(c, title, 30, t.text, Ui.MEDIUM));
+        TextView m = Ui.text(c, msg, 20, t.sub, Ui.REGULAR);
+        m.setLineSpacing(0, 1.15f);
+        card.addView(m, Ui.margins(new LinearLayout.LayoutParams(-1, -2), 0, Ui.dp(c, 16), 0, 0));
+        LinearLayout btns = Ui.row(c);
+        btns.setGravity(Gravity.END);
+        btns.addView(button(c, t, first, second == null, v -> {
+            if (dim.getParent() != null) ((ViewGroup) dim.getParent()).removeView(dim);
+            if (onFirst != null) onFirst.run();
+        }), Ui.lp(-2, Ui.tp(c, 60)));
+        if (second != null) {
+            btns.addView(button(c, t, second, true, v -> {
+                if (dim.getParent() != null) ((ViewGroup) dim.getParent()).removeView(dim);
+                if (onSecond != null) onSecond.run();
+            }), Ui.margins(Ui.lp(-2, Ui.tp(c, 60)), Ui.dp(c, 12), 0, 0, 0));
+        }
         card.addView(btns, Ui.margins(new LinearLayout.LayoutParams(-1, -2), 0, Ui.dp(c, 28), 0, 0));
         dim.addView(card, new FrameLayout.LayoutParams(Ui.dp(c, 980), -2, Gravity.CENTER));
         root.addView(dim, new FrameLayout.LayoutParams(-1, -1));
@@ -255,6 +282,73 @@ public final class Confirm {
             java.util.List<Integer> out = new java.util.ArrayList<>();
             for (int i = 1; i < on.length; i++) if (on[i]) out.add(i);
             onOk.chosen(out);
+        }), Ui.margins(Ui.lp(-2, Ui.tp(c, 60)), Ui.dp(c, 12), 0, 0, 0));
+        card.addView(btns, Ui.margins(new LinearLayout.LayoutParams(-1, -2), 0, Ui.dp(c, 24), 0, 0));
+        dim.addView(card, new FrameLayout.LayoutParams(Ui.dp(c, 1180), -2, Gravity.CENTER));
+        root.addView(dim, new FrameLayout.LayoutParams(-1, -1));
+    }
+
+    /**
+     * 1.0.3: scelta multipla semplice (al massimo {@code max} voci, nell'ordine in cui si toccano), in 3 colonne.
+     * onOk riceve gli indici scelti nell'ordine di scelta.
+     */
+    public static void pickMany(FrameLayout root, Theme t, String title, String msg, String[] options, java.util.List<Integer> preset,
+                                int max, String cancel, String ok, OnMulti onOk) {
+        Context c = root.getContext();
+        FrameLayout dim = new FrameLayout(c);
+        dim.setBackgroundColor(t.day ? 0x66000000 : 0xB3000000);
+        dim.setClickable(true);
+        LinearLayout card = Ui.column(c);
+        card.setBackground(Ui.round(t.panel, Ui.dp(c, 28)));
+        card.setPadding(Ui.dp(c, 40), Ui.dp(c, 34), Ui.dp(c, 40), Ui.dp(c, 30));
+        card.setClickable(true);
+        card.addView(Ui.text(c, title, 30, t.text, Ui.MEDIUM));
+        TextView m = Ui.text(c, msg == null ? "" : msg, 18, t.sub, Ui.REGULAR);
+        m.setLineSpacing(0, 1.15f);
+        card.addView(m, Ui.margins(new LinearLayout.LayoutParams(-1, -2), 0, Ui.dp(c, 12), 0, 0));
+        java.util.List<Integer> on = new java.util.ArrayList<>(preset);
+        TextView[] chips = new TextView[options.length];
+        Runnable paint = () -> {
+            for (int i = 0; i < chips.length; i++) {
+                boolean sel = on.contains(i);
+                chips[i].setTextColor(sel ? t.panel : t.text);
+                chips[i].setBackground(sel ? Ui.round(t.text, Ui.tp(c, 14)) : Ui.pressable(c, t.chip, 14 * Ui.K, t));
+            }
+        };
+        LinearLayout grid = Ui.column(c);
+        int cols = 3;
+        LinearLayout row = null;
+        for (int i = 0; i < options.length; i++) {
+            if (i % cols == 0) {
+                row = Ui.row(c);
+                grid.addView(row, Ui.margins(new LinearLayout.LayoutParams(-1, -2), 0, i == 0 ? 0 : Ui.dp(c, 10), 0, 0));
+            }
+            final Integer idx = i;
+            TextView b = Ui.oneLine(Ui.text(c, options[i], Ui.ts(18), t.text, Ui.MEDIUM));
+            b.setGravity(Gravity.CENTER_VERTICAL);
+            b.setPadding(Ui.dp(c, 18), 0, Ui.dp(c, 12), 0);
+            b.setClickable(true);
+            b.setOnClickListener(v -> {
+                if (on.contains(idx)) on.remove(idx);
+                else if (on.size() < max) on.add(idx);
+                paint.run();
+            });
+            chips[i] = b;
+            row.addView(b, Ui.margins(Ui.lpWeight(0, Ui.tp(c, 60), 1), i % cols == 0 ? 0 : Ui.dp(c, 10), 0, 0, 0));
+        }
+        int rest = (cols - options.length % cols) % cols;
+        for (int k = 0; k < rest && row != null; k++) row.addView(new View(c), Ui.margins(Ui.lpWeight(0, 1, 1), Ui.dp(c, 10), 0, 0, 0));
+        paint.run();
+        android.widget.ScrollView sv = new android.widget.ScrollView(c);
+        sv.setVerticalScrollBarEnabled(false);
+        sv.addView(grid);
+        card.addView(sv, Ui.margins(new LinearLayout.LayoutParams(-1, listMaxHeight(c, true, 420)), 0, Ui.dp(c, 22), 0, 0));
+        LinearLayout btns = Ui.row(c);
+        btns.setGravity(Gravity.END);
+        btns.addView(button(c, t, cancel, false, v -> ((ViewGroup) dim.getParent()).removeView(dim)), Ui.lp(-2, Ui.tp(c, 60)));
+        btns.addView(button(c, t, ok, true, v -> {
+            ((ViewGroup) dim.getParent()).removeView(dim);
+            onOk.chosen(new java.util.ArrayList<>(on));
         }), Ui.margins(Ui.lp(-2, Ui.tp(c, 60)), Ui.dp(c, 12), 0, 0, 0));
         card.addView(btns, Ui.margins(new LinearLayout.LayoutParams(-1, -2), 0, Ui.dp(c, 24), 0, 0));
         dim.addView(card, new FrameLayout.LayoutParams(Ui.dp(c, 1180), -2, Gravity.CENTER));

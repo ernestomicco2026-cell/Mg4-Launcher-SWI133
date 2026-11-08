@@ -81,6 +81,10 @@ public final class CarFeatures {
         boolean on = "1".equals(rear) || "1".equals(rearNew);
         Diag.put("auto.config.spiaLuci", (on ? "sì" : "no") + " · rearfog " + rear + "/" + rearNew + " · frontfog " + front + "/"
                 + frontNew + " · hiboard " + hbRear + "/" + hbFront);
+        // 0.3.3 (come la SWI68 1.0.0): il pulsante fendinebbia di sistema vive nella StatusBar di Android, che i flag
+        // SYSTEM_UI_FLAG_FULLSCREEN/HIDE_NAVIGATION nascondono per avere lo schermo intero: per questo non si vede.
+        Diag.put("luci.pulsanteSistema", "nascosto dallo schermo intero (StatusBar di Android, come sulla SWI68) · fornitore di configurazione "
+                + (hasFeatureProvider(c) ? "presente" : "assente su questa firmware"));
         indicator = on;
         return on;
     }

@@ -22,7 +22,7 @@ public final class Pager extends ViewGroup {
     private float downX, downY, lastX;
     private boolean dragging;
     private VelocityTracker vt;
-    private int page, notified;
+    private int page;
     private float offset;          // 0 = pagina 0, larghezza = pagina 1, ...
     private ValueAnimator anim;
     private Listener listener;
@@ -67,67 +67,76 @@ public final class Pager extends ViewGroup {
         return Math.max(0, (getChildCount() - 1) * getWidth());
     }
 
-    /**
-     * Va alla pagina indicata, con animazione. 0.3.2 (punto 6c): animazione più morbida e senza scatti - durante lo
-     * scorrimento le pagine si disegnano da un livello hardware (niente ridisegno di ogni vista a ogni fotogramma) e il
-     * ricaricamento della pagina App parte solo a scorrimento finito, non durante.
-     */
+    /** Va alla pagina indicata, con animazione. */
     public void show(int p, boolean animate) {
         p = Math.max(0, Math.min(getChildCount() - 1, p));
-        boolean changedPage = p != notified;
+        boolean changedPage = p != page;
         page = p;
         float target = p * getWidth();
         if (anim != null) anim.cancel();
-        if (!animate || getWidth() == 0 || Math.abs(target - offset) < 1) {
+        if (!animate || getWidth() == 0) {
             offset = target;
             apply();
-            layers(false);
-            notified = p;
-            if (changedPage && listener != null) listener.onPageChanged(p);
+            if (!dragging) layers(false);
+        } else {
+            // 1.0.2 (issue SWI69 #2): animazione più fluida. Le pagine diventano "livelli hardware" (disegnati una volta in
+            // una texture e solo spostati durante lo scorrimento) e la pagina App si ricarica a fine animazione, non
+            // all'inizio (prima il ricaricamento cadeva sui primi fotogrammi e dava lo scatto). Durata corta e morbida:
+            // con 2 GB di RAM due texture 1920×720 sono circa 11 MB e si liberano subito dopo.
+            float dist = Math.abs(target - offset);
+            long dur = Math.max(180, Math.min(320, Math.round(320 * dist / Math.max(1f, getWidth()))));
+            anim = ValueAnimator.ofFloat(offset, target);
+            anim.setDuration(dur);
+            anim.setInterpolator(new android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f));
+            anim.addUpdateListener(a -> {
+                offset = (float) a.getAnimatedValue();
+                apply();
+            });
+            final int newPage = p;
+            anim.addListener(new android.animation.AnimatorListenerAdapter() {
+                private boolean cancelled;
+
+                @Override
+                public void onAnimationStart(android.animation.Animator a) {
+                    layers(true);
+                }
+
+                @Override
+                public void onAnimationCancel(android.animation.Animator a) {
+                    cancelled = true;
+                }
+
+                @Override
+                public void onAnimationEnd(android.animation.Animator a) {
+                    if (!dragging) layers(false);
+                    // notifica anche se un trascinamento aveva interrotto l'animazione che cambiava pagina
+                    if (!cancelled && page == newPage && newPage != notified && listener != null) {
+                        notified = newPage;
+                        listener.onPageChanged(newPage);
+                    }
+                }
+            });
+            anim.start();
             return;
         }
-        final int newPage = p;
-        final boolean notify = changedPage;
-        // durata proporzionale alla distanza (trascinando a metà basta meno), al massimo 320 ms
-        float frac = Math.min(1f, Math.abs(target - offset) / Math.max(1, getWidth()));
-        anim = ValueAnimator.ofFloat(offset, target);
-        anim.setDuration(Math.max(160, Math.round(320 * frac)));
-        anim.setInterpolator(new android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f));
-        anim.addUpdateListener(a -> {
-            offset = (float) a.getAnimatedValue();
-            apply();
-        });
-        anim.addListener(new android.animation.AnimatorListenerAdapter() {
-            private boolean cancelled;
-
-            @Override
-            public void onAnimationStart(android.animation.Animator a) {
-                layers(true);
-            }
-
-            @Override
-            public void onAnimationCancel(android.animation.Animator a) {
-                cancelled = true;
-            }
-
-            @Override
-            public void onAnimationEnd(android.animation.Animator a) {
-                layers(false);
-                if (!cancelled && notify) {
-                    notified = newPage;
-                    if (listener != null) listener.onPageChanged(newPage);
-                }
-            }
-        });
-        anim.start();
+        if (p != notified && listener != null) {
+            notified = p;
+            listener.onPageChanged(p);
+        }
     }
 
-    /** Livello hardware sulle pagine solo mentre scorrono (poi si libera la memoria: l'auto ha 2 GB). */
+    /** Ultima pagina notificata al listener. */
+    private int notified;
+
+    /** Livelli hardware sulle pagine durante animazione e trascinamento. */
     private void layers(boolean on) {
         for (int i = 0; i < getChildCount(); i++) {
             View v = getChildAt(i);
             int type = on ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
-            if (v.getLayerType() != type) v.setLayerType(type, null);
+            if (v.getLayerType() != type) {
+                v.setLayerType(type, null);
+                if (on) v.buildLayer();
+            }
         }
     }
 

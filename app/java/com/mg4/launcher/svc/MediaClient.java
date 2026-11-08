@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaMetadata;
 import android.media.browse.MediaBrowser;
 import android.media.session.MediaController;
@@ -31,6 +30,13 @@ public final class MediaClient {
     // --- sorgenti del launcher -------------------------------------------------------------
     public static final int SRC_RADIO = 1, SRC_USB = 2, SRC_ONLINE = 3, SRC_BT = 4, SRC_CARPLAY = 5, SRC_AAUTO = 6;
 
+    private static volatile int lastActiveSrc;
+
+    /** Sorgente che suona adesso (per il log dei tasti al volante). */
+    public static String currentSourceName() {
+        return lastActiveSrc == 0 ? "nessuna" : sourceName(lastActiveSrc);
+    }
+
     public static String sourceName(int s) {
         switch (s) {
             case SRC_RADIO: return "RADIO";
@@ -51,18 +57,12 @@ public final class MediaClient {
     private static final String USB = "com.saicmotor.sdk.media.IMusicPlayerBinderInterface";
     private static final int USB_PLAY_OR_PAUSE = 12, USB_PLAY = 14, USB_PREV = 25, USB_NEXT = 26, USB_IS_PLAYING = 30,
             USB_DURATION = 31, USB_CURRENT = 33, USB_ADD_LISTENER = 40;
-    // SWI133: la richiesta del focus audio (USB 50, BT 15, online 9 sulla SWI68) non esiste: play lo prende da solo
+    // SWI133 (mediaservice_my24_P): la richiesta del focus audio (USB 50, BT 15, online 9 sulla SWI68) non esiste
     private static final String BT = "com.saicmotor.sdk.media.IBtMusicBinderInterface";
     private static final int BT_PAUSE = 1, BT_PLAY = 2, BT_PREV = 4, BT_NEXT = 5, BT_META = 6, BT_STATE = 9,
             BT_CONN = 11, BT_REGISTER = 13;
     private static final String ONL = "com.saicmotor.sdk.media.IOnlineMusicBinderInterface";
     private static final int ONL_PAUSE = 1, ONL_PLAY = 2, ONL_PREV = 3, ONL_NEXT = 4, ONL_MUSIC = 5, ONL_STATUS = 6;
-    // 0.3.2 (punto 9): cambio di sorgente come la home originale (MediaPlayerManager.play(tipo)): il servizio media
-    // salva la sorgente (persist.sys.cal.MediaType), prende il fuoco audio e avvia il lettore giusto
-    private static final String MP = "com.saicmotor.sdk.media.IMediaPlayerBinderInterface";
-    private static final int MP_PLAY = 2;
-    /** Tipi del servizio media: 1 radio, 5 Bluetooth, 6 online, 7 USB (8 CarPlay e 9 Android Auto non si salvano). */
-    private static final int MT_RADIO = 1, MT_BT = 5, MT_ONLINE = 6, MT_USB = 7;
     // callback
     private static final String USB_EVT = "com.saicmotor.sdk.media.callback.IMusicPlayerEventListener";
     private static final String BT_CB = "com.saicmotor.sdk.media.callback.IBtMusicCallback";
@@ -71,9 +71,20 @@ public final class MediaClient {
     private static final String RADIO_PKG = "com.saicmotor.service.radio";
     private static final String RADIO_ACTION = "com.saicmotor.service.radio.radioservice";
     private static final String RAD = "com.saicmotor.sdk.radio.IRadioAppService";
-    private static final int RAD_NEXT = 13, RAD_PREV = 14, RAD_CURRENT = 19, RAD_PLAY = 27, RAD_PAUSE = 28;
-    private static final int RAD_FAVORITES = 7, RAD_TUNE = 8, RAD_TUNE_DAB = 9, RAD_SET_MUTED = 18, RAD_DAB_LOGO = 52;
-    private static final int RAD_LAST_INFO = 21, RAD_LIST = 22, RAD_LAST_MODE = 20;
+    /** 1.0.3: callback del servizio radio (elenco stazioni e preferiti cambiati). Codici 1/2 = add/removeListener. */
+    private static final String RAD_EVT = "com.saicmotor.sdk.radio.IRadioListener";
+    private static final int RAD_ADD_LISTENER = 1, RAD_REMOVE_LISTENER = 2;
+    // codici fino a 20: uguali in tutte le versioni del servizio radio SWI68 analizzate
+    private static final int RAD_NEXT = 13, RAD_PREV = 14, RAD_CURRENT = 19;
+    private static final int RAD_FAVORITES = 7, RAD_TUNE = 8, RAD_TUNE_DAB = 9, RAD_SET_MUTED = 18;
+    /**
+     * 0.9.1: dal codice 21 in poi la tabella dipende dalla versione del servizio radio (-1 = non usare).
+     * In RadioService.3A111 manca getLastRadioInfo (21) e tutti i codici successivi sono spostati di uno: il "22"
+     * delle altre versioni (elenco stazioni) lì è orderProgram, e la chiamata del launcher salvava un promemoria DAB
+     * vuoto che faceva crashare il servizio radio (e riavviare l'infotainment) a ogni avvio.
+     */
+    private final int radLastInfo, radList, radPlay, radDabLogo;
+    private final String radTable;
     public static final int BAND_AM = 1, BAND_FM = 2, BAND_DAB = 4;
 
     // --- CarPlay / Android Auto ---------------------------------------------------------------
@@ -109,7 +120,6 @@ public final class MediaClient {
         public String radioUnit = "MHz";
         public String stationKey = "";     // stazione in onda (per evidenziarla tra i preferiti)
         public Bitmap logo;                // logo della stazione in onda, se disponibile
-        public Bitmap cover;               // 0.3.2: copertina del brano Bluetooth, se il telefono la manda
         public List<Station> favorites = new ArrayList<>();
         public List<Station> stations = new ArrayList<>();   // stazioni trovate sulla banda attuale
         public int deviceType;             // 0 nessuno, 1 CarPlay, 2 Android Auto
@@ -118,6 +128,11 @@ public final class MediaClient {
         // indicazioni di navigazione da CarPlay/AA
         public boolean tbtActive;
         public String tbtDistance = "", tbtRoad = "";
+        // ---- 1.0.2 ----
+        /** Sorgente che suona davvero secondo il servizio media (0 = nessuna / non nota). */
+        public int activeSrc;
+        /** Copertina del brano (Bluetooth: dal telefono, se la manda), null se non c'è. */
+        public Bitmap art;
     }
 
     public interface Listener {
@@ -125,7 +140,7 @@ public final class MediaClient {
     }
 
     private final Context ctx;
-    private final ServiceLink status, usb, bt, online, radio, rui, player;
+    private final ServiceLink status, usb, bt, online, radio, rui;
     private final HandlerThread thread = new HandlerThread("mg4-media");
     private Handler bg;
     private final Handler main = new Handler(Looper.getMainLooper());
@@ -148,10 +163,20 @@ public final class MediaClient {
     private volatile List<Station> stations = new ArrayList<>();
     private long stationsAt;
     private int stationsBand = -1;
+    /**
+     * Profilo radio del firmware. Vecchio (R46/R59, RadioService_eh32_P): il servizio apre i sintonizzatori una sola
+     * volta all'avvio e, se fallisce, resta senza fino al riavvio; si comanda solo quando è partito da un po'.
+     * Nuovo (R69, radioservice_eh32_eu_P): riapre i sintonizzatori da solo, comportamento normale.
+     */
+    private final boolean oldRadio;
+    private volatile long radioUpAt;
+    /** Firmware vecchio: il servizio radio crasha sul promemoria DAB rotto e la riparazione non è ancora fatta. */
+    private volatile boolean radioBroken;
+    private static final long REPAIR_EVERY_MS = 120_000;
+    private static final long OLD_RADIO_SETTLE_MS = 30_000;
 
     public MediaClient(Context c) {
         ctx = c.getApplicationContext();
-        instance = this;
         status = new ServiceLink(ctx, "media", ServiceLink.byComponent(MEDIA_PKG, MEDIA_CLS,
                 "com.saicmotor.service.media.PLAY_STATUS_ACTION"));
         usb = new ServiceLink(ctx, "media.usb", ServiceLink.byComponent(MEDIA_PKG, MEDIA_CLS,
@@ -160,29 +185,114 @@ public final class MediaClient {
                 "com.saicmotor.service.media.BT_MUSIC_ACTION"));
         online = new ServiceLink(ctx, "media.online", ServiceLink.byComponent(MEDIA_PKG, MEDIA_CLS,
                 "com.saicmotor.service.media.ONLINE_MUSIC_ACTION"));
-        player = new ServiceLink(ctx, "media.lettore", ServiceLink.byComponent(MEDIA_PKG, MEDIA_CLS,
-                "com.saicmotor.service.media.MEDIA_PLAYER_ACTION"));
         radio = new ServiceLink(ctx, "radio", ServiceLink.byAction(RADIO_PKG, RADIO_ACTION));
         // firmware SWI68 più vecchi (R46/R59, RadioService_eh32_P): il servizio radio cade se è il launcher a farlo
         // ripartire; lì ci si collega solo quando l'auto l'ha già avviato
-        String radioApk = "";
+        String radioApk = "", radioVer = "";
         try {
             radioApk = ctx.getPackageManager().getApplicationInfo(RADIO_PKG, 0).sourceDir;
         } catch (Exception ignored) {
         }
-        boolean oldRadio = radioApk.contains("RadioService_eh32_P");
+        try {
+            android.content.pm.PackageInfo pi = ctx.getPackageManager().getPackageInfo(RADIO_PKG, 0);
+            radioVer = nz(pi.versionName) + " (" + pi.versionCode + ")";
+        } catch (Exception ignored) {
+        }
+        // SWI133: un solo servizio radio (radioservice_my24_P), tabella codici standard verificata sul firmware
+        // (getLastRadioInfo 21, getRadioList 22, srcPlayRadio 27, getRadioDabLogo 52; listener 2 e 5). Niente profilo
+        // "vecchio" né riparazione dei promemoria DAB, che riguardano solo i firmware SWI68 R46/R59.
+        oldRadio = false;
+        radTable = "standard SWI133 (verificata)";
+        radLastInfo = 21; radList = 22; radPlay = 27; radDabLogo = 52;
         radio.setAutoCreate(!oldRadio);
         Diag.put("radio.servizio", (radioApk.isEmpty() ? "?" : radioApk.substring(radioApk.lastIndexOf('/') + 1))
                 + (oldRadio ? " · firmware vecchio: collegamento senza avvio" : ""));
+        Diag.put("radio.versione", radioVer.isEmpty() ? "?" : radioVer);
+        Diag.put("radio.codici", radTable);
+        Diag.put("radio.profilo", oldRadio
+                ? "vecchio (R46/R59): comandi solo " + (OLD_RADIO_SETTLE_MS / 1000) + " s dopo l'avvio del servizio, altrimenti app Radio"
+                : "normale");
+        radio.setOnConnected(() -> {
+            radioUpAt = android.os.SystemClock.uptimeMillis();
+            Diag.put("radio.collegatoAlle", clock());
+            post(this::registerRadioListener);
+        });
         logos = new StationLogos(ctx);
         logos.setOnUpdate(this::refreshLogosSoon);
         rui = new ServiceLink(ctx, "carplay", ServiceLink.byComponent("com.allgo.rui", "com.allgo.rui.RemoteUIService", null));
-        usb.setOnConnected(() -> post(this::registerUsbListener));
+        usb.setOnConnected(() -> post(() -> {
+            registerUsbListener();
+            try {
+                usbPorts(usb.binder(), null, true);
+            } catch (Exception e) {
+                Diag.error("media.usb2", e.toString());
+            }
+        }));
         bt.setOnConnected(() -> post(this::registerBtListener));
     }
 
     public void setListener(Listener l) {
         listener = l;
+    }
+
+    // ---- 1.0.3: letture per il Controllo funzioni (solo lettura, nessun comando) ----------------
+
+    public boolean radioLinked() {
+        return radio.binder() != null;
+    }
+
+    public boolean mediaLinked() {
+        return status.binder() != null && usb.binder() != null;
+    }
+
+    /** Da dove arrivano titolo e artista Bluetooth (ultima lettura). */
+    public static volatile String btMetaSource = "";
+
+    public boolean btLinked() {
+        return bt.binder() != null;
+    }
+
+    /** null = CarPlay/Android Auto (Allgo) non installato su questa auto. */
+    public Boolean projectionLinked() {
+        try {
+            ctx.getPackageManager().getPackageInfo("com.allgo.rui", 0);
+        } catch (Exception e) {
+            return null;
+        }
+        return rui.binder() != null;
+    }
+
+    /** Stato Bluetooth dal servizio media (2 = telefono collegato), -1 se non si legge. */
+    public int btState() {
+        try {
+            IBinder b = bt.binder();
+            return b == null ? -1 : Rpc.callInt(b, BT, BT_CONN);
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    /** Porte USB viste: [porta, …] (es. "usb3", "usb1"); null se il servizio media non risponde. */
+    public List<String> usbPortsSeen() {
+        try {
+            IBinder b = usb.binder();
+            if (b == null) return null;
+            return Rpc.call(b, USB, USB_DEVICES, Rpc.NONE, p -> {
+                List<String> out = new ArrayList<>();
+                int n = p.readInt();
+                for (int i = 0; i < n && i < 8; i++) {
+                    if (p.readInt() == 0) continue;
+                    p.readString();
+                    p.readString();
+                    out.add(nz(p.readString()));
+                    p.readString();
+                    p.readInt();
+                }
+                return out;
+            });
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /** Chiamata in corso su CarPlay/Android Auto (stato di Allgo: com.allgo.extra.CallStatus diverso da 0). */
@@ -210,16 +320,37 @@ public final class MediaClient {
             bg = new Handler(thread.getLooper());
         }
         status.start();
-        player.start();
         usb.start();
         bt.start();
         online.start();
         radio.start();
         rui.start();
         connectBrowser();
+        WheelKeys.start(ctx);
         bg.post(loop);
-        bg.postDelayed(this::bootResume, BOOT_FIRST_CHECK_MS);
+        String pw = pendingPowerOn;
+        if (pw != null) {
+            pendingPowerOn = null;
+            bg.postDelayed(() -> resumeAfterPowerOn(pw), 8000);
+        }
+        if (oldRadio) {
+            bg.removeCallbacks(repairLoop);
+            bg.postDelayed(repairLoop, 15_000);
+        }
     }
+
+    /** Firmware vecchio: controlla il crash dei promemoria DAB e ripara il servizio radio (vedi RadioRepair). */
+    private final Runnable repairLoop = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                radioBroken = false;   // SWI133: nessuna riparazione (solo firmware SWI68 vecchi)
+            } catch (Throwable e) {
+                Diag.error("radio.riparazione", e.toString());
+            }
+            if (bg != null) bg.postDelayed(this, REPAIR_EVERY_MS);
+        }
+    };
 
     /** Sospende le letture (launcher non visibile) senza scollegarsi dai servizi. */
     public void pause() {
@@ -235,12 +366,16 @@ public final class MediaClient {
 
     public void stop() {
         running = false;
-        if (bg != null) bg.removeCallbacks(loop);
+        btGen++;
+        if (bg != null) {
+            bg.removeCallbacks(loop);
+            bg.removeCallbacks(repairLoop);
+        }
         status.stop();
-        player.stop();
         usb.stop();
         bt.stop();
         online.stop();
+        unregisterRadioListener();
         radio.stop();
         rui.stop();
         if (browser != null) {
@@ -255,6 +390,160 @@ public final class MediaClient {
 
     private void post(Runnable r) {
         if (bg != null) bg.post(r);
+    }
+
+    /**
+     * Musica online della SWI68 (0.9): sulle auto europee recenti è Amazon Music (servizio di sistema
+     * com.saicmotor.onlinemedia.amazon.v2, con login sulla pagina Amazon al primo uso), su altre è Spotify
+     * (com.saicmotor.mediacenter). I comandi passano comunque dall'interfaccia "musica online" del servizio media.
+     */
+    public static final String ONLINE_AMAZON = "com.saicmotor.onlinemedia.amazon.v2", ONLINE_SPOTIFY = "com.saicmotor.mediacenter";
+    private volatile String onlinePkg = null, onlineName = "Spotify";
+    private volatile boolean onlineChecked;
+
+    /** App della musica online presente sull'auto (Amazon Music prima di Spotify), null se nessuna. */
+    public String onlinePackage() {
+        return onlinePkg;
+    }
+
+    private void detectOnline() {
+        android.content.pm.PackageManager pm = ctx.getPackageManager();
+        String pkg = null, name = "Spotify";
+        for (String[] c : new String[][]{{ONLINE_AMAZON, "Amazon Music"}, {ONLINE_SPOTIFY, "Spotify"}}) {
+            try {
+                pm.getPackageInfo(c[0], 0);
+                pkg = c[0];
+                name = c[1];
+                break;
+            } catch (Exception ignored) {
+            }
+        }
+        onlinePkg = pkg;
+        onlineName = name;
+        onlineChecked = true;
+        Diag.put("media.online.servizio", pkg == null ? "nessuno (né Amazon Music né Spotify)" : name + " · " + pkg);
+    }
+
+    /** Apre l'app della musica online (login, libreria): si usa quando non suona nulla. */
+    public void openOnlineApp(String why) {
+        String pkg = onlinePkg;
+        Diag.put("media.online.appAperta", (pkg == null ? "nessuna app" : pkg) + " · " + why + " · " + clock());
+        if (pkg == null) return;
+        main.post(() -> {
+            try {
+                Intent i = ctx.getPackageManager().getLaunchIntentForPackage(pkg);
+                if (i == null) return;
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ctx.startActivity(i);
+            } catch (Throwable e) {
+                Diag.error("media.online.app", e.toString());
+            }
+        });
+    }
+
+    private boolean hasOnlineTrack() {
+        try {
+            Audio a = audio(online.binder(), ONL, ONL_MUSIC);
+            return a != null && a.name != null && !a.name.trim().isEmpty();
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
+    /** Diagnostica: app di musica sull'auto e sessioni media attive (ogni 10 minuti). */
+    private long musicAppsAt = -1;
+
+    private void musicAppsDiag() {
+        long now = android.os.SystemClock.uptimeMillis();
+        if (musicAppsAt >= 0 && now - musicAppsAt < 600_000) return;
+        musicAppsAt = now;
+        detectOnline();
+        try {
+            android.content.pm.PackageManager pm = ctx.getPackageManager();
+            StringBuilder sb = new StringBuilder();
+            for (android.content.pm.PackageInfo pi : pm.getInstalledPackages(0)) {
+                String p = pi.packageName.toLowerCase(java.util.Locale.ROOT);
+                if (!(p.contains("amazon") || p.contains("music") || p.contains("spotify") || p.contains("mediacenter")
+                        || p.contains("online") || p.contains("deezer") || p.contains("tidal") || p.contains("audio"))) continue;
+                if (sb.length() > 0) sb.append(" | ");
+                sb.append(pi.packageName).append(' ').append(pi.versionName)
+                        .append(pm.getLaunchIntentForPackage(pi.packageName) != null ? " (apribile)" : "");
+            }
+            Diag.put("media.appMusica", sb.length() == 0 ? "nessuna" : sb.toString());
+        } catch (Throwable e) {
+            Diag.error("media.appMusica", e.toString());
+        }
+        try {
+            android.media.session.MediaSessionManager msm =
+                    (android.media.session.MediaSessionManager) ctx.getSystemService(Context.MEDIA_SESSION_SERVICE);
+            StringBuilder sb = new StringBuilder();
+            for (MediaController mc : msm.getActiveSessions(null)) {
+                if (sb.length() > 0) sb.append(" | ");
+                android.media.session.PlaybackState ps = mc.getPlaybackState();
+                android.media.MediaMetadata md = mc.getMetadata();
+                sb.append(mc.getPackageName()).append(" stato ").append(ps == null ? "-" : String.valueOf(ps.getState()));
+                if (md != null) {
+                    CharSequence t = md.getText(android.media.MediaMetadata.METADATA_KEY_TITLE);
+                    if (t != null) sb.append(" \"").append(t).append('"');
+                }
+            }
+            Diag.put("media.sessioni", sb.length() == 0 ? "nessuna" : sb.toString());
+        } catch (Throwable e) {
+            Diag.error("media.sessioni", e.toString());
+        }
+    }
+
+    private static String clock() {
+        return new java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.ROOT).format(new java.util.Date());
+    }
+
+    /** Annota l'ultima chiamata al servizio radio, con l'ora (diagnostica: quale chiamata lo fa cadere). */
+    private void markRadio(String what) {
+        radio.lastCall = what + " alle " + clock();
+        // 0.8.8-beta: senza evento (ogni secondo riempiva il registro eventi e copriva l'avvio)
+        Diag.putQuiet("radio.ultimaChiamata", radio.lastCall);
+    }
+
+    /**
+     * Firmware vecchio: motivo per cui ora la radio non va comandata (servizio non avviato o avviato da meno di 30 s),
+     * oppure null se si può. Sui firmware nuovi sempre null.
+     */
+    private String oldRadioBlock() {
+        if (!oldRadio) return null;
+        if (radioBroken) return "servizio radio da riparare (promemoria DAB rotto), riparazione in corso";
+        if (radio.binder() == null) return "servizio radio non avviato";
+        long left = radioUpAt + OLD_RADIO_SETTLE_MS - android.os.SystemClock.uptimeMillis();
+        if (left > 0) return "servizio radio avviato da poco (ancora " + (left / 1000 + 1) + " s)";
+        return null;
+    }
+
+    /** Apre l'app Radio originale: è lei ad avviare il servizio radio, come fa la home MG. */
+    private void openRadioApp(String why) {
+        if (radioBroken) {
+            // aprire l'app avvierebbe il servizio radio, che crasha subito e può far riavviare l'infotainment
+            Diag.put("radio.appAperta", "no (riparazione in corso): " + why + " · " + clock());
+            return;
+        }
+        Diag.put("radio.appAperta", why + " · " + clock());
+        main.post(() -> {
+            try {
+                Intent i = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName("com.saicmotor.hmi.radio",
+                        "com.saicmotor.hmi.radio.app.RadioHomeActivity"));
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ctx.startActivity(i);
+            } catch (Exception e) {
+                Diag.error("radio.app", e.toString());
+            }
+        });
+    }
+
+    /** True se il comando radio va fermato (firmware vecchio, servizio non pronto): al suo posto si apre l'app Radio. */
+    private boolean radioBlocked(String what) {
+        String why = oldRadioBlock();
+        if (why == null) return false;
+        Diag.put("media.comando", what + " · " + why + (radioBroken ? ": comando non inviato" : ": comando non inviato, aperta l'app Radio"));
+        openRadioApp(what + " · " + why);
+        return true;
     }
 
     private final Runnable loop = new Runnable() {
@@ -272,7 +561,7 @@ public final class MediaClient {
 
     private static final class Audio {
         long duration;
-        String name, artist, album, playTime, cover, avatar;
+        String name, artist, album, playTime, cover, path;
         int playState, playerType;
     }
 
@@ -281,11 +570,11 @@ public final class MediaClient {
         p.readLong();                 // id
         a.duration = p.readLong();
         a.name = p.readString();
-        a.cover = p.readString();     // copertina (Bluetooth: file nella cache del servizio media)
-        p.readString();               // path
+        a.cover = p.readString();     // copertina (percorso o URL)
+        a.path = p.readString();      // percorso del file (dice da quale porta USB suona)
         a.artist = p.readString();
         p.readString();               // userId
-        a.avatar = p.readString();    // Bluetooth: ALBUM_ART_URI dell'AVRCP
+        p.readString();               // avatar
         a.album = p.readString();
         p.readLong();                 // addTime
         p.readLong();                 // lastPlayTime
@@ -328,8 +617,6 @@ public final class MediaClient {
                     return new int[]{type, session};
                 }));
                 s.deviceType = dev == null ? 0 : dev[0];
-                deviceTypeNow = s.deviceType;
-                deviceTypeAt = android.os.SystemClock.elapsedRealtime();
                 Diag.put("carplay.dispositivo", dev == null ? "nessuno" : ("tipo " + dev[0] + ", sessione " + dev[1] + ", " + s.deviceName));
             } catch (Exception e) {
                 Diag.error("carplay", e.toString());
@@ -340,7 +627,9 @@ public final class MediaClient {
         s.sources.add(SRC_RADIO);
         s.sources.add(SRC_USB);
         s.sources.add(SRC_BT);
-        s.sources.add(SRC_ONLINE);
+        musicAppsDiag();
+        // 0.9.1: "Musica online" solo se l'auto ha Amazon Music o Spotify (i firmware vecchi non hanno nessuno dei due)
+        if (!onlineChecked || onlinePkg != null) s.sources.add(SRC_ONLINE);
         if (s.deviceType == DEV_CARPLAY) s.sources.add(SRC_CARPLAY);
         if (s.deviceType == DEV_AAUTO) s.sources.add(SRC_AAUTO);
 
@@ -382,12 +671,14 @@ public final class MediaClient {
         int shown = chosen != 0 ? chosen : (active != 0 ? active : SRC_RADIO);
         if (!s.sources.contains(shown)) shown = active != 0 && s.sources.contains(active) ? active : SRC_RADIO;
         s.source = shown;
+        s.activeSrc = active;
 
         try {
             fill(s, shown, active == shown);
         } catch (Exception e) {
             Diag.error("media." + sourceName(shown), e.toString());
         }
+        noteRealSource(s);
 
         Bundle t = tbt;
         if (t != null && (s.deviceType != 0)) {
@@ -398,7 +689,7 @@ public final class MediaClient {
         }
 
         last = s;
-        noteLastSource(active == s.source ? active : 0, s.playing);
+        lastActiveSrc = s.activeSrc;
         main.post(() -> {
             if (listener != null) listener.onMediaState(s);
         });
@@ -433,6 +724,7 @@ public final class MediaClient {
                 if (b == null) return;
                 Audio a = audio(b, USB, USB_CURRENT);
                 s.playing = Rpc.callBool(b, USB, USB_IS_PLAYING);
+                usbPorts(b, a == null ? null : a.path, false);
                 if (a != null) {
                     s.title = nz(a.name);
                     s.subtitle = join(a.artist, a.album);
@@ -451,14 +743,9 @@ public final class MediaClient {
                 s.playing = Rpc.callBool(b, BT, BT_STATE);
                 int conn = Rpc.callInt(b, BT, BT_CONN);
                 Diag.put("media.bt.connessione", conn);
-                if (a != null) {
-                    s.title = nz(a.name);
-                    s.subtitle = join(a.artist, a.album);
-                    s.durationMs = a.duration;
-                    s.cover = btCover(nz(a.cover), nz(a.avatar));
-                }
+                // 1.0.3: titolo e artista prima dalla sessione Bluetooth (A2DP/AVRCP), poi dal servizio media SAIC
+                btInfo(s, a);
                 s.positionMs = btPos;
-                btInfoDiag(a, s.cover != null);
                 if (s.title.isEmpty()) s.title = com.mg4.launcher.L.s(com.mg4.launcher.R.string.bt_music);
                 if (s.subtitle.isEmpty()) s.subtitle = com.mg4.launcher.L.s(com.mg4.launcher.R.string.bt_start);
                 break;
@@ -472,11 +759,11 @@ public final class MediaClient {
                 s.playing = isActive && stt == 1;
                 if (a != null) {
                     s.title = nz(a.name);
-                    s.subtitle = join(a.artist, "Amazon Music");
+                    s.subtitle = join(a.artist, onlineName);
                     s.durationMs = a.duration;
                 }
                 if (s.title.isEmpty()) s.title = com.mg4.launcher.L.s(com.mg4.launcher.R.string.online_music);
-                if (s.subtitle.isEmpty()) s.subtitle = "Amazon Music";
+                if (s.subtitle.isEmpty()) s.subtitle = onlineName;
                 break;
             }
             case SRC_RADIO: {
@@ -486,8 +773,17 @@ public final class MediaClient {
                     s.subtitle = com.mg4.launcher.L.s(com.mg4.launcher.R.string.radio_protected);
                     return;
                 }
+                if (oldRadio && oldRadioBlock() != null) {
+                    s.title = com.mg4.launcher.L.s(com.mg4.launcher.R.string.src_radio);
+                    s.subtitle = com.mg4.launcher.L.s(radioBroken ? com.mg4.launcher.R.string.radio_repairing
+                            : com.mg4.launcher.R.string.radio_waiting);
+                    s.radioUnit = "";
+                    Diag.put("radio.attesa", oldRadioBlock());
+                    return;
+                }
+                if (oldRadio) Diag.put("radio.attesa", "nessuna: servizio pronto, comandi attivi");   // 0.8.7-beta
                 if (b == null) return;
-                radio.lastCall = "stazione corrente (19)";
+                markRadio("stazione corrente (19)");
                 Rpc.call(b, RAD, RAD_CURRENT, Rpc.NONE, p -> Rpc.readNullable(p, q -> {
                     q.readInt();                       // enable (byte)
                     String name = q.readString();
@@ -544,8 +840,9 @@ public final class MediaClient {
                 s.playing = now < radioHoldUntil ? radioPlaying : (radioState > 0 ? radioState == 1 : isActive || radioPlaying);
                 if (s.radioBand == BAND_DAB) {
                     try {
-                        radio.lastCall = "logo DAB (52)";
-                        Bitmap logo = Rpc.call(b, RAD, RAD_DAB_LOGO, Rpc.NONE, p -> Rpc.readNullable(p, Bitmap.CREATOR::createFromParcel));
+                        markRadio("logo DAB (52)");
+                        Bitmap logo = radDabLogo < 0 ? null
+                                : Rpc.call(b, RAD, radDabLogo, Rpc.NONE, p -> Rpc.readNullable(p, Bitmap.CREATOR::createFromParcel));
                         if (logo != null) logos.put(s.stationKey, logo);
                     } catch (Exception e) {
                         Diag.error("radio.logo", e.toString());
@@ -584,172 +881,6 @@ public final class MediaClient {
         }
     }
 
-    // ---- 0.3.2 (punto 9d): copertina e informazioni del brano Bluetooth (AVRCP) ------------------------
-
-    private String coverPath = "";
-    private Bitmap coverBmp;
-    private String btInfo = "";
-
-    /** Copertina dal file che il servizio media salva per il Bluetooth (o dall'URI file:// dell'AVRCP); null se non c'è. */
-    private Bitmap btCover(String cover, String uri) {
-        String path = !cover.isEmpty() ? cover : uri.startsWith("file://") ? uri.substring(7) : uri.startsWith("/") ? uri : "";
-        if (path.isEmpty()) return null;
-        if (path.equals(coverPath)) return coverBmp;
-        coverPath = path;
-        coverBmp = null;
-        try {
-            java.io.File f = new java.io.File(path);
-            if (!f.isFile() && android.os.Build.VERSION.SDK_INT >= 23
-                    && ctx.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                grant(android.Manifest.permission.READ_EXTERNAL_STORAGE);
-            }
-            if (f.isFile()) {
-                BitmapFactory.Options o = new BitmapFactory.Options();
-                o.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(path, o);
-                int sample = 1;
-                while (o.outWidth / (sample * 2) >= 256 && o.outHeight / (sample * 2) >= 256) sample *= 2;   // RAM: max ~512 px
-                o = new BitmapFactory.Options();
-                o.inSampleSize = sample;
-                coverBmp = BitmapFactory.decodeFile(path, o);
-            }
-        } catch (Throwable e) {
-            coverBmp = null;
-        }
-        return coverBmp;
-    }
-
-    private void grant(String perm) {
-        try {
-            android.content.pm.PackageManager pm = ctx.getPackageManager();
-            pm.getClass().getMethod("grantRuntimePermission", String.class, String.class, android.os.UserHandle.class)
-                    .invoke(pm, ctx.getPackageName(), perm, android.os.Process.myUserHandle());
-        } catch (Throwable ignored) {
-        }
-    }
-
-    private void btInfoDiag(Audio a, boolean cover) {
-        String d = a == null ? "nessuna informazione dal servizio" : "titolo " + (nz(a.name).isEmpty() ? "no" : "sì") + " · artista "
-                + (nz(a.artist).isEmpty() ? "no" : "sì") + " · copertina " + (cover ? "sì" : nz(a.cover).isEmpty() && nz(a.avatar).isEmpty() ? "no" : "indicata ma non leggibile");
-        if (!d.equals(btInfo)) {
-            btInfo = d;
-            Diag.put("media.bt.info", d);
-        }
-    }
-
-    // ---- 0.3.2 (punto 9a): ultima sorgente all'accensione -----------------------------------------------
-
-    private static final long BOOT_FIRST_CHECK_MS = 10_000, BOOT_WINDOW_MS = 5 * 60_000L, BT_WAIT_MS = 45_000;
-    private static final String K_LAST_SRC = "ultimaSorgente";
-    private int playingSrc, playingTicks;
-    private boolean bootDone;
-    private long bootStart;
-
-    private android.content.SharedPreferences sp() {
-        return ctx.getSharedPreferences("mg4launcher", Context.MODE_PRIVATE);
-    }
-
-    /** Ricorda l'ultima sorgente usata davvero (in riproduzione per almeno 5 s), CarPlay/Android Auto compresi. */
-    private void noteLastSource(int active, boolean playing) {
-        if (!playing || active == 0) {
-            playingTicks = 0;
-            return;
-        }
-        if (active != playingSrc) {
-            playingSrc = active;
-            playingTicks = 0;
-        }
-        if (++playingTicks == 5 && sp().getInt(K_LAST_SRC, 0) != active) sp().edit().putInt(K_LAST_SRC, active).apply();
-    }
-
-    private static int fromMediaType(String mt) {
-        switch (mt) {
-            case "1": case "2": case "3": case "4": return SRC_RADIO;
-            case "5": return SRC_BT;
-            case "6": return SRC_ONLINE;
-            case "7": return SRC_USB;
-            default: return 0;
-        }
-    }
-
-    private static String systemProperty(String key) {
-        try {
-            Class<?> c = Class.forName("android.os.SystemProperties");
-            return String.valueOf(c.getMethod("get", String.class, String.class).invoke(null, key, ""));
-        } catch (Throwable e) {
-            return "";
-        }
-    }
-
-    /**
-     * All'accensione (launcher avviato nei primi minuti dopo il boot) riprende l'ultima sorgente usata davvero, come
-     * l'app Media originale: se dopo 10 s non suona niente, avvia quella sorgente (e la mostra subito). Il Bluetooth si
-     * aspetta fino a 45 s (il telefono si collega dopo); se non arriva, radio. CarPlay/Android Auto se collegati.
-     */
-    private void bootResume() {
-        if (bootDone) return;
-        long up = android.os.SystemClock.elapsedRealtime();
-        boolean first = bootStart == 0;
-        if (first) bootStart = up;
-        if (first && up > BOOT_WINDOW_MS) {
-            bootDone = true;
-            Diag.put("media.avvio", "launcher avviato " + (up / 1000) + " s dopo l'accensione: nessuna ripresa (non è un'accensione)");
-            return;
-        }
-        // stato aggiornato anche se il launcher non è davanti (le letture periodiche sono ferme)
-        poll();
-        if (bootDone) return;
-        int saved = sp().getInt(K_LAST_SRC, 0);
-        String mt = systemProperty("persist.sys.cal.MediaType");
-        int sys = fromMediaType(mt);
-        int want = saved != 0 ? saved : sys != 0 ? sys : SRC_RADIO;
-        State s = last;
-        String base = "salvata " + sourceName(saved) + " · sistema " + (mt.isEmpty() ? "?" : mt + " (" + sourceName(sys) + ")");
-        if (isPlayingNow()) {
-            bootDone = true;
-            Diag.put("media.avvio", base + " · già in riproduzione " + sourceName(s.source) + ": niente da fare · " + clock());
-            return;
-        }
-        long waited = up - bootStart;
-        int target = want;
-        if ((want == SRC_CARPLAY || want == SRC_AAUTO) && s.deviceType == 0) target = waited < BT_WAIT_MS ? -1 : SRC_RADIO;
-        if (want == SRC_BT && !btConnected()) target = waited < BT_WAIT_MS ? -1 : SRC_RADIO;
-        if (target == -1) {
-            if (chosen == 0) chosen = want;   // si mostra già la sorgente che sta per tornare, non la radio
-            if (bg != null) bg.postDelayed(this::bootResume, 3000);
-            Diag.put("media.avvio", base + " · aspetto " + sourceName(want) + " (" + (waited / 1000) + " s) · " + clock());
-            return;
-        }
-        bootDone = true;
-        final int t = target;
-        chosen = t;
-        Diag.put("media.avvio", base + " · ripresa " + sourceName(t) + (t != want ? " (al posto di " + sourceName(want) + ", non disponibile)" : "") + " · " + clock());
-        command("avvio " + sourceName(t), () -> startSource(t, false));
-        if (bg != null) bg.postDelayed(() -> Diag.put("media.avvio", base + " · ripresa " + sourceName(t) + " · esito "
-                + (isPlayingNow() ? "in riproduzione" : "non in riproduzione") + " · " + clock()), 8000);
-    }
-
-    private boolean isPlayingNow() {
-        State s = last;
-        return s.playing;
-    }
-
-    /** Telefono collegato per l'audio Bluetooth (A2DP sink / AVRCP)? */
-    private boolean btConnected() {
-        try {
-            android.bluetooth.BluetoothAdapter ad = android.bluetooth.BluetoothAdapter.getDefaultAdapter();
-            if (ad == null || !ad.isEnabled()) return false;
-            for (int profile : new int[]{11 /* A2DP_SINK */, 12 /* AVRCP_CONTROLLER */, android.bluetooth.BluetoothProfile.A2DP}) {
-                try {
-                    if (ad.getProfileConnectionState(profile) == android.bluetooth.BluetoothProfile.STATE_CONNECTED) return true;
-                } catch (Throwable ignored) {
-                }
-            }
-        } catch (Throwable ignored) {
-        }
-        return false;
-    }
-
     // ------------------------------------------------------------------------------------------
     // Comandi
     // ------------------------------------------------------------------------------------------
@@ -765,18 +896,9 @@ public final class MediaClient {
     }
 
     public void selectSource(int src) {
-        userAction();
         chosen = src;
-        command("avvio " + sourceName(src), () -> startSource(src, true));
-    }
-
-    /** Numero dell'ultimo comando dell'utente: i controlli ritardati non rifanno nulla se nel frattempo ne è arrivato un altro. */
-    private volatile int cmdSeq;
-
-    /** L'utente ha scelto qualcosa: la ripresa automatica dell'accensione non interviene più. */
-    private void userAction() {
-        bootDone = true;
-        cmdSeq++;
+        btGen++;   // 1.0.3: un avvio Bluetooth ancora in attesa non deve più rubare l'audio alla sorgente scelta
+        command("avvio " + sourceName(src), () -> startSource(src));
     }
 
     // ---- comandi con nuovo tentativo -------------------------------------------------------
@@ -785,35 +907,63 @@ public final class MediaClient {
         void run() throws Exception;
     }
 
-    /** 0.3.2 (punto 3): servizio non pronto → nuovi tentativi dopo 1, 2 e 4 secondi, senza errori se uno riesce. */
-    private static final long[] RETRY_MS = {1000, 2000, 4000};
+    /** 1.0.2 (punto 3): nuovi tentativi con attesa crescente (1, 2, 4 s) se il servizio non è ancora pronto. */
+    private static final long[] RETRY_WAIT_MS = {1000, 2000, 4000};
 
     /**
      * Esegue un comando media. Subito dopo l'accensione il servizio può non essere ancora pronto
-     * ("binder non disponibile", "servizio non collegato", "Result::NOT_INITIALIZED"): si riprova (1, 2, 4 s).
-     * L'esito di play e salto finisce nella diagnostica (media.comando); i tentativi in media.attesa.
+     * ("binder non disponibile", "servizio radio non collegato", "Result::NOT_INITIALIZED"): si riprova in background
+     * con attesa crescente, senza bloccare l'interfaccia e senza errori se un tentativo successivo riesce.
+     * L'esito di play e salto finisce nella diagnostica (media.comando); i tentativi in media.attesa / radio.tentativi.
      */
     private void command(String what, Cmd cmd) {
         post(() -> {
-            if (radio.fragile() && (last.source == SRC_RADIO || what.endsWith(sourceName(SRC_RADIO)))) {
+            // comando per la radio: "avvio RADIO", oppure play/salto con la radio come sorgente mostrata
+            // (passare dalla radio a USB/Bluetooth non è un comando radio)
+            boolean toRadio = what.startsWith("avvio ") ? what.endsWith(sourceName(SRC_RADIO)) : last.source == SRC_RADIO;
+            if (toRadio && radio.fragile()) {
                 Diag.put("media.comando", what + " · radio protetta: comando non inviato (usa l'app Radio)");
                 return;
             }
-            attempt(what, cmd, 0);
+            if (toRadio && radioBlocked(what)) return;
+            // "sorgente radio su" al nuovo tentativo solo per i comandi che fanno partire la radio, mai per pausa o salto
+            boolean startLike = toRadio && (what.startsWith("avvio ") || what.equals("play") && !last.playing);
+            attempt(what, cmd, 0, toRadio, startLike, null);
         });
     }
 
-    static boolean notReady(Exception e) {
-        String msg = String.valueOf(e.getMessage()) + " " + e;
-        return msg.contains("NOT_INITIALIZED") || msg.contains("binder non disponibile") || msg.contains("non collegato")
-                || e instanceof NullPointerException || e instanceof android.os.DeadObjectException;
+    /** Comando radio (banda, sintonia) con lo stesso nuovo tentativo. */
+    private void radioCommand(String what, Cmd cmd) {
+        post(() -> {
+            if (radio.fragile()) {
+                Diag.put("media.comando", what + " · radio protetta: comando non inviato (usa l'app Radio)");
+                return;
+            }
+            if (radioBlocked(what)) return;
+            attempt(what, cmd, 0, true, true, null);
+        });
     }
 
-    private void attempt(String what, Cmd cmd, int n) {
+    private static boolean notReady(Exception e) {
+        String msg = String.valueOf(e.getMessage()) + " " + e;
+        return msg.contains("NOT_INITIALIZED") || msg.contains("binder non disponibile") || msg.contains("non collegato");
+    }
+
+    /** onDone: chiamato con true/false a fine tentativi (sul thread di lavoro), può essere null. */
+    private void attempt(String what, Cmd cmd, int n, boolean isRadio, boolean startLike, java.util.function.Consumer<Boolean> onDone) {
         State before = last;
+        Boolean result = null;
         try {
+            // dal secondo tentativo di un avvio radio si riattiva la sorgente radio (srcPlayRadio), che apre il
+            // sintonizzatore; se la sorgente attiva non è la radio ci pensa già il comando stesso (niente doppio invio)
+            if (startLike && n > 0 && last.activeSrc == SRC_RADIO) radioSourceUp("nuovo tentativo " + (n + 1));
             cmd.run();
-            if (n > 0) Diag.put("media.attesa", what + ": eseguito al tentativo " + (n + 1) + " · " + clock());
+            if (n > 0) {
+                Diag.put("media.attesa", what + ": eseguito al tentativo " + (n + 1));
+                if (isRadio) Diag.put("radio.tentativi", what + ": riuscito al tentativo " + (n + 1) + " · " + clock());
+            } else if (isRadio) {
+                Diag.put("radio.tentativi", what + ": riuscito al primo tentativo · " + clock());
+            }
             String src = sourceName(before.source);
             boolean wasPlaying = before.playing;
             String b = before.title;
@@ -822,46 +972,66 @@ public final class MediaClient {
                 Diag.put("media.comando", what + " · " + src + " · prima " + (wasPlaying ? "in riproduzione" : "in pausa")
                         + " \"" + b + "\" · dopo " + (a.playing ? "in riproduzione" : "in pausa") + " \"" + a.title + "\"");
             }, 1500);
+            result = true;
         } catch (Exception e) {
-            if (notReady(e) && n < RETRY_MS.length && bg != null) {
-                Diag.put("media.attesa", what + ": servizio non pronto (" + e.getClass().getSimpleName() + "), nuovo tentativo "
-                        + (n + 2) + " tra " + (RETRY_MS[n] / 1000) + " s · " + clock());
-                bg.postDelayed(() -> attempt(what, cmd, n + 1), RETRY_MS[n]);
+            if (notReady(e) && n < RETRY_WAIT_MS.length && bg != null) {
+                Diag.put("media.attesa", what + ": servizio non ancora pronto, nuovo tentativo " + (n + 2) + " tra " + (RETRY_WAIT_MS[n] / 1000) + " s");
+                bg.postDelayed(() -> attempt(what, cmd, n + 1, isRadio, startLike, onDone), RETRY_WAIT_MS[n]);
                 return;
             }
-            Diag.error("media." + what, e.toString() + (n > 0 ? " (dopo " + (n + 1) + " tentativi)" : ""));
+            if (isRadio) Diag.put("radio.tentativi", what + ": non riuscito dopo " + (n + 1) + " tentativi (" + e.getMessage() + ") · " + clock());
+            Diag.error(what.startsWith("radio.") ? what : "media." + what, e.toString());
+            result = false;
+        }
+        // l'esito si comunica una sola volta, fuori dal try (un errore nella callback non lo ribalta)
+        if (onDone != null) {
+            try {
+                onDone.accept(result);
+            } catch (Exception e) {
+                Diag.error("media." + what + ".esito", e.toString());
+            }
         }
         poll();
     }
 
-    private static String clock() {
-        return new java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.ROOT).format(new java.util.Date());
+    /**
+     * Sorgente radio "su": srcPlayRadio del servizio radio (IRadioAppService 27, 26 su 3A111), lo stesso metodo con cui il
+     * sistema passa l'audio alla radio. Serve quando prima suonava un'altra sorgente (Bluetooth, USB): la sola sintonia
+     * non prende l'audio e il servizio risponde NOT_INITIALIZED finché il sintonizzatore non è aperto.
+     */
+    private void radioSourceUp(String why) throws RemoteException {
+        IBinder b = radio.binder();
+        if (b == null) throw new RemoteException("servizio radio non collegato");
+        if (radPlay < 0) return;
+        markRadio("sorgente radio (" + radPlay + ") · " + why);
+        Rpc.call(b, RAD, radPlay, Rpc.NONE, Parcel::readInt);
     }
 
-    /** Cambio sorgente col servizio media (come la home originale). False se il servizio non c'è (si usa la via diretta). */
-    private boolean mpPlay(int type) throws RemoteException {
-        IBinder b = player.binder();
-        if (b == null) return false;
-        Rpc.call(b, MP, MP_PLAY, p -> p.writeInt(type));
-        return true;
-    }
-
-    private void startSource(int src, boolean user) throws RemoteException {
+    private void startSource(int src) throws RemoteException {
         if (src != SRC_RADIO && radioPlaying) radioPlaying = false;
         switch (src) {
             case SRC_USB: {
-                if (!mpPlay(MT_USB)) Rpc.call(usb.binder(), USB, USB_PLAY, Rpc.NONE, Parcel::readInt);
+                IBinder b = usb.binder();
+                // SWI133: niente richiesta del focus (codice 50 assente): play lo prende da solo
+                Rpc.call(b, USB, USB_PLAY, Rpc.NONE, Parcel::readInt);
                 break;
             }
             case SRC_BT:
-                btStart(0, user);
+                btStart(0, true, null);
                 break;
             case SRC_ONLINE: {
-                if (!mpPlay(MT_ONLINE)) Rpc.call(online.binder(), ONL, ONL_PLAY, Rpc.NONE, Parcel::readInt);
+                IBinder b = online.binder();
+                // SWI133: niente richiesta del focus (codice 9 assente)
+                Rpc.call(b, ONL, ONL_PLAY, Rpc.NONE, Parcel::readInt);
+                // 0.9: se dopo qualche secondo non suona nulla (es. Amazon Music senza login) si apre l'app
+                if (bg != null) bg.postDelayed(() -> {
+                    State a = last;
+                    if (chosen == SRC_ONLINE && !a.playing && !hasOnlineTrack()) openOnlineApp("nessun brano dopo la scelta");
+                }, 3500);
                 break;
             }
             case SRC_RADIO:
-                radioStart("sorgente Radio");
+                radioResume();
                 break;
             case SRC_CARPLAY:
             case SRC_AAUTO:
@@ -872,95 +1042,13 @@ public final class MediaClient {
         }
     }
 
-    // ---- 0.3.2 (punto 9b): avvio vero della radio ---------------------------------------------------
-
-    /**
-     * Avvia davvero la sessione radio dell'auto: cambio sorgente col servizio media (fuoco audio, sorgente salvata,
-     * ultima stazione), poi controllo dopo 2,5 s; se la radio non è in onda si sintonizza l'ultima stazione direttamente
-     * (anche questo prende il fuoco audio). Il servizio non pronto si riprova (1, 2, 4 s) dal chiamante.
-     */
-    private void radioStart(String why) throws RemoteException {
-        final int seq = cmdSeq;
-        boolean viaMedia = mpPlay(MT_RADIO);
-        if (!viaMedia) radioResume();
-        radioPlaying = true;
-        radioHoldUntil = android.os.SystemClock.uptimeMillis() + 3000;
-        final boolean via = viaMedia;
-        if (bg != null) bg.postDelayed(() -> {
-            String esito;
-            if (seq != cmdSeq || chosen != SRC_RADIO) {
-                esito = "controllo saltato: nel frattempo un altro comando";
-            } else if (radioState == 1) {
-                esito = "in onda" + (via ? " (cambio sorgente del servizio media)" : " (sintonia diretta)");
-            } else {
-                try {
-                    radioResume();
-                    esito = "non partita col cambio sorgente: sintonizzata l'ultima stazione";
-                } catch (Exception e) {
-                    esito = "non partita: " + e.getClass().getSimpleName();
-                }
-            }
-            Diag.put("media.radio.avvio", why + " · " + esito + " · " + clock());
-            poll();
-        }, 2500);
-    }
-
-    // ---- 0.3.2 (punto 9c): Bluetooth affidabile ---------------------------------------------------------
-
-    /**
-     * Avvio del Bluetooth: cambio sorgente col servizio media (o play diretto), poi verifica; se non parte si riprova
-     * (play diretto, fino a 2 volte) e solo alla fine si apre l'app Musica, come prima.
-     */
-    private void btStart(int n, boolean user) throws RemoteException {
-        final int seq = cmdSeq;
-        boolean viaMedia = n == 0 && mpPlay(MT_BT);
-        if (!viaMedia) Rpc.call(bt.binder(), BT, BT_PLAY, Rpc.NONE, Parcel::readInt);
-        if (bg == null) return;
-        bg.postDelayed(() -> {
-            boolean playing = false;
-            try {
-                playing = Rpc.callBool(bt.binder(), BT, BT_STATE);
-            } catch (Exception ignored) {
-            }
-            if (playing) {
-                Diag.put("media.bt.esito", "partito" + (n > 0 ? " al tentativo " + (n + 1) : "") + (viaMedia ? " (cambio sorgente)" : " (play diretto)") + " · " + clock());
-                poll();
-                return;
-            }
-            if (seq != cmdSeq) return;   // l'utente ha già dato un altro comando
-            if (n < 2 && chosen == SRC_BT) {
-                Diag.put("media.bt.esito", "non partito al tentativo " + (n + 1) + ": riprovo · " + clock());
-                try {
-                    btStart(n + 1, user);
-                } catch (Exception e) {
-                    Diag.error("media.bt.avvio", e.toString());
-                }
-                return;
-            }
-            if (chosen != SRC_BT) return;   // nel frattempo l'utente ha scelto un'altra sorgente
-            // l'app Musica si apre solo se l'ha chiesto l'utente e il launcher è davanti (mai sopra il navigatore o CarPlay)
-            if (!user || !ctx.getPackageName().equals(StartGuard.topPackage(ctx))) {
-                Diag.put("media.bt.esito", "non partito dopo 3 tentativi (app Musica non aperta: " + (user ? "launcher non davanti" : "avvio automatico") + ") · " + clock());
-                return;
-            }
-            Diag.put("media.bt.esito", "non partito dopo 3 tentativi: apro l'app Musica · " + clock());
-            main.post(() -> {
-                try {
-                    ctx.startActivity(new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName("com.saicmotor.hmi.music",
-                            "com.saicmotor.hmi.music.ui.activity.MusicActivity")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                } catch (Exception e) {
-                    Diag.error("media.bt.app", e.toString());
-                }
-            });
-        }, 3000);
-    }
-
     // ---- radio: pausa e ripresa come la home originale ---------------------------------------
 
     /** Pausa: setMuted(false, banda), lo stesso comando usato dal launcher MG. */
     private void radioPause() throws RemoteException {
         Station cur = current;
         int band = cur != null ? cur.band : BAND_FM;
+        markRadio("pausa (18)");
         Rpc.call(radio.binder(), RAD, RAD_SET_MUTED, p -> {
             p.writeInt(0);
             p.writeInt(band);
@@ -969,11 +1057,19 @@ public final class MediaClient {
         radioHoldUntil = android.os.SystemClock.uptimeMillis() + 3000;
     }
 
-    /** Ripresa: si risintonizza la stazione corrente (FM/AM per frequenza, DAB per servizio). */
+    /**
+     * Avvio/ripresa della radio (1.0.2, punto 9b): se prima suonava un'altra sorgente si riattiva la sorgente radio
+     * (srcPlayRadio: cambio sorgente e fuoco audio, come fa il sistema), poi si risintonizza l'ultima stazione
+     * (FM/AM per frequenza, DAB per servizio). Con un servizio non ancora pronto ci pensa attempt() a riprovare.
+     */
     private void radioResume() throws RemoteException {
         IBinder b = radio.binder();
+        if (b == null) throw new RemoteException("servizio radio non collegato");
         Station cur = current;
+        boolean otherSource = last.activeSrc != SRC_RADIO;
+        if (otherSource && radPlay >= 0) radioSourceUp("prima suonava " + sourceName(last.activeSrc));
         if (cur != null && cur.band == BAND_DAB && cur.sid != 0) {
+            markRadio("ripresa DAB (9)");
             Rpc.call(b, RAD, RAD_TUNE_DAB, p -> {
                 p.writeInt(cur.index);
                 p.writeLong(cur.sid);
@@ -981,23 +1077,424 @@ public final class MediaClient {
                 p.writeInt(cur.secId);
             });
         } else if (cur != null && cur.khz > 0) {
+            markRadio("ripresa FM/AM (8)");
             Rpc.call(b, RAD, RAD_TUNE, p -> {
                 p.writeInt(cur.band);
                 p.writeInt(cur.khz);
             });
         } else {
-            // 0.3.2: nessuna stazione in memoria (radio mai partita da questa accensione): l'ultima ascoltata
-            Station lastSt = null;
-            try {
-                lastSt = Rpc.call(b, RAD, RAD_LAST_MODE, Rpc.NONE, p -> Rpc.readNullable(p, MediaClient::readStationHead));
-            } catch (Exception e) {
-                Diag.error("radio.ultima", e.toString());
+            if (radPlay < 0) {
+                // servizio radio non verificato: niente codice di play; su richiesta dell'utente si apre l'app Radio
+                if (!autoRadio) openRadioApp("play · servizio radio non verificato");
+                return;
             }
-            if (lastSt != null && (lastSt.band == BAND_DAB ? lastSt.sid != 0 : lastSt.khz > 0)) tuneNow(b, lastSt);
-            else Rpc.call(b, RAD, RAD_PLAY, Rpc.NONE, Parcel::readInt);
+            if (!otherSource) radioSourceUp("play senza stazione nota");
         }
         radioPlaying = true;
         radioHoldUntil = android.os.SystemClock.uptimeMillis() + 3000;
+    }
+
+    // ---- 1.0.2 (punto 9): Bluetooth affidabile, comandi e informazioni del brano --------------------
+
+    private static final long[] BT_RETRY_MS = {1000, 2000};
+
+    /**
+     * Avvio del Bluetooth come la home originale: fuoco audio Bluetooth (requestBtAudioFocus), una breve attesa perché il
+     * servizio media prenda l'audio, poi play. Dopo 2,5 s si controlla che suoni: se no si riprova (attesa 1 e 2 s) e solo
+     * alla fine, se l'ha chiesto l'utente, si apre l'app Musica originale. onDone (può essere null) riceve l'esito.
+     */
+    private void btStart(int n, boolean byUser, java.util.function.Consumer<Boolean> onDone) {
+        // 1.0.3: al primo tentativo si aspetta che il telefono sia collegato davvero (A2DP e AVRCP): all'accensione al
+        // massimo 30 s, se l'ha chiesto l'utente al massimo 5 s (poi, se non va, si apre l'app Musica come prima)
+        int gen = ++btGen;   // un nuovo avvio annulla quello eventualmente ancora in attesa
+        if (n == 0) {
+            long max = byUser ? 5000 : BT_WAIT_MAX_MS;
+            post(() -> btWaitConnected(gen, android.os.SystemClock.uptimeMillis(), -1, max, () -> btStartNow(gen, n, byUser, onDone)));
+            return;
+        }
+        btStartNow(gen, n, byUser, onDone);
+    }
+
+    /** 1.0.3: cresce a ogni avvio Bluetooth, a ogni scelta di sorgente e a stop(): i passi vecchi si fermano da soli. */
+    private volatile int btGen;
+
+    /** True (e nel log) se questo avvio Bluetooth è stato superato da un'altra scelta. */
+    private boolean btCancelled(int gen, java.util.function.Consumer<Boolean> onDone) {
+        if (gen == btGen) return false;
+        Diag.put("media.bt.esito", "avvio annullato: nel frattempo è stata scelta un'altra sorgente · " + clock());
+        if (onDone != null) resuming = false;   // ripresa all'accensione: niente ripiego sulla radio, decide l'utente
+        return true;
+    }
+
+    private static final long BT_WAIT_MAX_MS = 30_000, BT_WAIT_STEP_MS = 1000, BT_AVRCP_GRACE_MS = 3000;
+    /** Profili Bluetooth lato auto (costanti nascoste di BluetoothProfile): A2DP sink 11, AVRCP controller 12. */
+    private static final int PROFILE_A2DP_SINK = 11, PROFILE_AVRCP_CTRL = 12;
+
+    /**
+     * Aspetta (sul thread di lavoro, a passi di 1 s) che il servizio media dica "Bluetooth collegato" (getBluetoothState
+     * = 2) e che anche il profilo AVRCP risulti collegato (o non leggibile, o 3 s dopo A2DP). Al massimo 30 s, poi si
+     * prova comunque. In media.bt.attesa: quanti secondi ha aspettato e perché si è fermato.
+     */
+    private void btWaitConnected(int gen, long since, long a2dpAt, long max, Runnable then) {
+        if (gen != btGen) {
+            then.run();   // btStartNow se ne accorge e si ferma (scrive il log)
+            return;
+        }
+        long now = android.os.SystemClock.uptimeMillis();
+        int conn = -1;
+        try {
+            IBinder b = bt.binder();
+            if (b != null) conn = Rpc.callInt(b, BT, BT_CONN);
+        } catch (Exception ignored) {
+        }
+        int a2dp = profileState(PROFILE_A2DP_SINK), avrcp = profileState(PROFILE_AVRCP_CTRL);
+        boolean a2dpOk = conn == 2 || a2dp == 2;
+        if (a2dpOk && a2dpAt < 0) a2dpAt = now;
+        boolean avrcpOk = avrcp == 2 || avrcp < 0 || a2dpAt >= 0 && now - a2dpAt >= BT_AVRCP_GRACE_MS;
+        long waited = now - since;
+        String states = "servizio media " + conn + " · A2DP " + profileTxt(a2dp) + " · AVRCP " + profileTxt(avrcp);
+        if (a2dpOk && avrcpOk || waited >= max) {
+            Diag.put("media.bt.attesa", "aspettato " + Math.round(waited / 1000.0) + " s · "
+                    + (a2dpOk && avrcpOk ? "collegato" : "non collegato dopo " + (max / 1000) + " s: provo lo stesso") + " · " + states + " · " + clock());
+            then.run();
+            return;
+        }
+        final long at = a2dpAt;
+        bg.postDelayed(() -> btWaitConnected(gen, since, at, max, then), BT_WAIT_STEP_MS);
+    }
+
+    /** Stato di un profilo Bluetooth: 2 collegato, 0 scollegato, -1 non leggibile. */
+    private static int profileState(int profile) {
+        try {
+            android.bluetooth.BluetoothAdapter ad = android.bluetooth.BluetoothAdapter.getDefaultAdapter();
+            if (ad == null || !ad.isEnabled()) return ad == null ? -1 : 0;
+            return ad.getProfileConnectionState(profile);
+        } catch (Throwable e) {
+            return -1;
+        }
+    }
+
+    private static String profileTxt(int st) {
+        return st == 2 ? "collegato" : st == 1 ? "in collegamento" : st == 0 ? "scollegato" : st < 0 ? "non leggibile" : String.valueOf(st);
+    }
+
+    /** Controller della sessione media Bluetooth attiva (A2DP sink), null se non c'è. */
+    private MediaController btSession() {
+        try {
+            android.media.session.MediaSessionManager msm =
+                    (android.media.session.MediaSessionManager) ctx.getSystemService(Context.MEDIA_SESSION_SERVICE);
+            for (MediaController mc : msm.getActiveSessions(null)) {
+                if (mc.getPackageName().toLowerCase(java.util.Locale.ROOT).contains("bluetooth")) return mc;
+            }
+        } catch (Throwable ignored) {
+        }
+        return null;
+    }
+
+    private void btStartNow(int gen, int n, boolean byUser, java.util.function.Consumer<Boolean> onDone) {
+        post(() -> {
+            if (btCancelled(gen, onDone)) return;
+            String err = null;
+            try {
+                IBinder b = bt.binder();
+                if (b == null) throw new RemoteException("binder non disponibile");
+                // SWI133: niente richiesta del focus (codice 15 assente): play lo prende da solo
+                // 1.0.3: play dalla sessione media Bluetooth (come fa il servizio media), altrimenti dal servizio SAIC
+                MediaController mc = btSession();
+                if (mc != null) {
+                    mc.getTransportControls().play();
+                    btCommand("play (avvio, sessione Bluetooth)", null);
+                } else {
+                    Integer r = Rpc.call(b, BT, BT_PLAY, Rpc.NONE, Parcel::readInt);
+                    btCommand("play (avvio, servizio media)", r);
+                }
+            } catch (Exception e) {
+                err = e.getClass().getSimpleName() + (e.getMessage() == null ? "" : ": " + e.getMessage());
+            }
+            final String error = err;
+            bg.postDelayed(() -> {
+                if (btCancelled(gen, onDone)) return;
+                boolean playing = false;
+                try {
+                    IBinder b = bt.binder();
+                    playing = b != null && Rpc.callBool(b, BT, BT_STATE);
+                } catch (Exception ignored) {
+                }
+                if (playing) {
+                    Diag.put("media.bt.esito", "partito al tentativo " + (n + 1) + " · " + clock());
+                    if (onDone != null) onDone.accept(true);
+                    poll();
+                    return;
+                }
+                if (n < BT_RETRY_MS.length) {
+                    Diag.put("media.bt.esito", "non partito al tentativo " + (n + 1) + (error == null ? "" : " (" + error + ")")
+                            + ": riprovo tra " + (BT_RETRY_MS[n] / 1000) + " s");
+                    bg.postDelayed(() -> btStartNow(gen, n + 1, byUser, onDone), BT_RETRY_MS[n]);
+                    return;
+                }
+                Diag.put("media.bt.esito", "non partito dopo " + (n + 1) + " tentativi" + (error == null ? "" : " (" + error + ")")
+                        + (byUser ? ": apro l'app Musica" : ""));
+                if (byUser) {
+                    main.post(() -> {
+                        try {
+                            ctx.startActivity(new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName("com.saicmotor.hmi.music",
+                                    "com.saicmotor.hmi.music.ui.activity.MusicActivity")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        } catch (Exception e) {
+                            Diag.error("media.bt.app", e.toString());
+                        }
+                    });
+                }
+                if (onDone != null) onDone.accept(false);
+                poll();
+            }, 2500);
+        });
+    }
+
+    private final java.util.Map<String, String> btCmds = new java.util.TreeMap<>();
+
+    /** media.bt.comandi: esito dell'ultimo play/pausa/avanti/indietro (valore restituito dal servizio media). */
+    private void btCommand(String what, Integer result) {
+        synchronized (btCmds) {
+            btCmds.put(what, (result == null ? "inviato" : "risposta " + result) + " alle " + clock());
+            StringBuilder sb = new StringBuilder();
+            for (java.util.Map.Entry<String, String> e : btCmds.entrySet()) sb.append(sb.length() == 0 ? "" : " · ").append(e.getKey()).append(' ').append(e.getValue());
+            Diag.put("media.bt.comandi", sb.toString());
+        }
+    }
+
+    private String btArtKey = "";
+    private Bitmap btArt;
+    private long btSessionAt;
+    private String btSessTitle = "", btSessArtist = "", btSessAlbum = "";
+    private long btSessDur;
+    private Bitmap btSessArt;
+
+    /**
+     * Titolo, artista e copertina del brano Bluetooth: dal servizio media (metadati AVRCP) e, se manca qualcosa, dalla
+     * sessione media del Bluetooth di Android. Se il telefono non manda nulla la card mostra l'icona Bluetooth.
+     */
+    private void btInfo(State s, Audio a) {
+        long now = android.os.SystemClock.uptimeMillis();
+        if (now - btSessionAt > 3000) {
+            btSessionAt = now;
+            btSessTitle = "";
+            btSessArtist = "";
+            btSessAlbum = "";
+            btSessDur = 0;
+            btSessArt = null;
+            try {
+                android.media.session.MediaSessionManager msm =
+                        (android.media.session.MediaSessionManager) ctx.getSystemService(Context.MEDIA_SESSION_SERVICE);
+                for (MediaController mc : msm.getActiveSessions(null)) {
+                    String pkg = mc.getPackageName().toLowerCase(java.util.Locale.ROOT);
+                    if (!pkg.contains("bluetooth")) continue;
+                    MediaMetadata md = mc.getMetadata();
+                    if (md == null) continue;
+                    btSessTitle = nz(md.getString(MediaMetadata.METADATA_KEY_TITLE));
+                    btSessArtist = nz(md.getString(MediaMetadata.METADATA_KEY_ARTIST));
+                    btSessAlbum = nz(md.getString(MediaMetadata.METADATA_KEY_ALBUM));
+                    btSessDur = md.getLong(MediaMetadata.METADATA_KEY_DURATION);
+                    Bitmap art = md.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART);
+                    if (art == null) art = md.getBitmap(MediaMetadata.METADATA_KEY_ART);
+                    btSessArt = art;
+                    break;
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        String metaSrc;
+        if (!btSessTitle.isEmpty()) {
+            s.title = btSessTitle;
+            s.subtitle = join(btSessArtist, btSessAlbum);
+            if (btSessDur > 0) s.durationMs = btSessDur;
+            metaSrc = "sessione Bluetooth";
+        } else if (a != null && !nz(a.name).isEmpty()) {
+            s.title = nz(a.name);
+            s.subtitle = join(a.artist, a.album);
+            s.durationMs = a.duration;
+            metaSrc = "servizio media SAIC (la sessione non li dà)";
+        } else {
+            metaSrc = "nessuna";
+        }
+        String artSrc = "no";
+        String cover = a == null ? "" : nz(a.cover);
+        if (!cover.isEmpty() && !cover.startsWith("http")) {
+            if (!cover.equals(btArtKey)) {
+                btArtKey = cover;
+                btArt = null;
+                try {
+                    java.io.File f = new java.io.File(cover);
+                    if (f.isFile() && f.length() < 4_000_000) {
+                        android.graphics.BitmapFactory.Options o = new android.graphics.BitmapFactory.Options();
+                        o.inSampleSize = f.length() > 600_000 ? 2 : 1;
+                        btArt = android.graphics.BitmapFactory.decodeFile(cover, o);
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+            if (btArt != null) {
+                s.art = btArt;
+                artSrc = "sì (servizio media)";
+            }
+        }
+        if (s.art == null && btSessArt != null) {
+            s.art = btSessArt;
+            artSrc = "sì (sessione Bluetooth)";
+        }
+        boolean title = a != null && !nz(a.name).isEmpty() || !btSessTitle.isEmpty();
+        boolean artist = a != null && !nz(a.artist).isEmpty() || !btSessArtist.isEmpty();
+        btMetaSource = metaSrc;
+        Diag.put("media.bt.info", "titolo " + (title ? "sì" : "no") + " · artista " + (artist ? "sì" : "no") + " · copertina " + artSrc
+                + " · titolo/artista da " + metaSrc);
+    }
+
+    // ---- 1.0.2 (punto 9a): ultima sorgente usata davvero, ripresa all'accensione -------------------
+
+    private static final String K_LAST_SRC = "ultimaSorgenteAudio";
+    private int realCandidate;
+    private long realSince;
+
+    /** Una sorgente che suona per almeno 5 s diventa "l'ultima usata davvero" (salvata per la prossima accensione). */
+    private void noteRealSource(State s) {
+        int src = s.activeSrc;
+        boolean playing = src != 0 && src == s.source && s.playing;
+        long now = android.os.SystemClock.uptimeMillis();
+        if (!playing || resuming) {
+            realCandidate = 0;
+            return;
+        }
+        if (src != realCandidate) {
+            realCandidate = src;
+            realSince = now;
+            return;
+        }
+        if (now - realSince >= 5000) {
+            android.content.SharedPreferences sp = ctx.getSharedPreferences("mg4launcher", Context.MODE_PRIVATE);
+            if (sp.getInt(K_LAST_SRC, 0) != src) {
+                sp.edit().putInt(K_LAST_SRC, src).apply();
+                Diag.put("media.ultimaSorgente", sourceName(src) + " · " + clock());
+            }
+        }
+    }
+
+    private volatile boolean resuming;
+    private long lastPowerOn;
+
+    /**
+     * Accensione (avvio del launcher o risveglio dello schermo): dopo 8 s, se non suona già niente, si riprende l'ultima
+     * sorgente usata davvero, come fa l'app Media originale. Se non è disponibile (telefono non collegato) si passa alla
+     * radio, avviata davvero (sorgente, fuoco audio, ultima stazione).
+     */
+    public void onPowerOn(String why) {
+        long now = android.os.SystemClock.uptimeMillis();
+        if (now - lastPowerOn < 30_000) return;
+        lastPowerOn = now;
+        if (bg == null) {
+            pendingPowerOn = why;   // i servizi partono subito dopo il primo disegno: la ripresa si programma in start()
+            return;
+        }
+        bg.postDelayed(() -> resumeAfterPowerOn(why), 8000);
+    }
+
+    private volatile String pendingPowerOn;
+
+    private void resumeAfterPowerOn(String why) {
+        State s = last;
+        int saved = ctx.getSharedPreferences("mg4launcher", Context.MODE_PRIVATE).getInt(K_LAST_SRC, 0);
+        String head = "sorgente salvata " + (saved == 0 ? "nessuna" : sourceName(saved)) + " (" + why + ")";
+        if (s.activeSrc != 0 && s.playing) {
+            Diag.put("media.avvio", head + " · ripresa: già in riproduzione " + sourceName(s.activeSrc) + " (lasciata) · " + clock());
+            return;
+        }
+        if (saved == 0) {
+            Diag.put("media.avvio", head + " · ripresa: niente da riprendere · " + clock());
+            return;
+        }
+        resuming = true;
+        chosen = saved;   // si mostra subito la sorgente giusta, non la radio
+        switch (saved) {
+            case SRC_BT:
+                btStart(0, false, ok -> {
+                    if (ok) finishResume(head, "BLUETOOTH", "riuscita", 0);
+                    else fallbackRadio(head, "Bluetooth non disponibile (telefono non collegato?)");
+                });
+                break;
+            case SRC_CARPLAY:
+            case SRC_AAUTO:
+                if (s.deviceType == 0) {
+                    fallbackRadio(head, "CarPlay/Android Auto non collegato");
+                } else {
+                    try {
+                        remotePlay(true);
+                        finishResume(head, sourceName(saved), "inviato", 0);
+                    } catch (Exception e) {
+                        fallbackRadio(head, "comando non riuscito: " + e.getClass().getSimpleName());
+                    }
+                }
+                break;
+            case SRC_USB:
+            case SRC_ONLINE:
+                attempt("avvio " + sourceName(saved), () -> startSource(saved), 0, false, false, ok -> bg.postDelayed(() -> {
+                    if (last.playing && last.activeSrc == saved) finishResume(head, sourceName(saved), "riuscita", 0);
+                    else fallbackRadio(head, sourceName(saved) + " non parte");
+                }, 3000));
+                break;
+            default:
+                startRadioForResume(head, "radio");
+                break;
+        }
+    }
+
+    private void fallbackRadio(String head, String why) {
+        // il sistema potrebbe aver ripreso da solo qualcosa nel frattempo: in quel caso non si tocca
+        State s = last;
+        if (s.activeSrc != 0 && s.playing) {
+            finishResume(head, sourceName(s.activeSrc), "ripresa dal sistema", 0);
+            return;
+        }
+        chosen = SRC_RADIO;
+        startRadioForResume(head, why + " → radio");
+    }
+
+    private void startRadioForResume(String head, String what) {
+        startRadioForResume(head, what, 0);
+    }
+
+    private void startRadioForResume(String head, String what, int waits) {
+        if (radio.fragile()) {
+            finishResume(head, "RADIO", "non avviata: radio protetta", 0);
+            return;
+        }
+        String block = oldRadioBlock();
+        if (block != null) {
+            // firmware vecchio: il servizio radio va comandato solo dopo 30 s dal suo avvio; si riprova quando è pronto
+            if (waits < 12 && bg != null) {
+                Diag.put("media.avvio", head + " · ripresa RADIO in attesa: " + block);
+                bg.postDelayed(() -> startRadioForResume(head, what, waits + 1), 10_000);
+            } else {
+                finishResume(head, "RADIO", "non avviata: " + block, 0);
+            }
+            return;
+        }
+        final int[] tries = {0};
+        attempt("avvio RADIO", () -> {
+            tries[0]++;
+            autoRadio = true;
+            try {
+                radioResume();
+            } finally {
+                autoRadio = false;
+            }
+        }, 0, true, true, ok -> finishResume(head, "RADIO (" + what + ")", ok ? "riuscita" : "non riuscita", tries[0]));
+    }
+
+    /** Avvio radio automatico (accensione): mai aprire l'app Radio sopra il launcher. */
+    private volatile boolean autoRadio;
+
+    private void finishResume(String head, String resumed, String result, int tries) {
+        resuming = false;
+        Diag.put("media.avvio", head + " · ripresa " + resumed + " · esito " + result + (tries > 0 ? " · tentativi " + tries : "") + " · " + clock());
+        poll();
     }
 
     // ---- preferiti radio -------------------------------------------------------------------
@@ -1013,7 +1510,7 @@ public final class MediaClient {
         List<Station> out = new ArrayList<>();
         for (int band : new int[]{BAND_FM, BAND_DAB}) {
             try {
-                radio.lastCall = "preferiti (7)";
+                markRadio("preferiti (7)");
                 List<Station> l = Rpc.call(b, RAD, RAD_FAVORITES, p -> p.writeInt(band), MediaClient::readStations);
                 if (l != null) out.addAll(l);
             } catch (Exception e) {
@@ -1041,9 +1538,11 @@ public final class MediaClient {
         stationsAt = now;
         stationsBand = band;
         List<Station> out = new ArrayList<>();
-        try {
-            radio.lastCall = "elenco stazioni (22)";
-            List<Station> l = Rpc.call(b, RAD, RAD_LIST, p -> p.writeInt(band), MediaClient::readStations);
+        String src = "elenco della ricerca (" + radList + ")";
+        if (radList < 0) src = "nessuna (codici sconosciuti)";
+        else try {
+            markRadio("elenco stazioni (" + radList + ")");
+            List<Station> l = Rpc.call(b, RAD, radList, p -> p.writeInt(band), MediaClient::readStations);
             java.util.Set<String> seen = new java.util.HashSet<>();
             if (l != null) {
                 for (Station st : l) {
@@ -1058,6 +1557,12 @@ public final class MediaClient {
         } catch (Exception e) {
             Diag.error("radio.elenco", e.toString());
         }
+        // 1.0.3: elenco della ricerca vuoto (mai fatta una ricerca, o codici sconosciuti) → i preferiti di questa banda
+        if (out.isEmpty()) {
+            java.util.Set<String> seen = new java.util.HashSet<>();
+            for (Station st : favorites) if (st.band == band && st.key != null && seen.add(st.key)) out.add(st);
+            if (!out.isEmpty()) src = "preferiti (elenco della ricerca vuoto)";
+        }
         // paese RDS dalle stazioni trovate (conferma o corregge il paese automatico dei loghi)
         LogoPacks.noteStations(band, out);
         if (band == BAND_DAB) {
@@ -1065,8 +1570,124 @@ public final class MediaClient {
         } else {
             java.util.Collections.sort(out, (x, y) -> Integer.compare(x.khz, y.khz));
         }
-        Diag.put("radio.elenco", (band == BAND_DAB ? "DAB " : "FM ") + out.size() + " stazioni");
+        Diag.put("radio.elenco", "fonte " + src + " · " + (band == BAND_DAB ? "DAB " : "FM ") + out.size() + " stazioni · aggiornato: " + radioListWhy);
         stations = out;
+    }
+
+    /**
+     * 1.0.3: rilegge elenco stazioni e preferiti al prossimo giro (ritorno dall'app Radio nel launcher, callback del
+     * servizio radio). Prima l'elenco restava quello vecchio fino a 30 s.
+     */
+    public void refreshRadioLists(String why) {
+        radioListWhy = why;
+        Handler h = bg;
+        if (h == null) return;
+        // durante una ricerca il servizio radio avvisa a ogni stazione trovata: si rilegge una volta sola, 0,5 s dopo
+        h.removeCallbacks(radioRefresh);
+        h.postDelayed(radioRefresh, 500);
+    }
+
+    private final Runnable radioRefresh = () -> {
+        stationsAt = 0;
+        favoritesAt = 0;
+        if (running) poll();
+    };
+
+    private volatile String radioListWhy = "avvio";
+    private volatile boolean radioListenerOn;
+
+    /**
+     * Callback IRadioListener (solo con la tabella codici verificata): 2 = onProgramListChanged (elenco della ricerca),
+     * 5 = onCollectionListChange (preferiti). Non si legge il contenuto: si rilegge l'elenco con i codici 22 e 7.
+     * Agli altri codici si risponde senza leggere niente.
+     */
+    private final Binder radioListener = new Binder() {
+        @Override
+        protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
+            if (code == INTERFACE_TRANSACTION) {
+                reply.writeString(RAD_EVT);
+                return true;
+            }
+            if (code == 2) refreshRadioLists("servizio radio: elenco cambiato");
+            else if (code == 5) refreshRadioLists("servizio radio: preferiti cambiati");
+            if (reply != null) reply.writeNoException();
+            return true;
+        }
+    };
+
+    private void registerRadioListener() {
+        if (radList != 22) {
+            Diag.put("radio.ascolto", "non registrato: tabella codici " + radTable + " (elenco riletto ogni 30 s e al ritorno nel launcher)");
+            return;
+        }
+        try {
+            Rpc.call(radio.binder(), RAD, RAD_ADD_LISTENER, p -> p.writeStrongBinder(radioListener));
+            radioListenerOn = true;
+            Diag.put("radio.ascolto", "registrato (aggiornamento automatico di elenco e preferiti)");
+        } catch (Exception e) {
+            Diag.error("radio.ascolto", e.toString());
+        }
+    }
+
+    private void unregisterRadioListener() {
+        if (!radioListenerOn) return;
+        radioListenerOn = false;
+        IBinder b = radio.binder();
+        if (b == null) return;
+        new Thread(() -> {
+            try {
+                Rpc.call(b, RAD, RAD_REMOVE_LISTENER, p -> p.writeStrongBinder(radioListener));
+            } catch (Exception ignored) {
+            }
+        }, "mg4-radio-ascolto").start();
+    }
+
+    // ---- 1.0.3: seconda porta USB --------------------------------------------------------------
+
+    /** getUsbDevices() di IMusicPlayerBinderInterface: lista di UsbDevicesInfoBean (uuid, label, port, path, scanState). */
+    private static final int USB_DEVICES = 3;
+    private long usbPortsAt;
+    private String usbPortsLast = "";
+
+    /**
+     * Sulla SWI68 non esiste un servizio USB2 separato (né com.saicmotor.media né Usb2MediaBrowserService): un solo
+     * lettore del servizio media suona da entrambe le porte. USB 2 quindi non diventa una sorgente a parte; si scrive
+     * nel log quali porte sono montate e da quale suona il brano (dal percorso del file). Porte del firmware: "usb3" è
+     * USB 1 e "usb1" è USB 2 secondo l'SDK SAIC (da confermare in auto con questo log). Il nome del disco non si scrive.
+     */
+    private void usbPorts(IBinder b, String playingPath, boolean force) throws RemoteException {
+        long now = android.os.SystemClock.uptimeMillis();
+        if (b == null || !force && now - usbPortsAt < 60_000) return;
+        usbPortsAt = now;
+        List<String[]> devs = Rpc.call(b, USB, USB_DEVICES, Rpc.NONE, p -> {
+            List<String[]> out = new ArrayList<>();
+            int n = p.readInt();
+            for (int i = 0; i < n && i < 8; i++) {
+                if (p.readInt() == 0) continue;
+                p.readString();                         // uuid
+                p.readString();                         // etichetta del disco (non si scrive)
+                String port = p.readString(), path = p.readString();
+                int scan = p.readInt();
+                out.add(new String[]{nz(port), nz(path), String.valueOf(scan)});
+            }
+            return out;
+        });
+        StringBuilder sb = new StringBuilder("SWI133: nessun servizio USB2 separato (un solo lettore per le due porte, come la SWI68): USB 2 non mostrata a parte");
+        sb.append(" · dispositivi ");
+        String playing = "—";
+        if (devs == null || devs.isEmpty()) sb.append("nessuno");
+        else for (int i = 0; i < devs.size(); i++) {
+            String[] d = devs.get(i);
+            String name = "usb3".equals(d[0]) ? "USB 1" : "usb1".equals(d[0]) ? "USB 2" : "porta ?";
+            sb.append(i == 0 ? "" : ", ").append(name).append(" (porta ").append(d[0]).append(", scansione ").append(d[2]).append(')');
+            if (playingPath != null && !d[1].isEmpty() && playingPath.startsWith(d[1])) playing = name + " (porta " + d[0] + ")";
+        }
+        sb.append(" · brano da ").append(playingPath == null ? "—" : playing);
+        String txt = sb.toString();
+        if (!txt.equals(usbPortsLast)) {
+            usbPortsLast = txt;
+            Diag.put("media.usb2", txt);
+        }
     }
 
     /** Lista di RadioBean (createTypedArrayList): legge ogni elemento per intero. */
@@ -1128,16 +1749,15 @@ public final class MediaClient {
      * (getLastRadioInfo), altrimenti il primo preferito o la prima stazione trovata.
      */
     public void switchBand(int band) {
-        userAction();
         chosen = SRC_RADIO;
-        // 0.3.2 (punto 3): servizio non pronto → nuovi tentativi (1, 2, 4 s)
-        command("banda " + (band == BAND_DAB ? "DAB" : "FM"), () -> {
+        radioCommand("radio.banda", () -> {
             {
                 IBinder b = radio.binder();
                 if (b == null) throw new RemoteException("servizio radio non collegato");
                 Station st = null;
                 try {
-                    st = Rpc.call(b, RAD, RAD_LAST_INFO, p -> p.writeInt(band), p -> Rpc.readNullable(p, MediaClient::readStationHead));
+                    st = radLastInfo < 0 ? null
+                            : Rpc.call(b, RAD, radLastInfo, p -> p.writeInt(band), p -> Rpc.readNullable(p, MediaClient::readStationHead));
                 } catch (Exception e) {
                     Diag.error("radio.banda.ultima", e.toString());
                 }
@@ -1147,7 +1767,8 @@ public final class MediaClient {
                 }
                 if (st == null) {
                     try {
-                        List<Station> list = Rpc.call(b, RAD, RAD_LIST, p -> p.writeInt(band), MediaClient::readStations);
+                        List<Station> list = radList < 0 ? null
+                                : Rpc.call(b, RAD, radList, p -> p.writeInt(band), MediaClient::readStations);
                         if (list != null) for (Station f : list) if (valid(f, band)) { st = f; break; }
                     } catch (Exception e) {
                         Diag.error("radio.banda.elenco", e.toString());
@@ -1160,6 +1781,7 @@ public final class MediaClient {
                     fm.khz = 87500;
                     st = fm;
                 }
+                if (last.activeSrc != SRC_RADIO) radioSourceUp("cambio banda");
                 if (st != null) tuneNow(b, st);
             }
         });
@@ -1171,6 +1793,7 @@ public final class MediaClient {
     }
 
     private void tuneNow(IBinder b, Station st) throws RemoteException {
+        markRadio(st.band == BAND_DAB ? "sintonia DAB (9)" : "sintonia FM/AM (8)");
         if (st.band == BAND_DAB) {
             Rpc.call(b, RAD, RAD_TUNE_DAB, p -> {
                 p.writeInt(st.index);
@@ -1190,11 +1813,11 @@ public final class MediaClient {
 
     /** Sintonizza una stazione dei preferiti e passa alla radio. */
     public void tune(Station st) {
-        userAction();
         chosen = SRC_RADIO;
-        command("sintonia " + st.label(), () -> {
+        radioCommand("radio.sintonia", () -> {
             IBinder b = radio.binder();
             if (b == null) throw new RemoteException("servizio radio non collegato");
+            if (last.activeSrc != SRC_RADIO) radioSourceUp("sintonia stazione");
             tuneNow(b, st);
         });
     }
@@ -1208,7 +1831,6 @@ public final class MediaClient {
     }
 
     public void playPause() {
-        userAction();
         command("play", () -> {
             State s = last;
             {
@@ -1217,17 +1839,21 @@ public final class MediaClient {
                         Rpc.call(usb.binder(), USB, USB_PLAY_OR_PAUSE, Rpc.NONE);
                         break;
                     case SRC_BT: {
-                        int r = Rpc.call(bt.binder(), BT, s.playing ? BT_PAUSE : BT_PLAY, Rpc.NONE, Parcel::readInt);
-                        btCommandDiag(s.playing ? "pausa" : "play", r);
+                        if (!s.playing && s.activeSrc != SRC_BT) {
+                            // il Bluetooth non è la sorgente attiva: play = avvio vero (fuoco audio + play, con verifica)
+                            btStart(0, true, null);
+                            break;
+                        }
+                        Integer r = Rpc.call(bt.binder(), BT, s.playing ? BT_PAUSE : BT_PLAY, Rpc.NONE, Parcel::readInt);
+                        btCommand(s.playing ? "pausa" : "play", r);
                         break;
                     }
                     case SRC_ONLINE:
                         Rpc.call(online.binder(), ONL, s.playing ? ONL_PAUSE : ONL_PLAY, Rpc.NONE, Parcel::readInt);
                         break;
                     case SRC_RADIO:
-                        // 0.3.2 (punto 9b): Play sulla radio = avvio vero della sessione radio (come la sorgente Radio)
                         if (s.playing) radioPause();
-                        else radioStart("tasto Play");
+                        else radioResume();
                         break;
                     case SRC_CARPLAY:
                     case SRC_AAUTO:
@@ -1241,7 +1867,6 @@ public final class MediaClient {
     }
 
     public void skip(boolean forward) {
-        userAction();
         command(forward ? "salto avanti" : "salto indietro", () -> {
             State s = last;
             {
@@ -1250,8 +1875,8 @@ public final class MediaClient {
                         Rpc.call(usb.binder(), USB, forward ? USB_NEXT : USB_PREV, Rpc.NONE);
                         break;
                     case SRC_BT: {
-                        int r = Rpc.call(bt.binder(), BT, forward ? BT_NEXT : BT_PREV, Rpc.NONE, Parcel::readInt);
-                        btCommandDiag(forward ? "avanti" : "indietro", r);
+                        Integer r = Rpc.call(bt.binder(), BT, forward ? BT_NEXT : BT_PREV, Rpc.NONE, Parcel::readInt);
+                        btCommand(forward ? "avanti" : "indietro", r);
                         break;
                     }
                     case SRC_ONLINE:
@@ -1259,6 +1884,7 @@ public final class MediaClient {
                         break;
                     case SRC_RADIO: {
                         int band = s.radioBand > 0 ? s.radioBand : BAND_FM;
+                        markRadio(forward ? "avanti (13)" : "indietro (14)");
                         Rpc.call(radio.binder(), RAD, forward ? RAD_NEXT : RAD_PREV, p -> p.writeInt(band), Parcel::readInt);
                         break;
                     }
@@ -1271,22 +1897,6 @@ public final class MediaClient {
                 }
             }
         });
-    }
-
-    /** 0.3.2 (punto 9e): esito dei comandi Bluetooth (risposta del servizio e stato dopo 1,5 s). */
-    private void btCommandDiag(String what, int reply) {
-        String before = last.title;
-        if (bg == null) return;
-        bg.postDelayed(() -> {
-            boolean playing = false;
-            try {
-                playing = Rpc.callBool(bt.binder(), BT, BT_STATE);
-            } catch (Exception ignored) {
-            }
-            String after = last.title;
-            Diag.put("media.bt.comandi", what + " · risposta " + reply + " · dopo " + (playing ? "in riproduzione" : "in pausa")
-                    + (what.equals("avanti") || what.equals("indietro") ? " · brano " + (after.equals(before) ? "uguale" : "cambiato") : "") + " · " + clock());
-        }, 1500);
     }
 
     /** True se la sessione CarPlay/Android Auto dice di essere in riproduzione. */
@@ -1334,41 +1944,13 @@ public final class MediaClient {
 
     /** Apre CarPlay o Android Auto a schermo intero. */
     public boolean openProjection() {
-        return openProjection(ctx, last.deviceType);
-    }
-
-    private static volatile int deviceTypeNow;
-    private static volatile long deviceTypeAt;
-    private static volatile MediaClient instance;
-
-    /** Quando è stato letto l'ultima volta lo stato del telefono (elapsedRealtime). */
-    public static long deviceTypeAt() {
-        return deviceTypeAt;
-    }
-
-    /** Rilettura subito dello stato (anche con il launcher non visibile). */
-    public static void refreshSoon() {
-        MediaClient m = instance;
-        if (m != null) m.post(m::poll);
-    }
-
-    /** Telefono/box collegato ora: 0 nessuno, 1 CarPlay, 2 Android Auto (ultima lettura). */
-    public static int deviceTypeNow() {
-        return deviceTypeNow;
-    }
-
-    /**
-     * Apre CarPlay o Android Auto come la home originale (MAIN + categoria HOME + nuovo task): lo usano il pulsante
-     * CarPlay/Android Auto e il ritorno dopo la retromarcia (0.3.2, punto 5).
-     */
-    public static boolean openProjection(Context ctx, int type) {
+        int type = last.deviceType;
         Intent i = new Intent(Intent.ACTION_MAIN);
         if (type == DEV_AAUTO) {
             i.setComponent(new ComponentName("com.allgo.app.androidauto", "com.allgo.app.androidauto.ProjectionActivity"));
         } else {
             i.setComponent(new ComponentName("com.allgo.carplay.service", "com.allgo.carplay.service.CarPlayActivity"));
         }
-        i.addCategory(Intent.CATEGORY_HOME);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             ctx.startActivity(i);

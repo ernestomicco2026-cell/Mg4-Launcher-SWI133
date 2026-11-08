@@ -36,14 +36,6 @@ public final class CarProps {
     /** Proprietà negate per un permesso che l'auto non concede (SecurityException): non si rileggono più. */
     private final java.util.Set<Integer> denied = java.util.Collections.synchronizedSet(new java.util.HashSet<>());
 
-    // 0.3.2: luci e giorno/notte (proprietà vendor della SWI133, tabella segnali di vehiclesettingservice_my24_P)
-    /** Anabbaglianti (BOOLEAN), luci di posizione (INT32), posizione del comando luci (INT32). */
-    public static final int DIPPED_BEAM = 555782944, MAIN_BEAM = 555782943, SIDE_LIGHTS = 557880099, LIGHT_SWITCH = 557880119;
-    /** Giorno/notte del quadro (INT32) e livello di attenuazione (FLOAT) del FICM. */
-    public static final int FICM_DAY_NIGHT = 557873928, DIM_LEVEL = 559971102;
-    /** Validità della "ambient" del clima (0 = valida). */
-    public static final int HVAC_AMBIENT_VALID = 356525355;
-
     /** Velocità del veicolo (FLOAT, m/s) e permesso che la protegge. */
     public static final int PERF_VEHICLE_SPEED = 291504647;
     public static final String PERM_CAR_SPEED = "android.car.permission.CAR_SPEED";
@@ -134,7 +126,9 @@ public final class CarProps {
                         allAreas.put(id, ids != null && ids.length > 0 ? ids : new int[]{0});
                     }
                     Diag.put("auto.proprietà", cfgs.size() + " disponibili; TPMS " + (areas.containsKey(TIRE_FL) ? "sì" : "no")
-                            + ", temp. interna " + (areas.containsKey(HVAC_TEMPERATURE_CURRENT) || areas.containsKey(HVAC_AMBIENT_TEMPERATURE) ? "sì" : "no"));
+                            // 1.0.3: "ambient" è la temperatura esterna, non conta come interna
+                            + ", temp. interna " + (areas.containsKey(HVAC_TEMPERATURE_CURRENT) ? "sì"
+                            : areas.containsKey(HVAC_AMBIENT_TEMPERATURE) ? "no (solo ambient = esterna)" : "no"));
                 }
             } catch (Throwable e) {
                 areasRead = false;
@@ -170,48 +164,6 @@ public final class CarProps {
         } catch (Throwable e) {
             return Integer.MIN_VALUE;
         }
-    }
-
-    /** Booleano come 1/0, Integer.MIN_VALUE se non leggibile o assente (senza errori nella diagnostica). */
-    public int getBoolQuiet(int prop) {
-        if (unsupported.contains(prop) || denied.contains(prop)) return Integer.MIN_VALUE;
-        try {
-            Object p = pm();
-            if (p == null) return Integer.MIN_VALUE;
-            area(prop);
-            if (!areas.containsKey(prop)) return Integer.MIN_VALUE;
-            Method m = p.getClass().getMethod("getBooleanProperty", int.class, int.class);
-            return (Boolean) m.invoke(p, prop, area(prop)) ? 1 : 0;
-        } catch (Throwable e) {
-            Throwable c = e instanceof java.lang.reflect.InvocationTargetException && e.getCause() != null ? e.getCause() : e;
-            if (c instanceof SecurityException) denied.add(prop);
-            else if (c instanceof IllegalArgumentException) unsupported.add(prop);
-            return Integer.MIN_VALUE;
-        }
-    }
-
-    /** Decimale o NaN, senza errori nella diagnostica (proprietà che potrebbero non esistere). */
-    public float getFloatQuiet(int prop) {
-        if (unsupported.contains(prop) || denied.contains(prop)) return Float.NaN;
-        try {
-            Object p = pm();
-            if (p == null) return Float.NaN;
-            area(prop);
-            if (!areas.containsKey(prop)) return Float.NaN;
-            Method m = p.getClass().getMethod("getFloatProperty", int.class, int.class);
-            return (Float) m.invoke(p, prop, area(prop));
-        } catch (Throwable e) {
-            Throwable c = e instanceof java.lang.reflect.InvocationTargetException && e.getCause() != null ? e.getCause() : e;
-            if (c instanceof SecurityException) denied.add(prop);
-            else if (c instanceof IllegalArgumentException) unsupported.add(prop);
-            return Float.NaN;
-        }
-    }
-
-    /** True se la proprietà è nell'elenco dell'auto. */
-    public boolean listed(int prop) {
-        area(prop);
-        return areas.containsKey(prop);
     }
 
     /** Decimale o NaN se non leggibile. Dopo il primo rifiuto dell'auto la proprietà non si rilegge più. */
@@ -297,6 +249,83 @@ public final class CarProps {
                     .append(" (").append(r[0]).append('…').append(r[1]).append(')').append(outsideLike ? " =est" : "");
         }
         return n + " letture · " + (all.length() == 0 ? "nessun valore da temperatura" : all);
+    }
+
+    // ---- 1.0.2: proprietà standard di Android Automotive per luci e giorno/notte --------------------
+    /** NIGHT_MODE (BOOLEAN): il sistema dice che è notte. */
+    public static final int NIGHT_MODE = 287310855;
+    /** HEADLIGHTS_STATE (INT32): 0 spenti, 1 accesi, 2 luci diurne. */
+    public static final int HEADLIGHTS_STATE = 289410560;
+    /** HEADLIGHTS_SWITCH (INT32): posizione della leva, 0 spenti, 1 accesi, 2 diurne, 3 automatico. */
+    public static final int HEADLIGHTS_SWITCH = 289410576;
+    /**
+     * SWI133: le proprietà standard dei fari non sono nella tabella segnali del servizio veicolo (vehiclesettingservice_my24_P,
+     * res/xml/signals); ci sono quelle SAIC: anabbaglianti (BOOLEAN) e luci di posizione (INT32), lette per prime.
+     */
+    public static final int SAIC_DIPPED_BEAM = 555782944, SAIC_SIDE_LIGHTS = 557880099;
+    /** DISPLAY_BRIGHTNESS (INT32). */
+    public static final int DISPLAY_BRIGHTNESS = 289409539;
+
+    /** True se la proprietà è nell'elenco dell'auto (letto una volta). */
+    public synchronized boolean has(int prop) {
+        try {
+            area(prop);
+        } catch (Throwable ignored) {
+        }
+        return areasRead && areas.containsKey(prop);
+    }
+
+    /** Booleano come 1/0, Integer.MIN_VALUE se non c'è o non si legge (nessun errore nella diagnostica). */
+    public int getBoolQuiet(int prop) {
+        if (unsupported.contains(prop) || denied.contains(prop)) return Integer.MIN_VALUE;
+        try {
+            Object p = pm();
+            if (p == null || !has(prop)) return Integer.MIN_VALUE;
+            Method m = p.getClass().getMethod("getBooleanProperty", int.class, int.class);
+            return ((Boolean) m.invoke(p, prop, area(prop))) ? 1 : 0;
+        } catch (Throwable e) {
+            Throwable c = e instanceof java.lang.reflect.InvocationTargetException && e.getCause() != null ? e.getCause() : e;
+            if (c instanceof SecurityException) denied.add(prop);
+            else if (c instanceof IllegalArgumentException) unsupported.add(prop);
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    /** Intero senza errori nella diagnostica; ricorda i rifiuti dell'auto. */
+    public int getIntSafe(int prop) {
+        if (unsupported.contains(prop) || denied.contains(prop)) return Integer.MIN_VALUE;
+        try {
+            Object p = pm();
+            if (p == null || !has(prop)) return Integer.MIN_VALUE;
+            Method m = p.getClass().getMethod("getIntProperty", int.class, int.class);
+            return (Integer) m.invoke(p, prop, area(prop));
+        } catch (Throwable e) {
+            Throwable c = e instanceof java.lang.reflect.InvocationTargetException && e.getCause() != null ? e.getCause() : e;
+            if (c instanceof SecurityException) denied.add(prop);
+            else if (c instanceof IllegalArgumentException) unsupported.add(prop);
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    /** Valore decimale per ogni area della proprietà (area → valore), vuoto se non c'è. Nessun errore nel log. */
+    public synchronized Map<Integer, Float> floatsAllAreas(int prop) {
+        Map<Integer, Float> out = new java.util.LinkedHashMap<>();
+        if (unsupported.contains(prop) || denied.contains(prop)) return out;
+        try {
+            Object p = pm();
+            if (p == null || !has(prop)) return out;
+            Method m = p.getClass().getMethod("getFloatProperty", int.class, int.class);
+            int[] as = allAreas.get(prop);
+            if (as == null) as = new int[]{0};
+            for (int a : as) {
+                try {
+                    out.put(a, (Float) m.invoke(p, prop, a));
+                } catch (Throwable ignored) {
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        return out;
     }
 
     /** False se la proprietà non è nell'elenco dell'auto o è stata rifiutata; null se non si sa ancora. */

@@ -355,10 +355,6 @@ public final class Updater {
         for (int hops = 0; code / 100 == 3 && hops < 5; hops++) {
             String loc = c.getHeaderField("Location");
             c.disconnect();
-            // 0.3.2: gli aggiornamenti automatici restano sul repository (raw.githubusercontent.com), nessun altro host
-            if (r != null && r.apkUrl != null && r.apkUrl.startsWith(RAW_BASE)
-                    && (loc == null || !loc.startsWith("https://raw.githubusercontent.com/")))
-                throw new HttpError("reindirizzamento verso un altro indirizzo rifiutato");
             boolean api = loc != null && loc.startsWith("https://api.github.com/");
             c = open(loc, api ? token : "", api ? accept : "application/octet-stream");
             c.setInstanceFollowRedirects(false);
@@ -440,12 +436,6 @@ public final class Updater {
                 ctx.unregisterReceiver(this);
             } catch (Exception ignored) {
             }
-            Done d = pendingDone;
-            pendingDone = null;
-            if (d != null) {
-                String m = i.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
-                d.done(st == PackageInstaller.STATUS_SUCCESS, st == PackageInstaller.STATUS_SUCCESS ? "" : "stato " + st + (m == null ? "" : ": " + m));
-            }
             if (st == PackageInstaller.STATUS_SUCCESS) {
                 status(L.s(R.string.upd_installed), null, false);
             } else {
@@ -475,6 +465,222 @@ public final class Updater {
         return bo.toString("UTF-8");
     }
 
+    // =========================================================================================
+    // 1.0.2 (punto 10): controllo automatico, aggiornamento forzato ("minima") e avvisi da remoto.
+    // Solo indirizzi HTTPS del proprio repository su raw.githubusercontent.com, nessun altro.
+    // =========================================================================================
+
+    public static final String OWN_RAW = "https://raw.githubusercontent.com/" + com.mg4.launcher.ui.Prefs.DEFAULT_REPO + "/main/";
+    private static final int MAX_FORCED_TRIES = 3;
+
+    /** Risultato del controllo da remoto. */
+    public static final class Remote {
+        public Release release;               // null se latest.json non si legge
+        public String minima = "";
+        /** La versione installata è più vecchia di "minima" (e c'è un APK più nuovo da installare). */
+        public boolean belowMinima;
+        public JSONArray notices;             // null se avvisi.json manca o non si legge
+        public String error = "";
+    }
+
+    public interface RemoteCb {
+        void done(Remote r);
+    }
+
+    private String lastRemote = "mai";
+
+    /** Controllo da remoto in background (latest.json e avvisi.json); cb sul thread principale, solo se qualcosa si è letto. */
+    public void checkRemote(RemoteCb cb) {
+        if (!Offline.canTry()) {
+            remoteDiag(null, "offline: rimandato");
+            return;
+        }
+        bg.post(() -> {
+            Remote out = new Remote();
+            try {
+                JSONObject o = new JSONObject(get(OWN_RAW + "releases/latest.json"));
+                Release r = new Release();
+                r.tag = o.optString("version", "");
+                r.name = "MG4 Launcher " + r.tag;
+                r.notes = o.optString("notes", "");
+                String apk = o.optString("apk", "");
+                // solo un percorso dentro il proprio repository
+                if (!apk.isEmpty() && !apk.contains("://") && !apk.contains("..") && apk.toLowerCase().endsWith(".apk")) {
+                    r.apkUrl = OWN_RAW + (apk.startsWith("/") ? apk.substring(1) : apk);
+                    r.apkName = apk.substring(apk.lastIndexOf('/') + 1);
+                    r.apkSize = o.optLong("size");
+                }
+                r.newer = compare(r.tag, currentVersion()) > 0;
+                out.release = r;
+                out.minima = o.optString("minima", "").trim();
+                out.belowMinima = !out.minima.isEmpty() && compare(currentVersion(), out.minima) < 0 && r.newer && r.apkUrl != null;
+                Offline.ok();
+            } catch (Exception e) {
+                out.error = e.getClass().getSimpleName() + (e.getMessage() == null ? "" : ": " + e.getMessage());
+                if (Offline.failed("aggiornamenti", e)) out.error = "offline";
+            }
+            try {
+                JSONObject a = new JSONObject(get(OWN_RAW + "releases/avvisi.json"));
+                out.notices = a.optJSONArray("avvisi");
+            } catch (Exception e) {
+                out.notices = null;   // file assente o non leggibile: nessun avviso, nessun errore mostrato
+                Diag.put("avvisi.lettura", "avvisi.json non letto (" + e.getClass().getSimpleName() + ")");
+            }
+            lastRemote = new java.text.SimpleDateFormat("dd/MM HH:mm", java.util.Locale.ITALY).format(new java.util.Date());
+            remoteDiag(out, out.release == null ? "non riuscito: " + out.error
+                    : out.release.newer ? "versione nuova " + out.release.tag : "aggiornato");
+            main.post(() -> cb.done(out));
+        });
+    }
+
+    private String lastResult = "—";
+
+    /** aggiornamento.stato: ultimo controllo, versione trovata, "minima", esito, tentativi. */
+    public void remoteDiag(Remote r, String result) {
+        if (result != null) lastResult = result;
+        String found = r == null || r.release == null ? "—" : r.release.tag;
+        String minima = r == null || r.minima.isEmpty() ? "—" : r.minima;
+        int tries = r == null || r.release == null ? 0 : forcedTries(r.release.tag);
+        Diag.put("aggiornamento.stato", "installata " + currentVersion() + " · ultimo controllo " + lastRemote + " · trovata " + found
+                + " · minima " + minima + " · esito " + lastResult + " · tentativi forzati " + tries + "/" + MAX_FORCED_TRIES);
+    }
+
+    private android.content.SharedPreferences sp() {
+        return ctx.getSharedPreferences("mg4launcher", Context.MODE_PRIVATE);
+    }
+
+    public int forcedTries(String version) {
+        return sp().getInt("aggForzatoTentativi:" + version, 0);
+    }
+
+    /** Si può ancora tentare l'installazione forzata di questa versione (al massimo 3 volte)? */
+    public boolean canForce(String version) {
+        return forcedTries(version) < MAX_FORCED_TRIES;
+    }
+
+    /**
+     * Installa una release letta da remoto (raw del proprio repository). Prima di installare controlla che sia un APK,
+     * che la dimensione corrisponda a "size" e che sia firmato con la stessa chiave del launcher installato.
+     * forced = true: aggiornamento forzato (conta i tentativi, al massimo 3 per versione).
+     */
+    public void installRemote(Release r, boolean forced) {
+        if (busy || r == null || r.apkUrl == null || !r.apkUrl.startsWith(OWN_RAW)) return;
+        if (HomeMode.officina(ctx)) return;
+        if (forced && !canForce(r.tag)) {
+            remoteDiag(null, "aggiornamento forzato fermo: già " + MAX_FORCED_TRIES + " tentativi falliti per " + r.tag);
+            return;
+        }
+        String kind = forced ? "forzato" : "dalla home";
+        status(L.f(R.string.upd_downloading, r.apkName), r, true);
+        bg.post(() -> {
+            byte[] apk;
+            try {
+                apk = download(r.apkUrl, r, "", "application/octet-stream");
+            } catch (Exception e) {
+                status(L.f(R.string.upd_download_failed, describe(e)), r, false);
+                remoteDiag(null, "aggiornamento " + kind + ": download non riuscito (" + describe(e) + ")");
+                return;
+            }
+            if (!isApk(apk)) {
+                status(L.f(R.string.upd_invalid_apk, apk.length), r, false);
+                remoteDiag(null, "aggiornamento " + kind + ": file non valido (" + apk.length + " byte)");
+                return;
+            }
+            if (r.apkSize > 0 && apk.length != r.apkSize) {
+                status(L.f(R.string.upd_invalid_apk, apk.length), r, false);
+                remoteDiag(null, "aggiornamento " + kind + ": dimensione " + apk.length + " diversa da size " + r.apkSize + ": non installato");
+                return;
+            }
+            String sig = sameSigner(apk);
+            if (sig != null) {
+                status(L.s(R.string.upd_wrong_package), r, false);
+                remoteDiag(null, "aggiornamento " + kind + ": " + sig + ": non installato");
+                return;
+            }
+            String version = checkPackage(apk);
+            if (version == null) {
+                status(L.s(R.string.upd_wrong_package), r, false);
+                remoteDiag(null, "aggiornamento " + kind + ": pacchetto diverso: non installato");
+                return;
+            }
+            // il tentativo forzato si conta solo con un APK valido in mano (senza rete non si consuma)
+            if (forced) sp().edit().putInt("aggForzatoTentativi:" + r.tag, forcedTries(r.tag) + 1).apply();
+            status(L.f(R.string.upd_installing, version), r, true);
+            remoteDiag(null, "aggiornamento " + kind + ": installazione di " + version + " avviata");
+            try {
+                installApk(apk);
+            } catch (Exception e) {
+                status(L.f(R.string.upd_install_failed, describe(e)), r, false);
+                remoteDiag(null, "aggiornamento " + kind + ": installazione non riuscita (" + describe(e) + ")");
+            }
+        });
+    }
+
+    /** null se l'APK è firmato con la stessa chiave del launcher installato, altrimenti il motivo. */
+    @SuppressWarnings("deprecation")
+    private String sameSigner(byte[] apk) {
+        File f = new File(ctx.getCacheDir(), "update-sig.apk");
+        try {
+            try (OutputStream os = new FileOutputStream(f)) {
+                os.write(apk);
+            }
+            PackageManager pm = ctx.getPackageManager();
+            PackageInfo a = pm.getPackageArchiveInfo(f.getPath(), PackageManager.GET_SIGNATURES);
+            PackageInfo me = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_SIGNATURES);
+            if (a == null || a.signatures == null || a.signatures.length == 0) return "firma dell'APK non leggibile";
+            if (!ctx.getPackageName().equals(a.packageName)) return "pacchetto diverso (" + a.packageName + ")";
+            java.util.Set<String> x = new java.util.HashSet<>(), y = new java.util.HashSet<>();
+            for (android.content.pm.Signature s : a.signatures) x.add(s.toCharsString());
+            for (android.content.pm.Signature s : me.signatures) y.add(s.toCharsString());
+            return x.equals(y) ? null : "firma diversa da quella del launcher installato";
+        } catch (Exception e) {
+            return "controllo della firma non riuscito (" + e.getClass().getSimpleName() + ")";
+        } finally {
+            f.delete();
+        }
+    }
+
+    /** 1.0.3 (Controllo funzioni): legge latest.json e avvisi.json senza toccare lo stato degli aggiornamenti. */
+    public static String[] probeRemote() {
+        String[] out = new String[2];
+        try {
+            out[0] = new JSONObject(get(OWN_RAW + "releases/latest.json")).optString("version", "?");
+        } catch (Exception e) {
+            out[0] = null;
+        }
+        try {
+            JSONArray a = new JSONObject(get(OWN_RAW + "releases/avvisi.json")).optJSONArray("avvisi");
+            out[1] = String.valueOf(a == null ? 0 : a.length());
+        } catch (Exception e) {
+            out[1] = null;
+        }
+        return out;
+    }
+
+    /** GET di un file piccolo (JSON) dal proprio repository. */
+    private static String get(String url) throws IOException {
+        if (!url.startsWith(OWN_RAW)) throw new IOException("indirizzo non ammesso");
+        HttpURLConnection c = open(url, "", "application/json");
+        c.setInstanceFollowRedirects(false);
+        int code = c.getResponseCode();
+        if (code != 200) {
+            c.disconnect();
+            throw new HttpError("HTTP " + code);
+        }
+        try (InputStream in = c.getInputStream()) {
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            byte[] b = new byte[8192];
+            int n;
+            while ((n = in.read(b)) > 0) {
+                bo.write(b, 0, n);
+                if (bo.size() > 256 * 1024) throw new IOException("file troppo grande");
+            }
+            return bo.toString("UTF-8");
+        } finally {
+            c.disconnect();
+        }
+    }
+
     /** Confronta versioni tipo "v0.3.0" e "0.2.0" numero per numero. */
     static int compare(String a, String b) {
         int[] x = nums(a), y = nums(b);
@@ -496,182 +702,6 @@ public final class Updater {
             }
         }
         return out;
-    }
-
-    // ==========================================================================================
-    // 0.3.2 (punto 10): controllo automatico, aggiornamento forzato e avvisi da remoto
-    // Solo indirizzi HTTPS del repository del launcher su raw.githubusercontent.com (nessun altro indirizzo).
-    // ==========================================================================================
-
-    public static final String RAW_BASE = "https://raw.githubusercontent.com/ernestomicco2026-cell/Mg4-Launcher-SWI133/main/";
-
-    /** Risultato di un controllo automatico. */
-    public static final class Auto {
-        public Release release;          // null se latest.json non si legge
-        public String minima = "";       // versione minima richiesta ("" = nessuna)
-        public JSONArray avvisi;         // null se avvisi.json manca o non si legge
-        public String error = "";
-    }
-
-    public interface AutoResult {
-        void done(Auto a);
-    }
-
-    /** Legge releases/latest.json e releases/avvisi.json (in background); risultato sul thread principale. */
-    public void checkAuto(AutoResult cb) {
-        if (!Offline.canTry()) {
-            Diag.put("aggiornamenti.auto", "offline: rimandato");
-            Auto a = new Auto();
-            a.error = "offline";
-            main.post(() -> cb.done(a));
-            return;
-        }
-        bg.post(() -> {
-            Auto a = new Auto();
-            try {
-                JSONObject o = new JSONObject(rawText("releases/latest.json"));
-                Release r = new Release();
-                r.tag = o.optString("version", "");
-                r.name = "MG4 Launcher " + r.tag;
-                r.notes = o.optString("notes", "");
-                String apk = o.optString("apk", "");
-                if (apk.startsWith("releases/") && apk.endsWith(".apk") && !apk.contains("..")) {
-                    r.apkUrl = RAW_BASE + apk;
-                    r.apkName = apk.substring(apk.lastIndexOf('/') + 1);
-                    r.apkSize = o.optLong("size");
-                    r.path = apk;
-                }
-                r.newer = compare(r.tag, currentVersion()) > 0;
-                a.release = r;
-                a.minima = o.optString("minima", "").trim();
-                Offline.ok();
-            } catch (Exception e) {
-                a.error = e.getClass().getSimpleName();
-                if (!Offline.failed("aggiornamenti", e)) Diag.put("aggiornamenti.auto", "non riuscito: " + Diag.netError(e));
-            }
-            if (a.release != null) {
-                try {
-                    // file facoltativo: se manca o non si legge non succede niente
-                    a.avvisi = new JSONObject(rawText("releases/avvisi.json")).optJSONArray("avvisi");
-                } catch (Exception ignored) {
-                    a.avvisi = null;
-                }
-            }
-            main.post(() -> cb.done(a));
-        });
-    }
-
-    private String rawText(String path) throws IOException {
-        HttpURLConnection c = open(RAW_BASE + path, "", "application/json, text/plain");
-        c.setUseCaches(false);
-        int code = c.getResponseCode();
-        if (code != 200) {
-            c.disconnect();
-            throw new IOException("HTTP " + code + " per " + path);
-        }
-        String s = readAll(c.getInputStream());
-        c.disconnect();
-        return s;
-    }
-
-    public interface Done {
-        /** ok = installazione riuscita; msg = motivo se no. */
-        void done(boolean ok, String msg);
-    }
-
-    private volatile Done pendingDone;
-
-    /**
-     * Scarica (solo da raw.githubusercontent.com del repository) e installa un aggiornamento trovato da checkAuto.
-     * Prima di installare controlla dimensione ("size" di latest.json), nome del pacchetto, versione e che l'APK sia
-     * firmato con la stessa chiave del launcher installato. Se un controllo non torna non installa.
-     */
-    /** Controllo fatto subito prima di installare (es. auto ancora ferma); false = non installare. Thread di lavoro. */
-    public interface Guard {
-        boolean ok();
-    }
-
-    public void installAuto(Release r, Done cb) {
-        installAuto(r, null, cb);
-    }
-
-    public void installAuto(Release r, Guard guard, Done cb) {
-        if (busy || r == null || r.apkUrl == null || !r.apkUrl.startsWith(RAW_BASE)) {
-            if (cb != null) main.post(() -> cb.done(false, busy ? "occupato" : "APK non indicato"));
-            return;
-        }
-        if (HomeMode.officina(ctx)) {
-            if (cb != null) main.post(() -> cb.done(false, "modalità officina"));
-            return;
-        }
-        status(L.f(R.string.upd_downloading, r.apkName), r, true);
-        bg.post(() -> {
-            String why = null;
-            byte[] apk = null;
-            try {
-                apk = download(r.apkUrl, r, "", "application/octet-stream");
-            } catch (Exception e) {
-                why = "download: " + describe(e);
-            }
-            if (why == null && !isApk(apk)) why = "file non valido (" + (apk == null ? 0 : apk.length) + " byte)";
-            if (why == null && guard != null && r.apkSize <= 0) why = "\"size\" mancante in latest.json (obbligatorio per l'aggiornamento forzato)";
-            if (why == null && r.apkSize > 0 && apk.length != r.apkSize) why = "dimensione " + apk.length + " invece di " + r.apkSize;
-            if (why == null) why = verify(apk, r.tag);
-            if (why != null) {
-                final String w = why;
-                status(L.f(R.string.upd_install_failed, w), r, false);
-                Diag.put("aggiornamenti.verifica", "non installato: " + w);
-                if (cb != null) main.post(() -> cb.done(false, w));
-                return;
-            }
-            Diag.put("aggiornamenti.verifica", "ok: dimensione, pacchetto, versione " + r.tag + " e firma uguali");
-            if (guard != null && !guard.ok()) {
-                status(L.f(R.string.upd_available, r.tag), r, false);
-                if (cb != null) main.post(() -> cb.done(false, "annullato: condizioni non più valide (auto non ferma)"));
-                return;
-            }
-            status(L.f(R.string.upd_installing, r.tag), r, true);
-            try {
-                pendingDone = cb;
-                installApk(apk);
-            } catch (Exception e) {
-                pendingDone = null;
-                status(L.f(R.string.upd_install_failed, describe(e)), r, false);
-                if (cb != null) main.post(() -> cb.done(false, describe(e)));
-            }
-        });
-    }
-
-    /** null se l'APK è il nostro pacchetto, con la versione attesa e la stessa firma; altrimenti il motivo. */
-    @SuppressWarnings("deprecation")
-    private String verify(byte[] apk, String expected) {
-        File f = new File(ctx.getCacheDir(), "update-verify.apk");
-        try {
-            try (OutputStream os = new FileOutputStream(f)) {
-                os.write(apk);
-            }
-            PackageManager pm = ctx.getPackageManager();
-            PackageInfo pi = pm.getPackageArchiveInfo(f.getPath(), PackageManager.GET_SIGNATURES);
-            if (pi == null) return "APK non leggibile";
-            if (!ctx.getPackageName().equals(pi.packageName)) return "pacchetto diverso (" + pi.packageName + ")";
-            if (expected != null && !expected.isEmpty() && compare(pi.versionName, expected) != 0)
-                return "versione " + pi.versionName + " invece di " + expected;
-            PackageInfo mine = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_SIGNATURES);
-            if (pi.signatures == null || pi.signatures.length == 0) return "APK senza firma";
-            java.util.Set<String> a = new java.util.HashSet<>(), b = new java.util.HashSet<>();
-            for (android.content.pm.Signature sg : pi.signatures) a.add(sg.toCharsString());
-            for (android.content.pm.Signature sg : mine.signatures) b.add(sg.toCharsString());
-            return a.equals(b) ? null : "firma diversa da quella del launcher installato";
-        } catch (Exception e) {
-            return "verifica non riuscita: " + describe(e);
-        } finally {
-            f.delete();
-        }
-    }
-
-    /** Confronto di versioni per gli altri componenti (es. "minima"). */
-    public static int compareVersions(String a, String b) {
-        return compare(a, b);
     }
 
     /** true se il launcher ha il permesso di installare senza conferma (firmato con la chiave platform). */

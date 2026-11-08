@@ -1,192 +1,177 @@
 package com.mg4.launcher.svc;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 /**
- * 0.3.2 (punto 5): ritorno all'app di prima dopo la retromarcia.
+ * 1.0.2 (punto 5): dopo la retromarcia si torna all'app che era davanti (CarPlay, Android Auto anche da box o dongle,
+ * navigatore o un'altra app), invece di restare sul launcher.
  * <p>
- * Segnalazione: con CarPlay (anche da un box Android riconosciuto come CarPlay) la retromarcia apre giustamente le
- * telecamere, ma alla chiusura l'auto torna sul launcher invece che su CarPlay. Nel firmware SWI133 né la home MG né il
- * servizio media riaprono CarPlay: il ritorno dipende solo dalla pila di Android (l'AVM chiude e torna davanti ciò
- * che c'è sotto). Nessuna delle nostre funzioni di avvio interviene qui: StartGuard agisce solo all'accensione/risveglio
- * e solo sulla home MG, HomeLock e HomeMode non aprono nulla. Cosa porta davanti il launcher si registra comunque
- * (retro.ritorno: "riportato da").
+ * Perché si tornava al launcher: con la marcia in R il sistema apre la telecamera (app aroundview / AVM) sopra tutto;
+ * la proiezione CarPlay/Android Auto (Allgo) in quel momento lascia lo schermo e chiude la sua schermata, quindi quando
+ * la telecamera si chiude Android mostra quello che resta sotto, cioè la home (il nostro launcher, oppure per un attimo
+ * la home MG che l'avvio sicuro sostituisce con il launcher). Non è HomeLock né HomeMode a riportarlo davanti; solo
+ * nei primi minuti dopo l'accensione StartGuard, vedendo comparire la home MG, riapriva il launcher: lì ora si ferma
+ * se c'è un ritorno dalla retromarcia in corso.
  * <p>
- * Quindi: quando davanti arriva la telecamera (retromarcia o 360) si ricorda l'app che c'era; quando la telecamera si
- * chiude e davanti c'è il launcher, la si riapre come fa il pulsante CarPlay/Android Auto. Non si riapre se l'utente
- * ha premuto Home o scelto un'altra app, se la telecamera è rimasta aperta più di 5 minuti, se il telefono/box non è più
- * collegato o se l'opzione è spenta. Tutto dal servizio di accessibilità (eventi di cambio finestra).
+ * Regole: si memorizza l'app in primo piano quando compare la telecamera; quando la telecamera si chiude e davanti c'è
+ * il launcher (o la home MG) si riapre quell'app nello stesso modo del pulsante CarPlay/Android Auto del launcher.
+ * Non si riapre se l'utente nel frattempo ha scelto un'altra app o premuto Home, se la retromarcia è durata più di
+ * 3 minuti, se l'app non è più collegata (box staccato) o se l'impostazione è spenta.
  */
 public final class RetroReturn {
-    private static final long MAX_CAMERA_MS = 5 * 60_000L, CHECK_DELAY_MS = 1200;
-    public static final String CAMERA_CLOSE = "com.saicmotor.360camera.close";
+    private static final long MAX_REVERSE_MS = 3 * 60_000L, SETTLE_MS = 700, SUPPRESS_MS = 6000;
 
-    private static String lastPkg, lastCls;
-    private static boolean camActive;
-    private static long camAt;
-    private static String savedPkg, savedCls, savedKind;
-    private static volatile long homeAt;
-    private static String broughtBy = "", camPkg = "";
-    private static long broughtAt;
-    private static final Handler H = new Handler(Looper.getMainLooper());
+    private static final Handler h = new Handler(Looper.getMainLooper());
+    private static volatile MediaClient media;
+
+    private static String prevPkg;          // ultima app in primo piano prima della telecamera
+    private static String lastAppPkg;       // ultima app non-home vista (Allgo può chiudersi un attimo prima della telecamera)
+    private static long lastAppAt;
+    private static String savedPkg;         // app memorizzata all'apertura della telecamera
+    private static boolean inCamera;
+    private static long cameraSince, cameraEnd;
+    private static boolean userActed;
+    private static String broughtBy = "";   // come è comparso il launcher dopo la telecamera
+    private static long suppressUntil;
 
     private RetroReturn() {}
 
-    private static String now() {
-        return new SimpleDateFormat("HH:mm:ss", Locale.ROOT).format(new Date());
+    public static void setMedia(MediaClient m) {
+        media = m;
     }
 
-    static boolean isCamera(String pkg) {
-        String p = pkg.toLowerCase(Locale.ROOT);
-        return p.contains("aroundview") || p.contains(".avm") || p.contains("rvc") || (p.startsWith("com.mg4.") && p.contains("360"));
+    /** App della telecamera (retrocamera, 360°): stessi nomi che l'avvio all'accensione non copre. */
+    public static boolean isCamera(String pkg) {
+        if (pkg == null) return false;
+        String p = pkg.toLowerCase(java.util.Locale.ROOT);
+        if (p.equals("com.saicmotor.hmi.aroundview") || p.equals("com.saicmotor.hmi.camera")) return true;
+        return p.startsWith("com.saicmotor.") && (p.contains("aroundview") || p.contains(".avm") || p.contains("rvc") || p.contains("rearview"));
     }
 
-    /** Pacchetti che passano davanti senza essere "un'app scelta" (barra di sistema, finestre di Android, tastiera). */
-    private static boolean transient_(String pkg) {
+    private static boolean isProjection(String pkg) {
+        String p = pkg.toLowerCase(java.util.Locale.ROOT);
+        return p.contains("allgo") || p.contains("carplay") || p.contains("androidauto");
+    }
+
+    /** Finestre che non sono un'app scelta dall'utente (barra di sistema, tastiera, pannelli). */
+    private static boolean ignored(Context c, String pkg) {
         return pkg.equals("com.android.systemui") || pkg.equals("android") || pkg.contains("inputmethod")
-                || pkg.startsWith("com.android.packageinstaller");
+                || pkg.equals("com.saicmotor.hmi.hvac.panel") || pkg.equals("com.android.car.hvac");   // SWI133: pannello clima
     }
 
-    private static String kind(String pkg) {
-        if (pkg.startsWith("com.allgo.carplay")) return "CarPlay";
-        if (pkg.startsWith("com.allgo.app.androidauto")) return "Android Auto";
-        String p = pkg.toLowerCase(Locale.ROOT);
-        if (p.contains("navi") || p.contains("map") || p.contains("waze") || p.contains("telenav")) return "navigatore";
-        return "app";
+    private static boolean isHomeLike(Context c, String pkg) {
+        return c.getPackageName().equals(pkg) || StartGuard.isHome(c, pkg);
     }
 
-    /** Chi ha appena portato davanti il launcher (intento Home e da chi, apertura del launcher, ripresa normale…). */
-    public static synchronized void noteBroughtBy(String why) {
-        broughtBy = why;
-        broughtAt = SystemClock.elapsedRealtime();
+    /** StartGuard non deve riaprire il launcher mentre si sta tornando all'app di prima. */
+    public static boolean suppressHome() {
+        return SystemClock.elapsedRealtime() < suppressUntil;
     }
 
-    /** Come noteBroughtBy, ma solo se nessuno ha scritto un motivo più preciso negli ultimi 2 secondi. */
-    public static synchronized void noteBroughtByIfNone(String why) {
-        if (SystemClock.elapsedRealtime() - broughtAt > 2000) noteBroughtBy(why);
+    /** Tasto Home premuto (dock o tasto del launcher): niente ritorno automatico. */
+    public static void userPressedHome(String how) {
+        if (inCamera || SystemClock.elapsedRealtime() - cameraEnd < SETTLE_MS + 500) {
+            userActed = true;
+            Diag.put("retro.ritorno", "app memorizzata " + label(savedPkg) + " · non riaperta: premuto Home (" + how + ")");
+        }
     }
 
-    /** Casetta del dock toccata: l'utente vuole la home, niente ritorno automatico. */
-    public static synchronized void homePressed() {
-        homeAt = SystemClock.elapsedRealtime();
+    /** Il launcher è comparso: come (HOME dal sistema, ritorno nello stack...). Serve alla diagnostica. */
+    public static void noteLauncherShown(String how) {
+        if (SystemClock.elapsedRealtime() - cameraEnd < 3000 || inCamera) broughtBy = how;
     }
 
-    /** Broadcast di chiusura della telecamera (SystemUI/AVM): solo per il registro. */
-    public static synchronized void cameraClosedBroadcast() {
-        if (camActive) Diag.put("retro.telecamera", "chiusura annunciata dall'AVM · " + now());
-    }
-
-    /** Nuova finestra in primo piano (TYPE_WINDOW_STATE_CHANGED). */
-    public static synchronized void onForeground(Context c, String pkg, String cls) {
-        if (pkg == null || transient_(pkg)) return;
-        String me = c.getPackageName();
+    /** Nuova app in primo piano (evento di accessibilità). */
+    public static synchronized void onForeground(Context c, String pkg) {
+        if (pkg == null || ignored(c, pkg)) return;
+        long now = SystemClock.elapsedRealtime();
         if (isCamera(pkg)) {
-            if (!camActive) {
-                camActive = true;
-                camAt = SystemClock.elapsedRealtime();
-                camPkg = pkg;
-                boolean useful = lastPkg != null && !lastPkg.equals(me) && !isCamera(lastPkg) && !StartGuard.isHome(c, lastPkg);
-                savedPkg = useful ? lastPkg : null;
-                savedCls = useful ? lastCls : null;
-                savedKind = useful ? kind(lastPkg) : "";
-                final String prev = lastPkg;
-                new Thread(() -> {
-                    int g = VehicleClient.gearRaw();
-                    Diag.put("retro.ritorno", "telecamera aperta (" + pkg + ") · marcia grezza " + g + " · davanti prima "
-                            + (prev == null ? "nessuna app" : prev) + (useful ? " → memorizzata (" + kind(prev) + ")" : " → niente da riaprire") + " · " + now());
-                }, "mg4-retro").start();
+            if (!inCamera) {
+                inCamera = true;
+                cameraSince = now;
+                userActed = false;
+                broughtBy = "";
+                savedPkg = prevPkg != null && !isHomeLike(c, prevPkg) && !isCamera(prevPkg) ? prevPkg : null;
+                if (savedPkg == null && lastAppPkg != null && now - lastAppAt < 3000) savedPkg = lastAppPkg;
+                Diag.put("retro.ritorno", "telecamera aperta (" + pkg + ") · app memorizzata " + label(savedPkg));
             }
-            lastPkg = pkg;
-            lastCls = cls;
             return;
         }
-        if (camActive) {
-            camActive = false;
-            long dur = SystemClock.elapsedRealtime() - camAt;
-            final String sp = savedPkg, sc = savedCls, sk = savedKind;
-            final long openedAt = camAt, closedAt = SystemClock.elapsedRealtime();
-            if (pkg.equals(me)) {
-                // si decide un attimo dopo: intanto il launcher rilegge il telefono collegato e si sa chi l'ha portato davanti
-                MediaClient.refreshSoon();
-                H.postDelayed(() -> decide(c, sp, sc, sk, dur, openedAt, closedAt, 0), CHECK_DELAY_MS);
-            } else if (sp != null && pkg.equals(sp)) {
-                Diag.put("retro.ritorno", "telecamera chiusa dopo " + (dur / 1000) + " s · tornata da sola " + sk + " (" + pkg + ") · " + now());
+        if (inCamera) {
+            inCamera = false;
+            cameraEnd = now;
+            long dur = now - cameraSince;
+            String first = pkg;
+            String saved = savedPkg;
+            String head = "app memorizzata " + label(saved) + " · dopo la telecamera " + first;
+            if (saved == null) {
+                Diag.put("retro.ritorno", head + " · niente da riaprire (prima c'era " + label(prevPkg) + ")");
+            } else if (!enabled(c)) {
+                Diag.put("retro.ritorno", head + " · non riaperta: impostazione spenta");
+            } else if (dur > MAX_REVERSE_MS) {
+                Diag.put("retro.ritorno", head + " · non riaperta: retromarcia di " + (dur / 1000) + " s (oltre 3 minuti)");
+            } else if (first.equals(saved)) {
+                Diag.put("retro.ritorno", head + " · tornata da sola");
+            } else if (!isHomeLike(c, first)) {
+                Diag.put("retro.ritorno", head + " · non riaperta: davanti c'è un'altra app scelta (" + first + ")");
             } else {
-                Diag.put("retro.ritorno", "telecamera chiusa dopo " + (dur / 1000) + " s · davanti " + pkg + " (scelta dell'utente o del sistema): non riapro "
-                        + (sp == null ? "niente" : sp) + " · " + now());
+                suppressUntil = now + SUPPRESS_MS;
+                Context app = c.getApplicationContext();
+                h.postDelayed(() -> reopen(app, saved, head), SETTLE_MS);
             }
         }
-        lastPkg = pkg;
-        lastCls = cls;
+        prevPkg = pkg;
+        if (!isHomeLike(c, pkg)) {
+            lastAppPkg = pkg;
+            lastAppAt = now;
+        }
     }
 
-    private static void decide(Context c, String pkg, String cls, String kind, long dur, long openedAt, long closedAt, int round) {
-        boolean proj = "CarPlay".equals(kind) || "Android Auto".equals(kind);
-        // lo stato del telefono deve essere letto DOPO la chiusura della telecamera (mentre CarPlay era davanti il
-        // launcher non leggeva): si aspetta al massimo altri 3 secondi
-        if (proj && MediaClient.deviceTypeAt() < closedAt && round < 3) {
-            MediaClient.refreshSoon();
-            H.postDelayed(() -> decide(c, pkg, cls, kind, dur, openedAt, closedAt, round + 1), 1000);
-            return;
-        }
-        boolean home = homeAt > openedAt;   // Home premuto durante la telecamera o subito dopo
-        String by;
-        synchronized (RetroReturn.class) {
-            by = SystemClock.elapsedRealtime() - broughtAt < 10_000 ? broughtBy : "ripresa della pila di Android (nessun nostro comando)";
-        }
-        String head = "telecamera " + camPkg + " chiusa dopo " + (dur / 1000) + " s · memorizzata " + (pkg == null ? "nessuna" : kind + " " + pkg)
-                + " · riportato da: " + by + " · ";
-        String no = null;
-        if (pkg == null) no = "prima c'era già il launcher";
-        else if (!c.getSharedPreferences("mg4launcher", Context.MODE_PRIVATE).getBoolean("retroRitorno", true)) no = "opzione spenta";
-        else if (home) no = "l'utente ha premuto Home";
-        else if (dur > MAX_CAMERA_MS) no = "telecamera aperta più di 5 minuti";
-        else if (!c.getPackageName().equals(StartGuard.topPackage(c))) no = "nel frattempo davanti " + StartGuard.topPackage(c);
-        else if (proj && MediaClient.deviceTypeAt() < closedAt) no = "stato del telefono non letto dopo la telecamera";
-        else if (proj && MediaClient.deviceTypeNow() == 0) no = kind + " non più collegato (telefono o box staccato)";
-        if (no != null) {
-            Diag.put("retro.ritorno", head + "NON riaperta: " + no + " · " + now());
-            return;
-        }
-        boolean ok;
-        if (proj) {
-            ok = MediaClient.openProjection(c, "Android Auto".equals(kind) ? MediaClient.DEV_AAUTO : MediaClient.DEV_CARPLAY);
-        } else {
-            ok = open(c, pkg, cls);
-        }
-        Diag.put("retro.ritorno", head + (ok ? "riaperta " + kind : "riapertura NON riuscita") + " · " + now());
+    private static boolean enabled(Context c) {
+        return c.getSharedPreferences("mg4launcher", Context.MODE_PRIVATE).getBoolean("retroRitorno", true);
     }
 
-    private static boolean open(Context c, String pkg, String cls) {
-        // prima l'attività esatta che c'era (se esportata), poi l'apertura normale dell'app
-        if (cls != null && cls.startsWith(pkg)) {
-            try {
-                Intent i = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(pkg, cls));
-                android.content.pm.ResolveInfo ri = c.getPackageManager().resolveActivity(i, 0);
-                if (ri != null && ri.activityInfo != null && ri.activityInfo.exported) {
-                    c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                    return true;
-                }
-            } catch (Exception ignored) {
+    private static void reopen(Context c, String pkg, String head) {
+        String top = StartGuard.topPackage(c);
+        String how = broughtBy.isEmpty() ? "" : " · launcher riportato da " + broughtBy;
+        if (userActed) return;   // già scritto da userPressedHome
+        if (top != null && !isHomeLike(c, top)) {
+            Diag.put("retro.ritorno", head + how + " · non riaperta: l'utente ha scelto " + top);
+            return;
+        }
+        if (isProjection(pkg)) {
+            MediaClient m = media;
+            if (m == null || m.last().deviceType == 0) {
+                Diag.put("retro.ritorno", head + how + " · non riaperta: CarPlay/Android Auto non più collegato");
+                return;
             }
+            boolean ok = m.openProjection();
+            Diag.put("retro.ritorno", head + how + " · riaperta " + (m.last().deviceType == MediaClient.DEV_AAUTO ? "Android Auto" : "CarPlay")
+                    + (ok ? "" : " (non riuscita)"));
+            return;
         }
         try {
             Intent i = c.getPackageManager().getLaunchIntentForPackage(pkg);
-            if (i == null) return false;
+            if (i == null) {
+                Diag.put("retro.ritorno", head + how + " · non riaperta: app non più disponibile");
+                return;
+            }
             c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            return true;
+            Diag.put("retro.ritorno", head + how + " · riaperta " + pkg);
         } catch (Exception e) {
-            Diag.error("retro.ritorno", e.toString());
-            return false;
+            Diag.put("retro.ritorno", head + how + " · non riaperta: " + e.getClass().getSimpleName());
         }
+    }
+
+    private static String label(String pkg) {
+        if (pkg == null) return "nessuna";
+        String p = pkg.toLowerCase(java.util.Locale.ROOT);
+        if (p.contains("androidauto")) return "Android Auto (" + pkg + ")";
+        if (p.contains("carplay") || p.contains("allgo")) return "CarPlay (" + pkg + ")";
+        return pkg;
     }
 }

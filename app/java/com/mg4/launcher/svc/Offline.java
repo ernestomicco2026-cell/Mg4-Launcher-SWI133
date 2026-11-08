@@ -66,6 +66,16 @@ public final class Offline {
         return true;
     }
 
+    /**
+     * 0.3.3: Android dice che la rete è tornata: la pausa si accorcia a pochi secondi, così chi aspettava (aggiornamenti,
+     * loghi, log) riprova subito invece di attendere fino a un'ora. Se la rete non va davvero, la pausa riparte da 1 minuto.
+     */
+    public static synchronized void networkBack() {
+        if (failures == 0) return;
+        until = Math.min(until, System.currentTimeMillis());
+        step = MIN_MS;
+    }
+
     /** Da chiamare quando un'operazione di rete riesce: fine della pausa. */
     public static synchronized void ok() {
         if (failures == 0) return;
