@@ -17,7 +17,7 @@
 
 # MG4 Launcher — SWI133 (MG4 Luxury MY24)
 
-<p align="center"><img src="screenshots/home.png" alt="Home di MG4 Launcher SWI133 (simulazione) · MG4 Launcher SWI133 home (mock-up)" width="100%"></p>
+<p align="center"><img src="docs/home-SWI133-0.3.4-ricarica.gif" alt="MG4 Launcher SWI133: animazione di ricarica sulla home (simulazione) · MG4 Launcher SWI133: charging animation on the home (mock-up)" width="100%"></p>
 
 <p align="center">
 <b>Launcher in stile Tesla per l'infotainment MG4 SWI133</b><br>
