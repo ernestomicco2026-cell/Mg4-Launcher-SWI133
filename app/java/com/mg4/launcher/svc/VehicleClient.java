@@ -81,8 +81,9 @@ public final class VehicleClient {
     private static final int COND_BMS_AVAILABLE = 52;      // 1 = batteria (BMS) pronta a ricevere comandi (SWI133: 52, SWI68: 56)
     // velocità e marcia dal servizio veicolo (vehiclesettingservice_my24_P: getCarSpeed 3, getCarGear 5, come la SWI68)
     private static final int COND_SPEED = 3, COND_GEAR = 5;
-    // assistenza alla guida, come l'app Impostazioni veicolo originale (sicurezza / guida); stessi codici verificati su
-    // vehiclesettingservice_my24_P della SWI133 (getLaneKeepingAsstMode 83, getSignalPedal 163, getLdwsConfigCode 31…)
+    /** 1.0.4: getVehicleIgnition (IGNITION_STATE_STS): 0 spenta, 2 READY. */
+    private static final int COND_IGNITION = 4;
+    // assistenza alla guida, come l'app Impostazioni veicolo originale (sicurezza / guida)
     // assistente di guida (ACC/TJA) e pedale del freno, stesse proprietà dell'auto su tutti i firmware (0.9.5)
     private static final int SET_GET_ACC_TJA = 81, SET_SET_ACC_TJA = 82, SET_GET_PEDAL = 135, SET_SET_PEDAL = 136;
     private static final int SET_GET_LKA = 83, SET_SET_LKA = 84, SET_GET_LAST_LKA = 147, SET_GET_LKA_FAILURE = 91;
@@ -107,6 +108,11 @@ public final class VehicleClient {
         public float soc = -1;            // %
         public int rangeKm = -1;
         public int chargingStatus = -1;   // codici SAIC, vedi ChargeText
+        /** 1.0.4: presa di ricarica BMS_CHRG_PLUG_CNCTNIO (0 cavo inserito, 1 no, -1 non letta). */
+        public int plugProp = -1;
+        /** 1.0.4: accensione (getVehicleIgnition): 2 = READY, -1 non letta. */
+        public int ignition = -1;
+        public float speedKmh = Float.NaN;
         public int predictMinutes = -1;
         public float chargeKw = 0;
         public int chargeLimit = -1;      // % (convertito dal codice SAIC)
@@ -396,7 +402,12 @@ public final class VehicleClient {
                     Diag.put("ricarica.bmsDisponibile", bms);
                     try {
                         s.speedRaw = Rpc.callFloat(cnd2, COND, COND_SPEED);
+                        s.speedKmh = s.speedRaw;
                         s.gearRaw = Rpc.callInt(cnd2, COND, COND_GEAR);
+                        try {
+                            s.ignition = Rpc.callInt(cnd2, COND, COND_IGNITION);
+                        } catch (Exception ignored) {
+                        }
                         lastSpeedRaw = s.speedRaw;
                         lastGearRaw = s.gearRaw;
                         long t = android.os.SystemClock.elapsedRealtime();
@@ -517,7 +528,13 @@ public final class VehicleClient {
             outValid = props.getIntQuiet(CarProps.HVAC_TEMPERATURE_OUTCARV);
             readInside(s.outsideTemp);
             readLights();
+            // 1.0.4 (punto F): segnale "cavo inserito", separato dallo stato di carica
+            String[] why = new String[1];
+            Integer plug = props.readLight(CarProps.BMS_CHRG_PLUG_CNCTNIO, false, why);
+            plugCache = plug == null ? -1 : plug;
+            Diag.putQuiet("ricarica.presa", plug == null ? "non letta (" + why[0] + ")" : (plug == 0 ? "cavo inserito" : "cavo non inserito") + " (" + plug + ")");
         }
+        s.plugProp = plugCache;
         System.arraycopy(tireCache, 0, s.tireBar, 0, 4);
         s.insideTemp = insideCache;
         s.insideSource = insideSrc;
@@ -595,24 +612,44 @@ public final class VehicleClient {
         return lightsDesc;
     }
 
+    /**
+     * 1.0.4 (punto B): sulla SWI68 HEADLIGHTS_STATE e HEADLIGHTS_SWITCH non ci sono mai (log "non leggibili"). Si leggono
+     * le luci SAIC: fari accesi se anabbaglianti == 1 OPPURE luci di posizione == 3 OPPURE leva su "accesi" (2, valore
+     * da confermare in auto), come sulla SWI69. Le proprietà standard restano come riserva.
+     */
+    /** 1.0.4: rilettura immediata dei fari (prova del Controllo funzioni, fuori dal thread principale). */
+    public void refreshLightsNow() {
+        try {
+            readLights();
+        } catch (Throwable ignored) {
+        }
+    }
+
     private void readLights() {
-        int st = props.getIntSafe(CarProps.HEADLIGHTS_STATE);
-        int sw = props.getIntSafe(CarProps.HEADLIGHTS_SWITCH);
-        // SWI133: prima i segnali SAIC (anabbaglianti, luci di posizione), poi le proprietà standard come sulla SWI68
-        int dip = props.getBoolQuiet(CarProps.SAIC_DIPPED_BEAM);
-        int side = props.getIntQuiet(CarProps.SAIC_SIDE_LIGHTS);
+        String[] w1 = new String[1], w2 = new String[1], w3 = new String[1];
+        Integer beam = props.readLight(CarProps.DIPD_BEAM_LGHT, true, w1);
+        Integer side = props.readLight(CarProps.VEH_SIDE_LGHT, false, w2);
+        Integer lever = props.readLight(CarProps.LIGHT_SWITCH_POS_STS, false, w3);
         int v;
-        if (dip == 1 || side == 1) v = 1;
-        else if (dip == 0 && (side == 0 || side == Integer.MIN_VALUE)) v = 0;
-        else if (st == 1) v = 1;
-        else if (st == 0 || st == 2) v = 0;
-        else if (sw == 1) v = 1;
-        else if (sw == 0 || sw == 2) v = 0;
-        else v = -1;   // leva su "automatico" (3) senza stato dei fari: non si sa
+        String src;
+        if (beam != null || side != null || lever != null) {
+            boolean on = beam != null && beam == 1 || side != null && side == 3 || lever != null && lever == 2;
+            v = on ? 1 : 0;
+            src = "luci SAIC (" + (beam != null ? w1[0] : side != null ? w2[0] : w3[0]) + ")";
+        } else {
+            int st = props.getIntSafe(CarProps.HEADLIGHTS_STATE);
+            int sw = props.getIntSafe(CarProps.HEADLIGHTS_SWITCH);
+            if (st == 1) v = 1;
+            else if (st == 0 || st == 2) v = 0;
+            else if (sw == 1) v = 1;
+            else if (sw == 0 || sw == 2) v = 0;
+            else v = -1;
+            src = "HEADLIGHTS stato " + (st == Integer.MIN_VALUE ? "?" : String.valueOf(st)) + " leva " + (sw == Integer.MIN_VALUE ? "?" : String.valueOf(sw))
+                    + " (luci SAIC: " + w1[0] + ")";
+        }
         lightsState = v;
-        lightsDesc = "anabbaglianti SAIC " + (dip == Integer.MIN_VALUE ? "?" : String.valueOf(dip)) + " · posizione SAIC "
-                + (side == Integer.MIN_VALUE ? "?" : String.valueOf(side)) + " · stato " + (st == Integer.MIN_VALUE ? "?" : String.valueOf(st)) + " · leva "
-                + (sw == Integer.MIN_VALUE ? "?" : String.valueOf(sw)) + " → " + (v == 1 ? "accesi" : v == 0 ? "spenti" : "non leggibili");
+        lightsDesc = "fonte " + src + " · anabbaglianti " + (beam == null ? "?" : beam) + " · posizione " + (side == null ? "?" : side)
+                + " · leva " + (lever == null ? "?" : lever) + " → " + (v == 1 ? "accesi" : v == 0 ? "spenti" : "non leggibili");
         Diag.put("luci.fari", lightsDesc);
     }
 
@@ -913,6 +950,29 @@ public final class VehicleClient {
      * 2 = presa V2L collegata (11 collegato, 13 in scarica, 14 sospeso, 15 finito), 1 = cavo di ricarica collegato
      * (stati 1-4, 6-10: gli stessi che abilitano il pulsante originale), 0 = niente di collegato.
      */
+    private volatile int plugCache = -1;
+
+    /**
+     * 1.0.4 (punto F): cavo di ricarica inserito, anche prima che la colonnina cominci. Segnale della presa
+     * (BMS_CHRG_PLUG_CNCTNIO = 0) oppure uno stato di ricarica con il cavo attaccato (1-5, 7-10, 12; 11 solo con potenza).
+     * Escluso il V2L (13, 14, 15).
+     */
+    public static boolean cablePlugged(State s) {
+        int st = s.chargingStatus;
+        if (st == 13 || st == 14 || st == 15) return false;
+        if (s.plugProp == 0) return true;
+        if (s.plugProp == 1) return false;   // la presa dice "staccato": vale più dello stato di ricarica
+        if (st == 11) return s.chargeKw > 0.3f;
+        return st >= 1 && st <= 5 || st >= 7 && st <= 10 || st == 12;
+    }
+
+    /** 1.0.4: carica finita (2) o ferma al limite (7/8 con la batteria al limite scelto). */
+    public static boolean chargeDone(State s) {
+        int st = s.chargingStatus;
+        if (st == 2) return true;
+        return (st == 7 || st == 8) && s.chargeLimit > 0 && s.soc >= s.chargeLimit - 1;
+    }
+
     public static int plugMode(State s) {
         int st = s.chargingStatus;
         if (st == 13 || st == 14 || st == 15) return 2;

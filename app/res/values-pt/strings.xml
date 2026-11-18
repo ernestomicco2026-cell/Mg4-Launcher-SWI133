@@ -421,8 +421,8 @@
     <string name="limit_auto" formatted="false">Automático</string>
     <string name="limit_show" formatted="false">Mostrar</string>
     <string name="limit_hide" formatted="false">Ocultar</string>
-    <string name="set_top_button" formatted="false">Botão no canto superior direito</string>
-    <string name="set_top_button_sub" formatted="false">No painel Mapa/Multimédia. Com \"Nenhum\" as fontes multimédia mantêm sempre o nome</string>
+    <string name="set_top_button" formatted="false">Botão ao lado de Mapa/Multimédia</string>
+    <string name="set_top_button_sub" formatted="false">Um terceiro botão que abre uma app à escolha; CarPlay e Android Auto estão na barra inferior</string>
     <string name="top_app" formatted="false">Uma app…</string>
     <string name="top_none" formatted="false">Nenhum</string>
     <string name="top_pick_app" formatted="false">App do botão no canto superior direito</string>
@@ -500,4 +500,35 @@
     <string name="newsv_2" formatted="false">Temperatura exterior mais fiável: valores inválidos (como -40°) já não aparecem</string>
     <string name="newsv_3" formatted="false">Temperatura interior oculta: o carro não a fornece (mostrava a exterior); estamos à procura dela nos registos</string>
     <string name="newsv_4" formatted="false">Os dongles CarPlay/Android Auto que aparecem como iPhone são agora reconhecidos e reiniciados se não arrancarem</string>
+    <string name="set_sources" formatted="false">Fontes de áudio</string>
+    <string name="set_sources_sub" formatted="false">Que fontes mostrar em cima no painel Multimédia (pelo menos uma)</string>
+    <string name="nav_other_app" formatted="false">Outra app…</string>
+    <string name="nav_other_app_sub" formatted="false">Apps de navegação instaladas no carro</string>
+    <string name="nav_no_apps" formatted="false">Nenhuma app de navegação instalada além da MG</string>
+    <string name="store_install" formatted="false">Instalar MG4 Store</string>
+    <string name="store_install_sub" formatted="false">A loja de apps MG4 está dentro do launcher: instala-se daqui e depois atualiza-se sozinha</string>
+    <string name="store_installing" formatted="false">A instalar a loja…</string>
+    <string name="store_installed" formatted="false">MG4 Store instalado</string>
+    <string name="store_failed" formatted="false">Não foi possível instalar</string>
+    <string name="set_charge_anim" formatted="false">Animação de carregamento</string>
+    <string name="set_charge_anim_sub" formatted="false">Ao ligar o cabo o carro anima-se; o pacote da cor escolhida descarrega-se sozinho</string>
+    <string name="anim_test" formatted="false">Testar animação de carregamento</string>
+    <string name="anim_test_sub" formatted="false">Mostra as fases uma após outra; sem pacote usa animazione-&lt;cor&gt;.zip da pen USB</string>
+    <string name="anim_test_missing" formatted="false">Sem pacote: copia animazione-&lt;cor&gt;.zip para a pen USB</string>
+    <string name="chk_theme_system" formatted="false">Tema do sistema</string>
+    <string name="chk_lights" formatted="false">Faróis</string>
+    <string name="chk_charge_anim" formatted="false">Animação de carregamento</string>
+    <string name="check_lights_on">Liga as luzes de presença (%s s)</string>
+    <string name="news_v104_1" formatted="false">O launcher decide agora o tema dia/noite e aplica-o a todo o sistema (Clima, apps MG, painel)</string>
+    <string name="news_v104_2" formatted="false">Novo ecrã: Mapa/Multimédia em baixo, FM/DAB sob Rádio, botões de fonte maiores</string>
+    <string name="news_v104_3" formatted="false">Animação de carregamento ao ligar o cabo, e MG4 Store incluído no launcher</string>
+    <string name="news_v104_4" formatted="false">Fontes de áudio e app de navegação à escolha; faróis lidos do carro; rádio mais fiável no arranque</string>
+    <string name="news_v104_5" formatted="false">Desinstalação mais segura: o ecrã inicial MG original volta sempre, mesmo que o launcher seja removido no menu Apps</string>
+    <string name="anim_preparing" formatted="false">A preparar a animação de carregamento: só da primeira vez, 2–3 minutos. Começa sozinha quando estiver pronta.</string>
+    <string name="anim_prepare_failed">Não foi possível preparar a animação de carregamento (%1$s). Os detalhes estão no registo.</string>
+    <string name="app_uninstall" formatted="false">Desinstalar</string>
+    <string name="app_uninstall_q">Queres desinstalar %1$s?</string>
+    <string name="app_uninstall_done">%1$s desinstalada</string>
+    <string name="app_uninstall_failed">Não foi possível desinstalar %1$s</string>
+    <string name="news_v104_6" formatted="false">Definições: ao mudar uma opção a página fica onde estava · Apps: toque longo numa app que instalaste para a desinstalar</string>
 </resources>

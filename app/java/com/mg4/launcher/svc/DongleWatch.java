@@ -250,7 +250,8 @@ public final class DongleWatch {
         if (changed) {
             sp.edit().putStringSet("seriali", s).putStringSet("telefoni", ph).apply();
             if (dongle) Diag.put("dongle.riconosciuto", m.deviceName + " (" + s.size() + " numeri di serie memorizzati)");
-            else Diag.put("dongle.telefonoRiconosciuto", "sessione con " + m.deviceName + ": il dispositivo USB è un telefono, non verrà mai resettato");
+            // 1.0.4: niente nome del telefono nel log (dato personale)
+            else Diag.put("dongle.telefonoRiconosciuto", "sessione con un telefono: il dispositivo USB è un telefono, non verrà mai resettato");
         }
     }
 

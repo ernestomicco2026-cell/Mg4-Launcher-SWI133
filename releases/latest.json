@@ -1,6 +1,6 @@
 {
-  "version": "0.3.3",
-  "apk": "releases/MG4Launcher-SWI133-0.3.3.apk",
-  "size": 797185,
-  "notes": "Tema giorno/notte non più bloccato su notte, crash delle app corretto, Bluetooth che aspetta il telefono all'accensione, elenco stazioni completo, riquadro accanto al clima (media, preferiti telefono, scorciatoie), ordine in alto, FM/DAB accanto ai comandi, Controllo funzioni, aggiornamenti che riprovano quando torna la rete."
+  "version": "0.3.4",
+  "apk": "releases/MG4Launcher-SWI133-0.3.4.apk",
+  "size": 1129557,
+  "notes": "Disinstallazione sicura, tema giorno/notte di tutto il sistema, fari letti dall'auto, nuova home, auto dal modello 3D con animazione di ricarica, MG4 Store incluso, sorgenti e navigazione a scelta, impostazioni che restano al loro posto, disinstallare le app."
 }
