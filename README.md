@@ -75,18 +75,24 @@
 <td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-molto-grande-notte.png" alt="Home con Dimensione comandi Molto grande di notte (simulazione)" width="100%"><br>
 <sub>Dimensione comandi <b>Molto grande</b>, di notte: tutte le sorgenti con la scritta · <i>Control size <b>Extra large</b>, at night: every source keeps its label</i></sub></td>
 </tr>
+<tr>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-notte-radio.png" alt="Home di notte con la radio (simulazione)" width="100%"><br>
+<sub>Tema <b>notte</b> con la radio, dimensione Normale · <i><b>Night</b> theme with the radio, Normal size</i></sub></td>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-molto-grande-giorno.png" alt="Home con Dimensione comandi Molto grande di giorno (simulazione)" width="100%"><br>
+<sub>Dimensione comandi <b>Molto grande</b>, di giorno · <i>Control size <b>Extra large</b>, by day</i></sub></td>
+</tr>
 </table>
 
 <table>
 <tr>
 <td width="50%" valign="top"><img src="screenshots/guida.png" alt="Gruppo Guida: corsia, One Pedal, assistente, pedale del freno" width="100%"><br>
-<sub>Gruppo <b>Guida</b>: corsia, One Pedal, assistente, pedale del freno · <i><b>Driving</b> group: lane, One Pedal, assistant, brake pedal</i></sub></td>
+<sub>Gruppo <b>Guida</b> aperto dalla barra: corsia, One Pedal, assistente, pedale del freno · <i><b>Driving</b> group opened from the bar: lane, One Pedal, assistant, brake pedal</i></sub></td>
 <td width="50%" valign="top"><img src="screenshots/clima-rapido.png" alt="Gruppo Clima: A/C, automatico, ricircolo" width="100%"><br>
 <sub>Gruppo <b>Clima</b>: A/C, automatico, ricircolo · <i><b>Climate</b> group: A/C, auto, recirculation</i></sub></td>
 </tr>
 <tr>
 <td width="50%" valign="top"><img src="screenshots/impostazioni.png" alt="Impostazioni: colore, cerchi e tetto dell'auto" width="100%"><br>
-<sub><b>Impostazioni</b>: colore, cerchi e tetto dell'auto · <i><b>Settings</b>: car colour, wheels and roof</i></sub></td>
+<sub><b>Impostazioni → Auto</b>: colore, animazione di ricarica, cerchi e tetto · <i><b>Settings → Car</b>: colour, charging animation, wheels and roof</i></sub></td>
 <td width="50%" valign="top"><img src="screenshots/mg4clima.png" alt="MG4 Clima aperto dal tasto del clima" width="100%"><br>
 <sub><a href="https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4">MG4 Clima</a> aperto dal tasto del clima · <i><a href="https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4">MG4 Clima</a> opened from the climate button</i></sub></td>
 </tr>
@@ -95,9 +101,9 @@
 <table>
 <tr>
 <td width="50%" valign="top"><img src="screenshots/impostazioni-menu-normale.png" alt="Impostazioni: menu con tutte le 7 sezioni (simulazione)" width="100%"><br>
-<sub><b>Impostazioni</b>, interfaccia normale: le 7 sezioni stanno tutte nel menu, con il riquadro aggiornamenti sempre in basso · <i><b>Settings</b>, normal size: all 7 sections fit in the menu, with the updates box always at the bottom</i></sub></td>
+<sub><b>Impostazioni → Home</b>: le 7 sezioni nel menu, con il riquadro aggiornamenti sempre in basso · <i><b>Settings → Home</b>: the 7 sections in the menu, with the updates box always at the bottom</i></sub></td>
 <td width="50%" valign="top"><img src="screenshots/impostazioni-menu-grande.png" alt="Impostazioni: interfaccia più grande (simulazione)" width="100%"><br>
-<sub><b>Impostazioni</b>, comandi molto grandi · <i><b>Settings</b>, extra-large controls</i></sub></td>
+<sub><b>Impostazioni → Sistema</b>, comandi molto grandi: aggiornamenti, log, Controllo funzioni, Disinstalla · <i><b>Settings → System</b>, extra-large controls: updates, logs, Feature check, Uninstall</i></sub></td>
 </tr>
 <tr>
 <td width="50%" valign="top"><img src="screenshots/impostazioni-menu-guida-destra.png" alt="Impostazioni: guida a destra (simulazione)" width="100%"><br>
@@ -150,7 +156,7 @@ Guarda la [video recensione su YouTube](https://youtu.be/JKZ0N3Lr7FI) · Watch t
 ## Italiano
 
 Launcher in stile Tesla per l'infotainment della **nuova MG4 Luxury** con software **SWI133** (MY24, Android Automotive 9).
-È la stessa home della versione SWI68 0.8.1 (grafica, opzioni, testi e lingue identici), adattata ai servizi di questo software.
+È la stessa home della versione SWI68 1.0.4 (grafica, opzioni, testi e lingue identici), adattata ai servizi di questo software.
 
 **Compatibilità:** funziona **solo con il software SWI133**. Con altri software dell'infotainment i servizi dell'auto
 sono diversi: il launcher se ne accorge, mostra un avviso con il link alla versione giusta e non si collega all'auto.
@@ -163,47 +169,65 @@ Sostituisce la schermata home originale mantenendone le funzioni, con una grafic
 
 ### Cosa fa
 
-- **Auto e batteria** (a sinistra): autonomia e **orologio** in grande, barra batteria con percentuale e tacca del limite di ricarica,
-  **data** (facoltativa), stato solo durante ricarica o V2L (tipo, potenza, tempo rimanente), temperatura esterna; sotto l'auto la **pressione degli pneumatici** (TPMS, in bar, kPa o psi) e, se li attivi, i **pulsanti di ricarica**: limite di ricarica, corrente AC e avvia/ferma ricarica o V2L (con conferma). La tua MG4 ricolorabile con gli 8 colori della gamma, tetto nero opzionale.
-  Tocca l'auto → Gestione energia. Tienila premuta → impostazioni del launcher.
-- **Mappa / Media / CarPlay** (a destra):
+- **Auto e batteria** (a sinistra): autonomia e **orologio** in grande, barra della batteria con percentuale e tacca del
+  limite di ricarica, **data** (facoltativa), stato solo durante la ricarica o il V2L (tipo, potenza, tempo rimanente),
+  temperatura esterna (e interna, se l'auto la fornisce); sotto l'auto la **pressione degli pneumatici** (TPMS, in bar,
+  kPa o psi) e, se li attivi, i **pulsanti di ricarica** (limite, corrente AC, avvia/ferma ricarica o V2L, con conferma).
+  - **L'auto è disegnata dal modello 3D**, negli 8 colori della gamma, con i cerchi a scelta (Aero 17", Nero 16",
+    Luxury 18", XPower 18"), il tetto nero se vuoi e **i fari accesi quando sono accesi davvero**.
+  - **Animazione di ricarica**: quando colleghi il cavo l'auto si gira, il cavo si aggancia e la carica scorre; a carica
+    finita resta ferma, quando stacchi il cavo si sgancia. Il pacchetto del colore scelto si scarica da solo una volta
+    (e si riscarica da solo quando viene aggiornato); si può spegnere.
+  - Tocca l'auto → gestione della ricarica. Tienila premuta → impostazioni del launcher.
+- **Mappa / Media** (a destra), con i pulsanti **Mappa** e **Media** in basso a sinistra:
   - **Mappa**: indicazioni del navigatore (prossima manovra, via, arrivo). Senza guida: **Dove andiamo?** con la barra
-    *Cerca una destinazione*, i riquadri **Casa** e **Lavoro** (se impostati nel navigatore) e la riga **Apri con** (MG, CarPlay/Android Auto se il telefono è collegato, Waze/Google Maps se installati sull'auto).
-    Tieni premuto un pulsante della riga per renderlo il navigatore predefinito.
-  - **Media**: mostra la sorgente che sta suonando (CarPlay/Android Auto compresi), altrimenti la radio; in alto un pulsante per ogni sorgente
-    (Radio, USB, Bluetooth, Online, e CarPlay/Android Auto se il telefono è collegato). Per la radio: logo della stazione,
-    pulsanti **FM / DAB** per cambiare banda, **elenco delle stazioni trovate** sulla banda attuale (a destra, tocca per
-    sintonizzare) e preferiti FM/DAB con logo, nome e frequenza. I **pacchetti dei loghi
-    per paese** si scaricano una volta (paese automatico dal fuso orario, o scelto nelle impostazioni, anche più di uno) e poi
-    funzionano senza internet; si installano anche da chiavetta (`MG4Launcher/loghi/IT.zip`). Puoi aggiungere i tuoi
-    nella cartella **MG4Launcher/loghi** (memoria o chiavetta USB), un file `nome.png` per stazione con il nome in
-    minuscolo, solo lettere e cifre (es. `rtl1025.png`): hanno la priorità.
-  - **CarPlay / Android Auto**: la scheda compare da sola quando colleghi il telefono; è una scorciatoia che apre
-    CarPlay/Android Auto a schermo intero e, durante la navigazione, mostra la prossima manovra.
-- **Barra in basso**: clima con pulsanti grandi da usare in guida — temperatura ‹ › (17 = LO … 33 = HI),
-  ventola ‹ › (OFF / 1…11 / A = automatico; tocca l'icona = pannello Clima dell'auto, tieni premuto = accendi/spegni),
-  i gruppi **Clima** (A/C, AUTO, ricircolo) e **Comfort** (sedili riscaldati a 3 livelli e volante riscaldato, solo quelli che l'auto ha):
-  un tocco apre sopra la barra le caselle grandi, la pressione lunga accende l'A/C o il sedile guida —, il gruppo **Guida** (LKA, One Pedal, assistente Spento/ACC/TJA e pedale del freno, solo i comandi che l'auto ha), mini-player, **retronebbia** (si può nascondere; sulla SWI133 i fendinebbia anteriori non sono comandabili),
-  Telefono, Radio, **360°**, Impostazioni. Con **Barra grande** i pulsanti diventano più grandi; con *Pulsanti raggruppati* spento torna la barra con i pulsanti separati.
+    *Cerca una destinazione*, i riquadri **Casa** e **Lavoro** e la riga **Apri con**. Il navigatore predefinito si
+    sceglie nelle impostazioni: navigatore MG, CarPlay/Android Auto o un'altra app (Google Maps, Waze, ABRP...).
+  - **Media**: in alto i pulsanti delle sorgenti (Radio, USB, Bluetooth, Online: scegli tu quali mostrare). Per la
+    radio: **FM / DAB** sotto Radio, logo e frequenza della stazione, comandi grandi, **elenco delle stazioni trovate**
+    a destra (tocca per sintonizzare) e, in basso, i **preferiti** con logo, nome e frequenza. I **pacchetti dei loghi
+    per paese** si scaricano una volta e poi funzionano senza internet; si installano anche da chiavetta
+    (`MG4Launcher/loghi/IT.zip`) e puoi aggiungere i tuoi nella cartella **MG4Launcher/loghi**.
+  - All'accensione riparte la sorgente che stavi ascoltando: la radio aspetta che il sintonizzatore sia pronto, il
+    Bluetooth che il telefono sia collegato.
+- **Barra in basso**: clima con pulsanti grandi da usare in guida: temperatura ‹ › (17 = LO … 33 = HI), ventola ‹ ›
+  (OFF / 1…11 / A = automatico; tocca l'icona = **pannello clima di sistema**, o [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4)
+  se installato; tieni premuto = accendi/spegni), i gruppi **Clima** (A/C, AUTO, ricircolo), **Comfort** (sedili e
+  volante riscaldati, solo quelli che l'auto ha) e **Guida** (LKA, One Pedal, assistente Spento/ACC/TJA, pedale del
+  freno): un tocco apre sopra la barra le caselle grandi. Poi il **riquadro accanto al clima** (la musica, fino a 6
+  preferiti del telefono da chiamare con un tocco o fino a 6 app), **retronebbia** (si può nascondere; sulla SWI133 i
+  fendinebbia anteriori non sono comandabili), **CarPlay / Android Auto** con la loro icona originale quando il
+  telefono è collegato, Telefono, Radio, **360°** e Impostazioni.
 - **In alto a destra**: indicatori di **Bluetooth**, **Wi-Fi** e rete **4G** della T-Box (con le tacche del segnale).
-- **App**: scorri la home verso sinistra per le app dell'auto e quelle che installi tu,
-  con le icone tutte nello stesso stile; scorri verso destra per tornare. Con **Modifica** scegli quali app mostrare, anche quelle dell'auto.
-  Tra le app dell'auto ci sono anche **Impostazioni Android** e **File Android** (se l'auto li ha).
-- **Impostazioni** (tieni premuta l'auto): a schermo intero, con un menu di cinque sezioni e la versione con lo stato
-  degli aggiornamenti sempre visibile in basso (con **Installa** quando c'è una versione nuova):
-  - **Auto**: colore dell'auto (con anteprima) e tetto nero;
-  - **Home**: data, percentuale batteria con decimali, pressione pneumatici e sua unità, pulsanti di ricarica, barra grande, pulsante retronebbia, pulsanti raggruppati, gruppo Guida, **loghi radio** (paese, stato dei pacchetti, Aggiorna, Elimina);
-  - **Aspetto**: tema (automatico, notte, giorno), **dimensione dei comandi** (Normale, Grande, Molto grande), **lingua**;
-  - **Guida**: **posizione di guida** (come l'auto, sinistra, destra: con la guida a destra la home si specchia e auto e
-    clima passano dal lato del guidatore), home originale MG (il navigatore predefinito si sceglie tenendo premuto un
-    pulsante della riga *Apri con* nella Mappa);
-  - **Sistema**: home predefinita, modalità officina, **Premi Home da solo dopo l'accensione**, **CarPlay e Android Auto** (riavvio del dongle, attesa, *Riavvia CarPlay/AA*), aggiornamenti e avviso, invio automatico dei log, **Salva log**, diagnostica dei servizi.
-  Si aprono anche dall'ingranaggio in alto a destra nella pagina App.
+- **App**: scorri la home verso sinistra per le app dell'auto e quelle che installi tu, con le icone tutte nello stesso
+  stile. Con **Modifica** scegli quali app mostrare; con la **pressione lunga** su un'app installata da te la puoi
+  **disinstallare** (le app di sistema e quelle MG sono protette). **MG4 Store** è già dentro il launcher: alla prima
+  accensione si installa da solo e poi si aggiorna per conto suo.
+- **Tema giorno/notte di tutto il sistema**: lo decide il launcher (scelta manuale, fari, alba e tramonto) e lo applica
+  anche al pannello clima, alle app MG e alla tendina.
+- **Dopo la retromarcia** torna l'app che avevi davanti (CarPlay, Android Auto, navigatore...), senza riavviarla.
+- **Impostazioni** (tieni premuta l'auto, o l'ingranaggio): a schermo intero, con un menu di sette sezioni e la
+  versione con lo stato degli aggiornamenti sempre visibile in basso. Cambiando un'opzione la pagina resta dov'era.
+  - **Auto**: colore, animazione di ricarica, cerchi, tetto nero, posizione di guida (con la guida a destra la home si
+    specchia);
+  - **Home**: data, percentuale della batteria, unità di distanza, pressione degli pneumatici, temperatura interna,
+    limite di ricarica, navigatore predefinito, **sorgenti audio**, pulsante accanto a Mappa/Media;
+  - **Barra e pulsanti**: barra grande, pulsanti raggruppati, LKA e OPD, retronebbia, pulsanti di ricarica, riquadro
+    accanto al clima, tasto 360;
+  - **Radio e loghi**: paese e pacchetti dei loghi, cartella dei loghi personali;
+  - **Aspetto**: tema (automatico, notte, giorno), **dimensione delle app e dei comandi** (Normale, Grande, Molto
+    grande), **lingua**;
+  - **Avvio e app**: home predefinita, modalità officina, **Premi Home da solo dopo l'accensione**, home originale MG,
+    ritorno dopo la retromarcia;
+  - **Sistema**: aggiornamenti, invio automatico dei log, **Salva log**, diagnostica dei servizi, Installa MG4 Store,
+    **Prova animazione di ricarica**, **Controllo funzioni** (prova in sola lettura cosa funziona su questa auto) e
+    **Disinstalla** (rimette la home MG originale e solo dopo toglie il launcher).
 - **Schermo intero**: barra di stato e dock MG nascosti (trascina dal bordo per richiamarli).
-- **Aggiornamenti**: le nuove versioni si scaricano e si installano dalle impostazioni, senza computer.
-- **Lingue**: italiano, inglese, spagnolo, tedesco, portoghese, francese, turco e polacco. Con **Automatica** (predefinita)
-  il launcher segue la lingua di sistema dell'auto e cambia da solo quando la cambi; altrimenti scegli la lingua
-  nelle impostazioni del launcher. Con una lingua di sistema non tradotta usa l'inglese.
+- **Aggiornamenti**: le nuove versioni si scaricano e si installano dalle impostazioni, senza computer; se all'accensione
+  la rete non c'è ancora, il controllo riparte appena arriva.
+- **Lingue**: italiano, inglese, spagnolo, tedesco, portoghese, francese, turco e polacco. Con **Automatica**
+  (predefinita) il launcher segue la lingua di sistema dell'auto; altrimenti scegli la lingua nelle impostazioni. Con
+  una lingua di sistema non tradotta usa l'inglese.
 
 ### Installazione
 
@@ -267,7 +291,9 @@ adb shell cmd package set-home-activity com.saicmotor.hmi.launcher/.ui.MainActiv
 ```
 
 Per rimuovere del tutto il launcher, anche senza computer (dalla 0.2.1): impostazioni → **Disinstalla MG4 Launcher**.
-Rimette la home MG originale e toglie il launcher dall'auto. Da computer: `adb uninstall com.mg4.launcher`.
+Rimette la home MG originale, controlla che sia davvero accesa e solo dopo toglie il launcher dall'auto. Non usare il
+menu App di Android: se l'auto resta su "Smartphone starting", installa [MG4 Ripristino Home](https://github.com/ernestomicco2026-cell/Mg4-Launcher-SWI68/raw/main/releases/MG4HomeRescue-1.0.apk) da chiavetta e aprilo.
+Da computer: `adb uninstall com.mg4.launcher`.
 L'app originale non viene mai modificata.
 
 ### Comandi utili
@@ -570,7 +596,7 @@ il pannello Mappa mostra le indicazioni e apre il navigatore a schermo intero.
 ## English
 
 Tesla-style launcher for the **new MG4 Luxury** infotainment system running **SWI133** software (MY24, Android Automotive 9).
-It is the same home as SWI68 version 0.8.1 (same design, options, texts and languages), adapted to this software's services.
+It is the same home as SWI68 version 1.0.4 (same design, options, texts and languages), adapted to this software's services.
 
 **Compatibility:** works **only with SWI133 software**. Other infotainment software versions use different car
 services: the launcher notices, shows a notice with a link to the right version and does not connect to the car.
@@ -583,47 +609,63 @@ It replaces the original home screen, keeping its features, with a new, clean de
 
 ### Features
 
-- **Car and battery** (left): range and a large **clock**, battery bar with percentage and charge-limit mark, charging and V2L status,
-  optional **date**, status only while charging or using V2L (type, power, time left), outside temperature, **tyre pressure** (TPMS, in bar, kPa or psi) under the car and, if enabled, the **charging buttons**: charge limit, AC current and start/stop charging or V2L (with confirmation). Your MG4, recolourable with the 8 factory colours, optional black roof.
-  Tap the car → Energy management. Long-press it → launcher settings.
-- **Map / Media / CarPlay** (right):
+- **Car and battery** (left): range and a large **clock**, battery bar with percentage and charge-limit mark, optional
+  **date**, status only while charging or using V2L (type, power, time left), outside temperature (and inside
+  temperature, if the car provides it); under the car the **tyre pressure** (TPMS, in bar, kPa or psi) and, if enabled,
+  the **charging buttons** (limit, AC current, start/stop charging or V2L, with confirmation).
+  - **The car is drawn from the 3D model**, in the 8 factory colours, with your choice of wheels (Aero 17", Black 16",
+    Luxury 18", XPower 18"), optional black roof and **headlights on when they are really on**.
+  - **Charging animation**: when you plug in the cable the car turns, the cable plugs in and the charge flows; when
+    charging is complete it stays still, when you unplug the cable it unplugs. The pack for the chosen colour downloads
+    by itself once (and again by itself when it is updated); it can be switched off.
+  - Tap the car → charging management. Long-press it → launcher settings.
+- **Map / Media** (right), with the **Map** and **Media** buttons at the bottom left:
   - **Map**: navigation guidance (next manoeuvre, street, arrival). When not navigating: **Where to?** with the
-    *Search for a destination* bar, **Home** and **Work** tiles (if set in the navigator) and the **Open with** row (MG, CarPlay/Android Auto when a phone is connected, Waze/Google Maps if installed on the car).
-    Long-press a button in that row to make it the default navigator.
-  - **Media**: shows the source that is playing (CarPlay/Android Auto included), otherwise the radio; one button per source at the top
-    (Radio, USB, Bluetooth, Online, plus CarPlay/Android Auto when a phone is connected). For the radio: station logo,
-    **FM / DAB** buttons to switch band, the **list of stations found** on the current band (on the right, tap to
-    tune in) and FM/DAB favourites with logo, name and frequency. **Logo packs per
-    country** are downloaded once (automatic country from the time zone, or chosen in settings, even more than one) and then work offline;
-    they can also be installed from a USB stick (`MG4Launcher/loghi/IT.zip`). You can add your own in the
-    **MG4Launcher/loghi** folder (storage or USB stick), one `name.png` per station, lowercase, letters and digits only
-    (e.g. `rtl1025.png`): they take priority.
-  - **CarPlay / Android Auto**: the tab appears by itself when you connect a phone; it is a shortcut that opens
-    CarPlay/Android Auto full screen and shows the next manoeuvre while navigating.
-- **Bottom bar**: climate with large buttons for use while driving — temperature ‹ › (17 = LO … 33 = HI),
-  fan ‹ › (OFF / 1…11 / A = auto; tap the icon = car Climate panel, long-press = climate on/off), the **Climate** group (A/C, AUTO,
-  recirculation) and the **Comfort** group (3-level heated seats and heated steering wheel, only those the car has): one tap
-  opens the big tiles above the bar, a long press turns on A/C or the driver's seat —, the **Driving** group (LKA, One Pedal, assistant Off/ACC/TJA and brake pedal, only the controls the car has), mini player, **rear fog light** (can be hidden; front fog lights cannot be controlled on SWI133), Phone, Radio, **360°**, Settings.
-  With **Large bar** the buttons get bigger; with *Grouped buttons* off you get the bar with separate buttons back.
+    *Search for a destination* bar, **Home** and **Work** tiles and the **Open with** row. The default navigator is
+    chosen in the settings: MG navigator, CarPlay/Android Auto or another app (Google Maps, Waze, ABRP...).
+  - **Media**: the source buttons at the top (Radio, USB, Bluetooth, Online: you choose which ones to show). For the
+    radio: **FM / DAB** under Radio, station logo and frequency, big controls, the **list of stations found** on the
+    right (tap to tune in) and, at the bottom, the **favourites** with logo, name and frequency. **Logo packs per
+    country** download once and then work offline; they can also be installed from a USB stick
+    (`MG4Launcher/loghi/IT.zip`) and you can add your own in the **MG4Launcher/loghi** folder.
+  - At start-up the source you were listening to resumes: the radio waits until the tuner is ready, Bluetooth until
+    the phone is connected.
+- **Bottom bar**: climate with large buttons for use while driving: temperature ‹ › (17 = LO … 33 = HI), fan ‹ › (OFF /
+  1…11 / A = auto; tap the icon = **system climate panel**, or [MG4 Clima](https://github.com/ernestomicco2026-cell/HVAC-Clima-MG4)
+  if installed; long-press = on/off), the **Climate** (A/C, AUTO, recirculation), **Comfort** (heated seats and
+  steering wheel, only those the car has) and **Driving** groups (LKA, One Pedal, assistant Off/ACC/TJA, brake pedal):
+  one tap opens the big tiles above the bar. Then the **panel next to the climate** (music, up to 6 phone favourites
+  to call with one tap or up to 6 apps), **rear fog light** (can be hidden; front fog lights cannot be controlled on
+  SWI133), **CarPlay / Android Auto** with their original icon when the phone is connected, Phone, Radio, **360°** and
+  Settings.
 - **Top right**: **Bluetooth**, **Wi-Fi** and T-Box **4G** indicators (with signal bars).
-- **Apps**: swipe the home screen left for the car's apps and the ones you install,
-  all with matching icons; swipe right to go back. Use **Modifica** (Edit) to choose which apps to show, car apps included.
-  The car apps also include **Android settings** and **Android files** (if the car has them).
-- **Settings** (long-press the car): full screen, with a menu of five sections and the version with the update status
-  always visible at the bottom (with **Install** when a new version is out):
-  - **Car**: car colour (with preview) and black roof;
-  - **Home**: date, battery percentage with decimals, tyre pressure and its unit, charging buttons, large bar, rear fog button, grouped buttons, Driving group, **radio logos** (country, pack status, Update, Delete);
-  - **Appearance**: theme (auto, night, day), **control size** (Normal, Large, Extra large), **language**;
-  - **Driving**: **driving side** (same as car, left, right: with right-hand drive the home is mirrored so the car and
-    climate are on the driver's side), original MG home (the default navigator is chosen by long-pressing a button of
-    the *Open with* row on the Map);
-  - **System**: default home, service mode, **Press Home automatically after power-on**, **CarPlay and Android Auto** (dongle restart, wait, *Restart CarPlay/AA*), updates and update notice, automatic log upload, **Save log**, service diagnostics.
-  Also available from the gear at the top right of the Apps page.
+- **Apps**: swipe the home screen left for the car's apps and the ones you install, all with matching icons. Use
+  **Modifica** (Edit) to choose which apps to show; **long-press** an app you installed to **uninstall** it (system
+  and MG apps are protected). **MG4 Store** is already inside the launcher: it installs itself on the first start and
+  then updates on its own.
+- **System-wide day/night theme**: the launcher decides it (manual choice, headlights, sunrise and sunset) and applies
+  it to the climate panel, the MG apps and the pull-down panel too.
+- **After reversing** the app you had in front comes back (CarPlay, Android Auto, navigator...), without restarting it.
+- **Settings** (long-press the car, or the gear): full screen, with a menu of seven sections and the version with the
+  update status always visible at the bottom. Changing an option keeps the page where it was.
+  - **Car**: colour, charging animation, wheels, black roof, driving side (with right-hand drive the home is mirrored);
+  - **Home**: date, battery percentage, distance unit, tyre pressure, inside temperature, charge limit, default
+    navigator, **audio sources**, button next to Map/Media;
+  - **Bar and buttons**: large bar, grouped buttons, LKA and OPD, rear fog light, charging buttons, panel next to the
+    climate, 360 button;
+  - **Radio and logos**: logo country and packs, personal logo folder;
+  - **Appearance**: theme (auto, night, day), **app and control size** (Normal, Large, Extra large), **language**;
+  - **Start-up and apps**: default home, service mode, **Press Home automatically after power-on**, original MG home,
+    return after reversing;
+  - **System**: updates, automatic log upload, **Save log**, service diagnostics, Install MG4 Store, **Test charging
+    animation**, **Feature check** (read-only test of what works on this car) and **Uninstall** (turns the original MG
+    home back on and only then removes the launcher).
 - **Full screen**: status bar and MG dock hidden (swipe from the edge to bring them back).
-- **Updates**: new versions download and install from the settings, no computer needed.
+- **Updates**: new versions download and install from the settings, no computer needed; if the network is not there
+  yet at start-up, the check starts again as soon as it arrives.
 - **Languages**: Italian, English, Spanish, German, Portuguese, French, Turkish and Polish. **Automatic** (the default)
-  follows the car's system language and switches by itself when you change it; otherwise pick a language in the
-  launcher settings. If the system language is not translated, English is used.
+  follows the car's system language; otherwise pick a language in the settings. If the system language is not
+  translated, English is used.
 
 ### Installation
 
@@ -688,7 +730,9 @@ adb shell cmd package set-home-activity com.saicmotor.hmi.launcher/.ui.MainActiv
 ```
 
 To remove the launcher completely, even without a computer (since 0.2.1): settings → **Uninstall MG4 Launcher**.
-It restores the original MG home and removes the launcher from the car. From a computer: `adb uninstall com.mg4.launcher`.
+It restores the original MG home, checks that it is really on and only then removes the launcher from the car. Do not
+use the Android Apps menu: if the car stays on "Smartphone starting", install [MG4 Ripristino Home](https://github.com/ernestomicco2026-cell/Mg4-Launcher-SWI68/raw/main/releases/MG4HomeRescue-1.0.apk) from a USB
+stick and open it. From a computer: `adb uninstall com.mg4.launcher`.
 The original app is never modified.
 
 ### Useful commands
