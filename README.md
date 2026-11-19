@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-<a href="releases/MG4Launcher-SWI133-0.3.4.apk"><img alt="Scarica / Download 0.3.4" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.3.4-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
+<a href="releases/MG4Launcher-SWI133-0.3.5.apk"><img alt="Scarica / Download 0.3.5" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.3.5-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
 <a href="https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT"><img alt="Sostieni il progetto con PayPal · Support the project with PayPal" src="https://img.shields.io/badge/Sostieni%20%2F%20Support-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white"></a> <img alt="sperimentale / experimental" src="https://img.shields.io/badge/sperimentale%20%2F%20experimental-orange?style=for-the-badge">
 </p>
 
@@ -236,7 +236,7 @@ Si installa come una normale app: non serve per forza un computer. Ci sono due m
 
 #### Metodo 1 — Da chiavetta USB (senza computer)
 
-1. Copia `MG4Launcher-SWI133-0.3.4.apk` su una chiavetta USB formattata **FAT32** o **exFAT**.
+1. Copia `MG4Launcher-SWI133-0.3.5.apk` su una chiavetta USB formattata **FAT32** o **exFAT**.
 2. Inserisci la chiavetta nell'auto, apri il file manager e tocca l'APK.
 3. Se Android avvisa che non può installare app da questa fonte: tocca **Impostazioni**, attiva
    **Consenti da questa fonte** per il file manager e torna indietro.
@@ -252,7 +252,7 @@ Il firmware MG può bloccare l'installazione normale delle app: l'opzione `-f` l
 
 1. Installa:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.3.4.apk
+   adb install -r -f MG4Launcher-SWI133-0.3.5.apk
    ```
 2. Rendilo la home predefinita:
    ```bash
@@ -334,6 +334,16 @@ Anche solo **2 €** sono un aiuto prezioso per continuare a sviluppare e provar
 [![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
 
 ### Versioni
+
+#### 0.3.5
+- **Animazione di ricarica**: ora parte davvero quando si attacca il cavo con lo schermo acceso. Prima scambiava il
+  quadro acceso per READY e restava ferma; adesso si ferma solo con il READY vero, in movimento o fuori dalla P.
+- **Cavo inserito** riconosciuto anche quando il segnale della presa dice "staccato" ma l'auto è in carica; stessa
+  regola per la scritta "in carica" della home.
+- Controllo funzioni con la prova "READY letto".
+- Le impostazioni restano al loro posto anche dopo una pausa e il pacchetto dell'animazione si riscarica da solo
+  quando viene aggiornato (già dalla 0.3.4).
+- Traduzioni controllate in tutte le 8 lingue.
 
 #### 0.3.4
 - **Disinstallazione sicura**: "Disinstalla" riaccende la home originale MG, controlla che sia davvero attiva e solo
@@ -674,7 +684,7 @@ It installs like a normal app, so a computer isn't required. There are two ways:
 
 #### Method 1 — From a USB stick (no computer)
 
-1. Copy `MG4Launcher-SWI133-0.3.4.apk` to a USB stick formatted as **FAT32** or **exFAT**.
+1. Copy `MG4Launcher-SWI133-0.3.5.apk` to a USB stick formatted as **FAT32** or **exFAT**.
 2. Plug it into the car, open the file manager and tap the APK.
 3. If Android says it cannot install apps from this source: tap **Settings**, enable
    **Allow from this source** for the file manager and go back.
@@ -690,7 +700,7 @@ The MG firmware may block normal app installs; the `-f` option allows it.
 
 1. Install it:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.3.4.apk
+   adb install -r -f MG4Launcher-SWI133-0.3.5.apk
    ```
 2. Make it the default home:
    ```bash
@@ -773,6 +783,16 @@ Even just **€2** is a great help to keep developing and testing new versions i
 [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
 
 ### Changelog
+
+#### 0.3.5
+- **Charging animation**: it now really starts when you plug in the cable with the screen on. Before, it mistook the
+  dashboard being on for READY and stayed still; now it only stops with real READY, while moving or out of P.
+- **Cable plugged in** recognised even when the socket signal says "unplugged" but the car is charging; same rule for
+  the "charging" text on the home.
+- Feature check with the "READY read" test.
+- Settings stay in place even after a pause and the animation pack downloads again by itself when it is updated
+  (already since 0.3.4).
+- Translations checked in all 8 languages.
 
 #### 0.3.4
 - **Safe uninstall**: "Uninstall" turns the original MG home back on, checks that it is really active and only then

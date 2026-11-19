@@ -1,6 +1,6 @@
 {
-  "version": "0.3.4",
-  "apk": "releases/MG4Launcher-SWI133-0.3.4.apk",
+  "version": "0.3.5",
+  "apk": "releases/MG4Launcher-SWI133-0.3.5.apk",
   "size": 1129557,
-  "notes": "Disinstallazione sicura, tema giorno/notte di tutto il sistema, fari letti dall'auto, nuova home, auto dal modello 3D con animazione di ricarica, MG4 Store incluso, sorgenti e navigazione a scelta, impostazioni che restano al loro posto, disinstallare le app."
+  "notes": "Animazione di ricarica che parte davvero quando si attacca il cavo con lo schermo acceso; cavo inserito riconosciuto meglio; prova READY nel Controllo funzioni; traduzioni controllate."
 }

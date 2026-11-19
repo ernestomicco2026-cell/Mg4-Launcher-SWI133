@@ -98,6 +98,7 @@ public final class SelfCheck {
         l.add(new Item("log", R.string.chk_logs));
         l.add(new Item("avvisi", R.string.chk_notices));
         l.add(new Item("animazione", R.string.chk_charge_anim));
+        l.add(new Item("ready", R.string.chk_ready));
         return l;
     }
 
@@ -259,6 +260,15 @@ public final class SelfCheck {
                 if (p != null) main.post(() -> p.onLightsCountdown(0));
                 set(it, seenOn ? OK : FAIL, (seenOn ? "accensione vista" : "nessuna accensione vista in 10 s") + " · "
                         + VehicleClient.lightsDescription(), "");
+                break;
+            }
+            case "ready": {
+                // 0.3.5: READY vero (getEngineState = SENSOR_EPTRDY), sola lettura
+                int r = s == null ? Integer.MIN_VALUE : s.ready;
+                if (r == Integer.MIN_VALUE) set(it, FAIL, "fonte getEngineState (SENSOR_EPTRDY) · leggibile no", "");
+                else set(it, OK, "fonte getEngineState (SENSOR_EPTRDY) · valore " + r
+                        + (r == 1 ? " (READY)" : r == 0 ? " (non in READY)" : " (sconosciuto)") + " · leggibile sì"
+                        + " · accensione " + s.ignition + " · marcia " + s.gearRaw, String.valueOf(r));
                 break;
             }
             case "animazione": {

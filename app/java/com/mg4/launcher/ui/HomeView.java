@@ -593,6 +593,9 @@ public final class HomeView extends LinearLayout {
 
     /** Testo di stato: solo durante ricarica o scarica (tipo · potenza · tempo rimanente), altrimenti vuoto. */
     private String chargeText(VehicleClient.State s) {
+        // 0.3.5: ricarica via cavo solo se anche l'animazione la vede (stessa decisione: VehicleClient.cablePlugged)
+        int cs = s.chargingStatus;
+        if ((cs == 1 || cs == 3 || cs == 10 || cs == 11) && !VehicleClient.cablePlugged(s)) return "";
         String kw = s.chargeKw > 0.3f ? String.format(L.locale(), " · %.1f kW", s.chargeKw) : "";
         switch (s.chargingStatus) {
             case 1: return L.s(R.string.charge_charging) + kw + remaining(s.predictMinutes);
@@ -1643,7 +1646,10 @@ public final class HomeView extends LinearLayout {
         if (chargeAnim == null) return;
         String color = Prefs.CAR_COLORS[prefs.carColorIndex()];
         boolean plugged = VehicleClient.cablePlugged(s), done = VehicleClient.chargeDone(s);
-        boolean ready = s.ignition == 2, moving = !Float.isNaN(s.speedKmh) && Math.abs(s.speedKmh) >= 1f;
+        // 0.3.5: READY vero (getEngineState = 1). L'accensione 2 è solo "quadro acceso": non ferma niente.
+        // Si ferma con READY confermato, in movimento o con una marcia letta diversa da P; READY sconosciuto non blocca.
+        boolean ready = s.ready == 1, moving = !Float.isNaN(s.speedKmh) && Math.abs(s.speedKmh) >= 1f;
+        boolean notP = s.gearRaw >= 1 && s.gearRaw <= 4 && s.gearRaw != VehicleClient.GEAR_P;
         // il controllo dei file si rifà solo quando il pacchetto o il colore cambiano (niente disco a ogni lettura)
         if (animGen != com.mg4.launcher.svc.ChargePack.generation || !color.equals(animColor)) {
             animGen = com.mg4.launcher.svc.ChargePack.generation;
@@ -1652,6 +1658,7 @@ public final class HomeView extends LinearLayout {
         }
         boolean have = animHave;
         String why = !prefs.chargeAnim() ? "spenta nelle impostazioni" : ready ? "in READY: ferma" : moving ? "in movimento: ferma"
+                : notP ? "marcia " + s.gearRaw + " (non P): ferma"
                 : !have ? "pacchetto non disponibile" : "";
         // al massimo una volta al minuto (ensure controlla poi il limite di 12 ore tra due download)
         long nowMs = SystemClock.uptimeMillis();
@@ -1664,7 +1671,9 @@ public final class HomeView extends LinearLayout {
         String txt = (prefs.chargeAnim() ? "attiva" : "spenta") + " · pacchetto " + color + " "
                 + (have ? "presente" : com.mg4.launcher.svc.ChargePack.busy() ? "in download" : "assente") + " · "
                 + ChargeAnimView.phaseTxt + " · cavo " + (plugged ? "inserito" : "non inserito") + (done ? " · carica finita" : "")
-                + " · stato ricarica " + s.chargingStatus + " · presa " + s.plugProp + " · accensione " + s.ignition;
+                + " · stato ricarica " + s.chargingStatus + " · presa " + s.plugProp + " · accensione " + s.ignition
+                + " · ready " + (s.ready == Integer.MIN_VALUE ? "? (getEngineState non leggibile)" : s.ready + " (getEngineState)")
+                + " · marcia " + (s.gearRaw == Integer.MIN_VALUE ? "?" : String.valueOf(s.gearRaw));
         if (!txt.equals(animLog)) {
             animLog = txt;
             com.mg4.launcher.svc.Diag.put("ricarica.animazione", txt);
