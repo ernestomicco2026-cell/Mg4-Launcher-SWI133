@@ -99,6 +99,8 @@ public final class SelfCheck {
         l.add(new Item("avvisi", R.string.chk_notices));
         l.add(new Item("animazione", R.string.chk_charge_anim));
         l.add(new Item("ready", R.string.chk_ready));
+        l.add(new Item("spegnimento", R.string.chk_power));
+        l.add(new Item("riscaldamentoBatteria", R.string.chk_batt_heat));
         return l;
     }
 
@@ -262,8 +264,29 @@ public final class SelfCheck {
                         + VehicleClient.lightsDescription(), "");
                 break;
             }
+            case "riscaldamentoBatteria": {
+                // 1.0.6 (issue #37): SOLA LETTURA, nessun comando. SWI133: VPM 84017179 (0 acceso, 1/-1 spento), poi codice 37
+                int bh = v == null ? Integer.MIN_VALUE : v.batteryHeat();
+                String raw = v == null ? "servizio assente" : v.batteryHeatRaw;
+                if (bh == Integer.MIN_VALUE) set(it, ABSENT, raw + " (disponibile: no)", "");
+                else set(it, OK, "disponibile: sì · " + raw + " → " + (bh == 1 ? "acceso" : "spento")
+                        + " · comando setIntPropertyRecovery(84017179, 1/2) non usato", String.valueOf(bh));
+                break;
+            }
+            case "spegnimento": {
+                // 1.0.6: SOLA LETTURA, non spegne niente. SWI133 (0.3.6): comando vehicleproperty 0x6030021 = 2, marcia VPM
+                // 0x5030043; getPowerModeSwitch vale 0 sulle auto e non decide più niente: si scrive solo nel log
+                boolean has = v != null && v.powerOffAvailable();
+                int vg = v == null ? Integer.MIN_VALUE : v.vpmInt(VehicleClient.VPM_GEAR);
+                int mode = v == null ? Integer.MIN_VALUE : v.powerModeSwitch();
+                if (!has) set(it, FAIL, "spegnimento disponibile: no (servizio vehicleproperty assente)", "");
+                else set(it, OK, "spegnimento disponibile: sì · metodo vehicleproperty.setIntProperty(0x6030021, 2) · marcia VPM 0x5030043 = "
+                        + (vg == Integer.MIN_VALUE ? "non leggibile" : String.valueOf(vg)) + " · getCarGear " + (s == null ? "?" : s.gearRaw)
+                        + " · getPowerModeSwitch " + (mode == Integer.MIN_VALUE ? "?" : mode) + " (solo log) · si spegne solo in P e ferma", "");
+                break;
+            }
             case "ready": {
-                // 0.3.5: READY vero (getEngineState = SENSOR_EPTRDY), sola lettura
+                // 1.0.5: READY vero (getEngineState = SENSOR_EPTRDY), sola lettura
                 int r = s == null ? Integer.MIN_VALUE : s.ready;
                 if (r == Integer.MIN_VALUE) set(it, FAIL, "fonte getEngineState (SENSOR_EPTRDY) · leggibile no", "");
                 else set(it, OK, "fonte getEngineState (SENSOR_EPTRDY) · valore " + r
@@ -324,6 +347,8 @@ public final class SelfCheck {
                 int f = ms.favorites == null ? 0 : ms.favorites.size();
                 String elenco = Diag.value("radio.elenco");
                 if (n > 0 || f > 0) set(it, OK, n + " stazioni · " + f + " preferiti · " + elenco, String.valueOf(Math.max(n, f)));
+                // 1.0.6: nel controllo automatico (Radio magari mai aperta) l'elenco vuoto è "da verificare", non un errore
+                else if (!interactive) set(it, SKIPPED, "da verificare: elenco non ancora arrivato (Radio non aperta?) · " + elenco, "0");
                 else set(it, FAIL, "nessuna stazione ricevuta (aprire la Radio e fare una ricerca) · " + elenco, "0");
                 break;
             }

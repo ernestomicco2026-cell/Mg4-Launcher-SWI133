@@ -56,6 +56,10 @@ public final class VehicleClient {
     private static final int AC_OPEN_POWER = 5;
     private static final int AC_CLOSE_POWER = 6;
     private static final int AC_SET_AIR_VOLUME = 15;
+    // EN: MG4 Clima SaicBackend: direction 14/58, rear heating 50/51/93.
+    // IT: MG4 Clima SaicBackend: direzione 14/58, lunotto 50/51/93.
+    private static final int AC_SET_BLOWER_MODE = 14, AC_GET_BLOWER_MODE = 58;
+    private static final int AC_OPEN_REAR_DEFROST = 50, AC_CLOSE_REAR_DEFROST = 51, AC_GET_REAR_DEFROST = 93;
     private static final int AC_SET_DRV_TEMP = 41;
     private static final int AC_GET_POWER = 53;
     private static final int AC_GET_AIR_VOLUME = 59;
@@ -99,6 +103,27 @@ public final class VehicleClient {
     private static final int SET_GET_LKA = 83, SET_SET_LKA = 84, SET_GET_LAST_LKA = 147, SET_GET_LKA_FAILURE = 91;
     // LKA: 0 non disponibile, 1 spento, 2 LDW, 3 LDP, 4 LKA, 5 ELK, 6-7 riservati
     private static final int SET_GET_OPD = 163, SET_SET_OPD = 164, SET_GET_OPD_INHIBIT = 165;   // One Pedal Drive: 1 acceso
+    /**
+     * 1.0.5: spegnimento della vettura, come il pulsante "Spegni" dell'app Impostazioni veicolo originale
+     * (VehiclePowerViewModel.defPowerOffClick → setPowerModeSwitch(2)). getPowerModeSwitch = 1: spegnimento possibile
+     * (l'originale abilita il pulsante solo così). Proprietà 0x2140d70f del servizio veicolo.
+     */
+    private static final int SET_GET_POWER_MODE = 172;
+    /**
+     * 0.3.6 (issue SWI68 #41): sulla SWI133 lo spegnimento è la proprietà 0x6030021 = 2 del "vehicleproperty" (lo
+     * stesso hub del servizio veicolo, VehiclePropertyManager dell'SDK SAIC: setIntPropertyRecovery = setIntProperty, codice
+     * 17). La marcia per il controllo è la proprietà 0x5030043 (P = 1), letta con getIntProperty (codice 6).
+     * Il firmware NON blocca lo spegnimento in marcia: il controllo (P e ferma) lo facciamo noi, subito prima dell'invio.
+     */
+    private static final String VPROP = "com.saicmotor.sdk.vehiclesettings.IVehiclePropertyService";
+    private static final int VPROP_GET_INT = 6, VPROP_SET_INT = 17;
+    public static final int VPM_POWER_OFF = 0x6030021, VPM_GEAR = 0x5030043, VPM_EPTRDY = 0x5030048;
+    /**
+     * 0.3.6 (punto 11): riscaldamento intelligente della batteria nell'app di ricarica SWI133 = proprietà VPM 84017179
+     * (0x502001B). Lettura: 0 acceso, 1 o -1 spento. La scrittura (1 accendi, 2 spegni) NON si usa: sola lettura.
+     */
+    public static final int VPM_BATTERY_HEAT = 84017179;
+    private static final int POWER_OFF = 2;
     private static final int COND_LDWS_CONFIG = 31;        // 1 = assistenza corsia assente (-1 = presente, come l'originale)
     private static final int COND_ONE_PEDAL_CONFIG = 41;   // 0 = One Pedal presente (-1 = assente, come l'originale)
     // sedili: spegnimento diretto (il tocco "premuto" fa il giro 0 → 3 → 2 → 1 → 0)
@@ -133,6 +158,8 @@ public final class VehicleClient {
         public int chargeControl = -1;    // 1 in carica, 2 fermo, 3 in preparazione
         public int dischargeControl = -1; // idem per il V2L
         public int dischargeLimit = -1;   // % sotto cui il V2L si ferma
+        /** 1.0.6 (issue #37): riscaldamento intelligente batteria (getDrivingBatteryHeat): 1 acceso, 0/2 spento; MIN_VALUE non leggibile. */
+        public int batteryHeat = Integer.MIN_VALUE;
         public int dischargeMinutes = -1;
         public boolean bmsAvailable;
         public int distUnit = -1;         // 0 km, 1 miglia (dal quadro)
@@ -142,6 +169,8 @@ public final class VehicleClient {
         public int acTemp = -1;           // °C, 17 = LO, 33 = HI
         public int hvacPower = -1;
         public int acOn = -1, autoOn = -1, defrostOn = -1;   // 1 acceso, 0 spento, -1 sconosciuto
+        /** EN: Confirmed readings; -1 unavailable. IT: Letture confermate; -1 non disponibile. */
+        public int blowerMode = -1, rearDefrostOn = -1;
         public int seatLeft = -1, seatRight = -1;          // 0..3, -1 non disponibile
         public int wheelHeat = -1;                         // 1 acceso, 0 spento, -1 non disponibile
         public float[] tireBar = {Float.NaN, Float.NaN, Float.NaN, Float.NaN};   // AS, AD, PS, PD
@@ -309,6 +338,11 @@ public final class VehicleClient {
                         s.distUnit = distUnit;
                         s.chargeLock = Rpc.callInt(c, CHG, CHG_GET_LOCK);
                         readReserve(c, s, now);
+                        try {
+                            s.batteryHeat = batteryHeat();   // sola lettura (SWI133: VPM 84017179, poi codice 37)
+                        } catch (Exception e) {
+                            s.batteryHeat = Integer.MIN_VALUE;
+                        }
                         Diag.put("ricarica.comandi", "corrente " + cur + " · avvia/ferma " + s.chargeControl + " · V2L " + s.dischargeControl
                                 + " · limite V2L " + dl + " · unità quadro " + distUnit + " · blocco presa " + s.chargeLock);
                     } catch (Exception e) {
@@ -378,6 +412,22 @@ public final class VehicleClient {
                     s.acOn = held(AC_GET_AC, Rpc.callInt(a, AC, AC_GET_AC), now);
                     s.autoOn = held(AC_GET_AUTO, Rpc.callInt(a, AC, AC_GET_AUTO), now);
                     s.defrostOn = held(AC_GET_FRONT_DEFROST, Rpc.callInt(a, AC, AC_GET_FRONT_DEFROST), now);
+                    // EN: Optional reads must not interrupt other controls. IT: Letture opzionali isolate.
+                    try {
+                        int mode = Rpc.callInt(a, AC, AC_GET_BLOWER_MODE);
+                        s.blowerMode = mode >= 0 && mode <= 6 ? mode : -1;
+                        held(AC_GET_BLOWER_MODE, s.blowerMode, now);
+                    } catch (Exception e) {
+                        Diag.error("clima.direzione", e.toString());
+                    }
+                    try {
+                        int rear = Rpc.callInt(a, AC, AC_GET_REAR_DEFROST);
+                        s.rearDefrostOn = rear == 0 || rear == 1 ? rear : -1;
+                        held(AC_GET_REAR_DEFROST, s.rearDefrostOn, now);
+                    } catch (Exception e) {
+                        Diag.error("clima.lunotto", e.toString());
+                    }
+                    Diag.put("clima.direzione/lunotto", s.blowerMode + " / " + s.rearDefrostOn);
                     try {
                         int loop = Rpc.callInt(a, AC, AC_GET_LOOP);
                         s.loopMode = held(AC_GET_LOOP, loop >= 0 && loop <= 2 ? loop : -1, now);
@@ -663,7 +713,10 @@ public final class VehicleClient {
             src = "HEADLIGHTS stato " + (st == Integer.MIN_VALUE ? "?" : String.valueOf(st)) + " leva " + (sw == Integer.MIN_VALUE ? "?" : String.valueOf(sw))
                     + " (luci SAIC: " + w1[0] + ")";
         }
+        int before = lightsState;
         lightsState = v;
+        // 1.0.6 (issue #43): fari prima non leggibili (CarService non pronto) e ora sì: il tema si ridecide subito
+        if (before < 0 && v >= 0) DayNight.redecideNow("fari leggibili (" + (v == 1 ? "accesi" : "spenti") + ")");
         lightsDesc = "fonte " + src + " · anabbaglianti " + (beam == null ? "?" : beam) + " · posizione " + (side == null ? "?" : side)
                 + " · leva " + (lever == null ? "?" : lever) + " → " + (v == 1 ? "accesi" : v == 0 ? "spenti" : "non leggibili");
         Diag.put("luci.fari", lightsDesc);
@@ -909,6 +962,151 @@ public final class VehicleClient {
         });
     }
 
+    // ---- 1.0.5: spegnimento della vettura -------------------------------------------------------
+
+    /** getPowerModeSwitch (sola lettura, da un thread di lavoro): 1 = spegnimento possibile; MIN_VALUE = non leggibile. */
+    public int powerModeSwitch() {
+        try {
+            IBinder st = sub("vehiclesetting");
+            if (st == null) return Integer.MIN_VALUE;
+            return Rpc.callInt(st, SET, SET_GET_POWER_MODE);
+        } catch (Exception e) {
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    /** 0.3.6: getIntProperty del "vehicleproperty" (sola lettura); MIN_VALUE = non leggibile. */
+    public int vpmInt(int prop) {
+        try {
+            IBinder vp = sub("vehicleproperty");
+            if (vp == null) return Integer.MIN_VALUE;
+            return Rpc.call(vp, VPROP, VPROP_GET_INT, p -> p.writeInt(prop), android.os.Parcel::readInt);
+        } catch (Exception e) {
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    /** 0.3.6 (punto 11): ultime letture grezze del riscaldamento batteria, per il log e il Controllo funzioni. */
+    public volatile String batteryHeatRaw = "non letto";
+
+    /**
+     * 1.0.6 (issue #37, solo studio), adattato alla SWI133: riscaldamento intelligente della batteria, SOLA LETTURA (da
+     * un thread di lavoro). Sulla SWI133 l'app di ricarica legge la proprietà VPM 84017179: 0 acceso, 1 o -1 spento.
+     * Se non si legge, getDrivingBatteryHeat del servizio ricarica (codice 37: 1 acceso, 2 o 0 spento), come la SWI68.
+     * Restituisce il valore nella convenzione della SWI68: 1 acceso, 2 spento; MIN_VALUE = non leggibile.
+     */
+    public int batteryHeat() {
+        int vpm = vpmInt(VPM_BATTERY_HEAT), chg = Integer.MIN_VALUE;
+        try {
+            IBinder c = sub("vehiclecharging");
+            if (c != null) chg = Rpc.callInt(c, CHG, CHG_GET_BATTERY_HEAT);
+        } catch (Exception ignored) {
+        }
+        batteryHeatRaw = "VPM 84017179 " + (vpm == Integer.MIN_VALUE ? "non leggibile" : String.valueOf(vpm))
+                + " · getDrivingBatteryHeat " + (chg == Integer.MIN_VALUE ? "non leggibile" : String.valueOf(chg));
+        if (vpm == 0) return 1;
+        if (vpm == 1) return 2;
+        if (chg == 1) return 1;
+        if (chg == 0 || chg == 2) return 2;
+        return Integer.MIN_VALUE;
+    }
+
+    private static final int CHG_GET_BATTERY_HEAT = 37;
+
+    /** 0.3.6 (punto 3): il metodo di spegnimento c'è (servizio "vehicleproperty" raggiungibile). Sola lettura. */
+    public boolean powerOffAvailable() {
+        try {
+            return sub("vehicleproperty") != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /** Esito dello spegnimento: "inviato", "non in P", "non disponibile", "errore". */
+    public interface PowerOffDone {
+        void done(String result);
+    }
+
+    /**
+     * Spegne la vettura. 0.3.6 (issue SWI68 #41): niente più getPowerModeSwitch come condizione (sulle auto vale 0 e
+     * bloccava sempre); resta solo nel log. Condizioni: marcia P (VPM 0x5030043 = 1) E velocità < 1 km/h, RILETTE qui
+     * subito prima dell'invio; se una delle due non si legge non si invia. Dopo 5 s si rileggono accensione e stato e
+     * auto.spegnimento dice "esito confermato" o "nessun effetto".
+     */
+    public void powerOff(PowerOffDone done) {
+        Handler main = new Handler(Looper.getMainLooper());
+        if (bg == null) {
+            Diag.put("auto.spegnimento", "richiesto · servizio non collegato · non inviato");
+            main.post(() -> done.done("errore"));
+            return;
+        }
+        bg.post(() -> {
+            String res;
+            int gear = Integer.MIN_VALUE, carGear = Integer.MIN_VALUE, mode = Integer.MIN_VALUE, ign = Integer.MIN_VALUE, ready = Integer.MIN_VALUE;
+            float speed = Float.NaN;
+            boolean sent = false;
+            try {
+                IBinder cnd = sub("vehiclecondition");
+                IBinder vp = sub("vehicleproperty");
+                if (cnd == null || vp == null) throw new RemoteException("servizio veicolo assente");
+                gear = vpmInt(VPM_GEAR);
+                try {
+                    carGear = Rpc.callInt(cnd, COND, COND_GEAR);
+                } catch (Exception ignored) {
+                }
+                speed = Rpc.callFloat(cnd, COND, COND_SPEED);
+                try {
+                    IBinder st = sub("vehiclesetting");
+                    if (st != null) mode = Rpc.callInt(st, SET, SET_GET_POWER_MODE);   // solo per il log
+                } catch (Exception ignored) {
+                }
+                try {
+                    ign = Rpc.callInt(cnd, COND, COND_IGNITION);
+                    ready = Rpc.callInt(cnd, COND, COND_ENGINE_STATE);
+                } catch (Exception ignored) {
+                }
+                if (gear == Integer.MIN_VALUE || Float.isNaN(speed)) res = "non disponibile";
+                else if (gear != GEAR_P || Math.abs(speed) >= 1f) res = "non in P";
+                else {
+                    Rpc.call(vp, VPROP, VPROP_SET_INT, p -> {
+                        p.writeInt(VPM_POWER_OFF);
+                        p.writeInt(POWER_OFF);
+                    });
+                    res = "inviato";
+                    sent = true;
+                }
+            } catch (Exception e) {
+                res = "errore";
+                Diag.error("auto.spegnimento", e.toString());
+            }
+            String head = "richiesto · marcia VPM 0x5030043 = " + (gear == Integer.MIN_VALUE ? "non leggibile" : gear)
+                    + " (getCarGear " + (carGear == Integer.MIN_VALUE ? "?" : carGear) + ") · velocità " + speed
+                    + " · getPowerModeSwitch " + (mode == Integer.MIN_VALUE ? "?" : mode) + " (solo log) · accensione " + ign
+                    + " · ready " + ready + " · metodo vehicleproperty.setIntProperty(0x6030021, 2)";
+            Diag.put("auto.spegnimento", head + " · esito " + res + (sent ? " · verifica tra 5 s" : ""));
+            if (sent) {
+                final int ign0 = ign, ready0 = ready;
+                bg.postDelayed(() -> {
+                    int ign1 = Integer.MIN_VALUE, ready1 = Integer.MIN_VALUE;
+                    try {
+                        IBinder cnd = sub("vehiclecondition");
+                        ign1 = Rpc.callInt(cnd, COND, COND_IGNITION);
+                        ready1 = Rpc.callInt(cnd, COND, COND_ENGINE_STATE);
+                    } catch (Exception ignored) {
+                    }
+                    // 0.3.6: una lettura non riuscita non vale come "cambiato"
+                    boolean readable = ign1 != Integer.MIN_VALUE || ready1 != Integer.MIN_VALUE;
+                    boolean changed = (ign1 != Integer.MIN_VALUE && ign1 != ign0) || (ready1 != Integer.MIN_VALUE && ready1 != ready0);
+                    Diag.put("auto.spegnimento", head + " · esito inviato · dopo 5 s accensione " + ign0 + " → " + ign1 + ", ready "
+                            + ready0 + " → " + ready1 + " · " + (changed ? "esito confermato"
+                            : readable ? "nessun effetto" : "non verificabile (servizio veicolo non risponde)"));
+                }, 5000);
+            }
+            String r = res;
+            main.post(() -> done.done(r));
+        });
+    }
+
     // ---- sedili a livello (gruppo Comfort: spento → 1 → 2 → 3 → spento) ------------------------
 
     private volatile int seatTargetLeft = -1, seatTargetRight = -1;
@@ -1118,8 +1316,8 @@ public final class VehicleClient {
     }
 
     public void toggleFrontDefrost() {
-        if (bg == null) return;
-        boolean on = last.defrostOn == 1;
+        if (bg == null || !last.connected || (last.defrostOn != 0 && last.defrostOn != 1)) return;
+        boolean on = predicted(AC_GET_FRONT_DEFROST, last.defrostOn) == 1;
         hold(AC_GET_FRONT_DEFROST, on ? 0 : 1);
         bg.post(() -> {
             try {
@@ -1127,6 +1325,47 @@ public final class VehicleClient {
                 if (a != null) Rpc.call(a, AC, on ? AC_CLOSE_FRONT_DEFROST : AC_OPEN_FRONT_DEFROST, Rpc.NONE);
             } catch (Exception e) {
                 Diag.error("clima.sbrinamento", e.toString());
+            }
+            poll();
+        });
+    }
+
+    /** EN: Toggle one outlet using SAIC's seven modes. IT: Commuta una direzione nei sette modi SAIC. */
+    public void toggleAirDirection(int direction) {
+        if (bg == null || !last.connected || last.blowerMode < 0) return;
+        bg.post(() -> {
+            int current = predicted(AC_GET_BLOWER_MODE, last.blowerMode);
+            int next = AirflowModes.toggle(current, direction);
+            if (next == current) return;
+            try {
+                IBinder a = sub("aircondition");
+                if (a == null) return;
+                Rpc.call(a, AC, AC_SET_BLOWER_MODE, p -> p.writeInt(next));
+                // EN: Queue rapid taps correctly; display only readings. IT: Tocchi rapidi in ordine; mostra solo letture.
+                hold(AC_GET_BLOWER_MODE, next);
+                Diag.put("comando.ultimo", "clima.direzione → " + next);
+            } catch (Exception e) {
+                synchronized (holds) { holds.remove(AC_GET_BLOWER_MODE); }
+                Diag.error("clima.direzione", e.toString());
+            }
+            poll();
+        });
+    }
+
+    /** EN: Rear window electric heating, separate from front demist. IT: Lunotto elettrico, separato dal parabrezza. */
+    public void toggleRearDefrost() {
+        if (bg == null || !last.connected || last.rearDefrostOn < 0) return;
+        bg.post(() -> {
+            int current = predicted(AC_GET_REAR_DEFROST, last.rearDefrostOn);
+            try {
+                IBinder a = sub("aircondition");
+                if (a == null) return;
+                Rpc.call(a, AC, current == 1 ? AC_CLOSE_REAR_DEFROST : AC_OPEN_REAR_DEFROST, Rpc.NONE);
+                hold(AC_GET_REAR_DEFROST, current == 1 ? 0 : 1);
+                Diag.put("comando.ultimo", "clima.lunotto → " + (current == 1 ? 0 : 1));
+            } catch (Exception e) {
+                synchronized (holds) { holds.remove(AC_GET_REAR_DEFROST); }
+                Diag.error("clima.lunotto", e.toString());
             }
             poll();
         });

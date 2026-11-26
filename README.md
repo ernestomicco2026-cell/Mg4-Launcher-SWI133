@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-<a href="releases/MG4Launcher-SWI133-0.3.5.apk"><img alt="Scarica / Download 0.3.5" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.3.5-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
+<a href="releases/MG4Launcher-SWI133-0.3.6.apk"><img alt="Scarica / Download 0.3.6" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.3.6-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
 <a href="https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT"><img alt="Sostieni il progetto con PayPal · Support the project with PayPal" src="https://img.shields.io/badge/Sostieni%20%2F%20Support-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white"></a> <img alt="sperimentale / experimental" src="https://img.shields.io/badge/sperimentale%20%2F%20experimental-orange?style=for-the-badge">
 </p>
 
@@ -58,27 +58,27 @@
 
 <table>
 <tr>
-<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-giorno-radio.png" alt="Home di giorno con la radio: FM/DAB sotto Radio, Mappa/Media in basso (simulazione)" width="100%"><br>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.6-giorno-radio.png" alt="Home di giorno con la radio: FM/DAB sotto Radio, Mappa/Media in basso (simulazione)" width="100%"><br>
 <sub>Tema <b>giorno</b> con la radio: <b>FM/DAB</b> sotto Radio, <b>Mappa/Media</b> in basso prima dei preferiti · <i><b>Day</b> theme with the radio: <b>FM/DAB</b> under Radio, <b>Map/Media</b> at the bottom before the favourites</i></sub></td>
 <td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-ricarica.gif" alt="Animazione di ricarica: l'auto ruota, il cavo si aggancia e il flusso scorre (simulazione)" width="100%"><br>
 <sub><b>Animazione di ricarica</b>: l'auto si gira, il cavo si aggancia e la carica scorre; potenza e tempo restante accanto alla temperatura · <i><b>Charging animation</b>: the car turns, the cable plugs in and the charge flows; power and time left next to the temperature</i></sub></td>
 </tr>
 <tr>
-<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-giorno-usb.png" alt="Home di giorno con la chiavetta USB (simulazione)" width="100%"><br>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.6-giorno-usb.png" alt="Home di giorno con la chiavetta USB (simulazione)" width="100%"><br>
 <sub>Sorgente <b>USB</b>: pulsanti delle sorgenti più grandi, ognuno con il suo fondo · <i><b>USB</b> source: bigger source buttons, each with its own background</i></sub></td>
-<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-notte-mappa.png" alt="Riquadro Mappa di notte (simulazione)" width="100%"><br>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.6-notte-mappa.png" alt="Riquadro Mappa di notte (simulazione)" width="100%"><br>
 <sub>Riquadro <b>Mappa</b> di notte, con Mappa/Media in basso a sinistra · <i><b>Map</b> panel at night, with Map/Media at the bottom left</i></sub></td>
 </tr>
 <tr>
-<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-grande-giorno.png" alt="Home con Dimensione comandi Grande (simulazione)" width="100%"><br>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.6-grande-giorno.png" alt="Home con Dimensione comandi Grande (simulazione)" width="100%"><br>
 <sub>Dimensione comandi <b>Grande</b>: testo e pulsanti crescono insieme · <i>Control size <b>Large</b>: text and buttons grow together</i></sub></td>
-<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-molto-grande-notte.png" alt="Home con Dimensione comandi Molto grande di notte (simulazione)" width="100%"><br>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.6-molto-grande-notte.png" alt="Home con Dimensione comandi Molto grande di notte (simulazione)" width="100%"><br>
 <sub>Dimensione comandi <b>Molto grande</b>, di notte: tutte le sorgenti con la scritta · <i>Control size <b>Extra large</b>, at night: every source keeps its label</i></sub></td>
 </tr>
 <tr>
-<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-notte-radio.png" alt="Home di notte con la radio (simulazione)" width="100%"><br>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.6-notte-radio.png" alt="Home di notte con la radio (simulazione)" width="100%"><br>
 <sub>Tema <b>notte</b> con la radio, dimensione Normale · <i><b>Night</b> theme with the radio, Normal size</i></sub></td>
-<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.4-molto-grande-giorno.png" alt="Home con Dimensione comandi Molto grande di giorno (simulazione)" width="100%"><br>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.6-molto-grande-giorno.png" alt="Home con Dimensione comandi Molto grande di giorno (simulazione)" width="100%"><br>
 <sub>Dimensione comandi <b>Molto grande</b>, di giorno · <i>Control size <b>Extra large</b>, by day</i></sub></td>
 </tr>
 </table>
@@ -236,7 +236,7 @@ Si installa come una normale app: non serve per forza un computer. Ci sono due m
 
 #### Metodo 1 — Da chiavetta USB (senza computer)
 
-1. Copia `MG4Launcher-SWI133-0.3.5.apk` su una chiavetta USB formattata **FAT32** o **exFAT**.
+1. Copia `MG4Launcher-SWI133-0.3.6.apk` su una chiavetta USB formattata **FAT32** o **exFAT**.
 2. Inserisci la chiavetta nell'auto, apri il file manager e tocca l'APK.
 3. Se Android avvisa che non può installare app da questa fonte: tocca **Impostazioni**, attiva
    **Consenti da questa fonte** per il file manager e torna indietro.
@@ -252,7 +252,7 @@ Il firmware MG può bloccare l'installazione normale delle app: l'opzione `-f` l
 
 1. Installa:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.3.5.apk
+   adb install -r -f MG4Launcher-SWI133-0.3.6.apk
    ```
 2. Rendilo la home predefinita:
    ```bash
@@ -334,6 +334,22 @@ Anche solo **2 €** sono un aiuto prezioso per continuare a sviluppare e provar
 [![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
 
 ### Versioni
+
+#### 0.3.6
+- Android Auto, chiavetta USB e radio regolari all'accensione (il riavvio del dongle interviene solo con un dongle vero);
+- Spegni la vettura dalle impostazioni (solo in P, ricontrollata prima del comando);
+- Riquadro auto nascondibile;
+- Navigatore in finestra nel pannello mappe (sperimentale);
+- Icone delle manovre;
+- Animazione di ricarica: pulsante Simula ricarica, preparazione molto più veloce e log inviato da solo alla prima ricarica;
+- Android Auto e CarPlay tra le sorgenti quando il telefono è collegato, con titolo e artista (e copertina, se trovata);
+- Testi del brano e della stazione più grandi;
+- Scorri in su per tornare (facoltativo);
+- Tendina dall'alto a schermo intero (facoltativa);
+- Scegli i 5 pulsanti della barra di ricarica;
+- Tema scuro quando i fari sono accesi (a scelta);
+- Direzione dell'aria, sbrinamento e lunotto nel menu Clima (grazie a sommistica);
+- Niente più falso errore delle stazioni.
 
 #### 0.3.5
 - **Animazione di ricarica**: ora parte davvero quando si attacca il cavo con lo schermo acceso. Prima scambiava il
@@ -684,7 +700,7 @@ It installs like a normal app, so a computer isn't required. There are two ways:
 
 #### Method 1 — From a USB stick (no computer)
 
-1. Copy `MG4Launcher-SWI133-0.3.5.apk` to a USB stick formatted as **FAT32** or **exFAT**.
+1. Copy `MG4Launcher-SWI133-0.3.6.apk` to a USB stick formatted as **FAT32** or **exFAT**.
 2. Plug it into the car, open the file manager and tap the APK.
 3. If Android says it cannot install apps from this source: tap **Settings**, enable
    **Allow from this source** for the file manager and go back.
@@ -700,7 +716,7 @@ The MG firmware may block normal app installs; the `-f` option allows it.
 
 1. Install it:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.3.5.apk
+   adb install -r -f MG4Launcher-SWI133-0.3.6.apk
    ```
 2. Make it the default home:
    ```bash
@@ -783,6 +799,22 @@ Even just **€2** is a great help to keep developing and testing new versions i
 [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
 
 ### Changelog
+
+#### 0.3.6
+- Android Auto, USB stick and radio work normally at start-up (the dongle restart only acts with a real dongle);
+- Turn off the car from the settings (only in P, checked again before the command);
+- The car panel can be hidden;
+- Navigation in a window inside the map panel (experimental);
+- Manoeuvre icons;
+- Charging animation: Simulate charging button, much faster preparation and a log sent automatically on the first charge;
+- Android Auto and CarPlay among the sources while the phone is connected, with title and artist (and cover, if found);
+- Bigger song and station text;
+- Swipe up to go back (optional);
+- Swipe down from the top in full screen (optional);
+- Choose the 5 buttons of the charging bar;
+- Dark theme when the headlights are on (optional);
+- Air direction, front demist and rear-window heating in the Climate menu (thanks to sommistica);
+- No more false station error.
 
 #### 0.3.5
 - **Charging animation**: it now really starts when you plug in the cable with the screen on. Before, it mistook the

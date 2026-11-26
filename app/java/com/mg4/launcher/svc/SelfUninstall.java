@@ -64,6 +64,8 @@ public final class SelfUninstall {
                 return;
             }
             Diag.put("disinstalla", "segno · home MG riattivata e verificata · predefinita: " + home);
+            // 0.3.6 (punto 14, SWI133): tema automatico SAIC rimesso com'era prima della scelta manuale
+            SaicTheme.restore(app);
             main.post(() -> uninstall(app, result));
         }, "mg4-disinstalla").start();
     }

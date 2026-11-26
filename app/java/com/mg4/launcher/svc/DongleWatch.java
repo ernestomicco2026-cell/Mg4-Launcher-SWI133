@@ -35,6 +35,9 @@ import java.util.Set;
  *   serie che hanno dato una sessione col nome di un telefono. Con un telefono escluso collegato non si tocca
  *   nulla sull'USB. Il motivo di ogni esclusione va nella diagnostica (dongle.escluso);</li>
  *   <li>mai durante una chiamata.</li>
+ *   <li>1.0.6 (issue #43): interviene solo con un dongle già riconosciuto in una sessione passata (VID:PID salvato) e
+ *   collegato adesso; senza dongle visibile non fa niente; il secondo tentativo riavvia TUTTI i servizi AllGo e
+ *   controlla che ripartano; mai con un telefono collegato, mai sulla porta con una chiavetta (anche solo vista).</li>
  * </ul>
  * Ogni passo va nella diagnostica (chiavi dongle.*).
  */
@@ -109,8 +112,45 @@ public final class DongleWatch {
         bg.post(this::logUsb);
         long wait = delaySeconds() * 1000L - SystemClock.elapsedRealtime();
         bg.postDelayed(this::check, Math.max(3000, wait));
-        bg.postDelayed(this::learn, 15_000);
+        bg.postDelayed(watch, 15_000);
     }
+
+    /** Tentativo 1 non prima di questi secondi dall'accensione (il dongle deve avere il tempo di partire). */
+    private static final int FIRST_TRY_MIN_S = 40;
+    private int watchTick;
+    /** 1.0.6: chiavetta vista dopo l'avvio (SWI133: il dongle non si resetta più fino al prossimo avvio); servizi AllGo visti attivi. */
+    private volatile boolean storageSeen, allgoSeen;
+
+    /**
+     * Ogni 5 s: chiavetta USB e servizi AllGo (SWI133: nessuna porta media da imparare); ogni 20 s: impara il dongle durante le
+     * sessioni (anche quelle che partono tardi) e aggiorna l'elenco USB se cambia.
+     */
+    private final Runnable watch = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                if (!storageSeen && storagePresent()) {
+                    storageSeen = true;
+                    Diag.put("dongle.chiavetta", "chiavetta USB vista: in questa accensione il dongle non si resetta");
+                    BootLog.mark(ctx, "chiavetta", null);
+                }
+                if (!allgoSeen && SystemClock.elapsedRealtime() < 10 * 60_000L) {
+                    String run = allgoRunning();
+                    if (run.contains("RemoteUIService") && (run.contains("CarPlayService") || run.contains("AndroidAuto"))) {
+                        allgoSeen = true;
+                        BootLog.mark(ctx, "allgo", null);
+                    }
+                }
+                if (watchTick++ % 4 == 0) {
+                    learn();
+                    logUsb();
+                }
+            } catch (Throwable e) {
+                Diag.error("dongle.watch", e.toString());
+            }
+            bg.postDelayed(this, 5_000);
+        }
+    };
 
     private int bootCount() {
         try {
@@ -133,6 +173,13 @@ public final class DongleWatch {
         return media.last().deviceType != 0;
     }
 
+    /**
+     * 1.0.6 (issue #43): si interviene SOLO se un dongle già riconosciuto (visto in una sessione passata, VID:PID salvato)
+     * è collegato ADESSO e la sessione non parte. "Dongle non visibile" = niente. Chi non ha mai avuto un dongle
+     * riconosciuto: la funzione resta spenta da sola. Mai toccare la porta con una chiavetta (anche solo vista dopo
+     * l'avvio); mai fermare i servizi con un telefono collegato (cavo o Bluetooth) o in chiamata. Ogni decisione va in
+     * dongle.esito con il motivo.
+     */
     private void check() {
         if (sessionActive()) {
             Diag.put("dongle.esito", attempts() == 0 ? "sessione partita da sola" : "sessione partita dopo " + attempts() + " tentativi");
@@ -143,39 +190,85 @@ public final class DongleWatch {
             Diag.put("dongle.esito", "nessuna sessione, riavvio automatico spento");
             return;
         }
+        if (knownIds().isEmpty() && learned().isEmpty()) {
+            Diag.put("dongle.esito", "nessuna sessione · mai visto un dongle riconosciuto in una sessione: funzione spenta da sola, non faccio niente");
+            return;
+        }
         int n = attempts();
         if (n >= 2) {
             Diag.put("dongle.esito", "nessuna sessione dopo 2 tentativi: niente altro in questa accensione");
             return;
         }
         if (inCall()) {
-            Diag.put("dongle.esito", "chiamata in corso: rimando");
+            Diag.put("dongle.esito", "chiamata in corso: rimando di 15 s");
             bg.postDelayed(this::check, 15_000);
             return;
         }
         UsbDevice d = findDongle();
-        String excl = excluded();
-        if (d == null && !excl.isEmpty()) {
-            Diag.put("dongle.esito", "nessuna sessione e nessun dongle: collegato solo " + excl + ": non tocco il dispositivo");
-            return;
-        }
         if (d == null) {
-            Diag.put("dongle.esito", "nessuna sessione, ma nessun dongle riconosciuto collegato: non intervengo");
+            String excl = excluded();
+            Diag.put("dongle.esito", "nessuna sessione, ma nessun dongle riconosciuto collegato adesso"
+                    + (excl.isEmpty() ? "" : " (collegato solo " + excl + ")") + ": non faccio niente");
             return;
         }
-        setAttempts(n + 1);
+        String phone = phoneConnected();
         if (n == 0) {
-            boolean ok = resetUsb(d);
-            Diag.put("dongle.tentativo1", "reset porta USB " + describe(d) + ": " + (ok ? "fatto" : "non riuscito"));
-            checkReappear("dongle.dopoReset", d.getVendorId(), d.getProductId());
-            if (!ok) {   // passa subito al secondo
-                bg.postDelayed(this::check, 2000);
+            String excl = excluded();
+            if (!excl.isEmpty()) {
+                Diag.put("dongle.esito", "dongle " + describe(d) + " collegato, ma c'è anche un telefono col cavo (" + excl + "): non tocco niente");
                 return;
             }
-        } else {
-            Diag.put("dongle.tentativo2", "riavvio servizio CarPlay/AA: " + restartAllgo());
+            long left = FIRST_TRY_MIN_S * 1000L - SystemClock.elapsedRealtime();
+            if (left > 0) {
+                Diag.put("dongle.esito", "dongle " + describe(d) + " collegato, nessuna sessione: aspetto ancora " + (left / 1000) + " s");
+                bg.postDelayed(this::check, left);
+                return;
+            }
+            setAttempts(1);
+            // SWI133: nessuna riaccensione della porta media (mai verificata su questo hub): solo il reset USB del dongle
+            String why = storagePresent() ? "chiavetta USB collegata" : storageSeen ? "chiavetta USB vista dopo l'avvio" : null;
+            StringBuilder sb = new StringBuilder("dongle " + describe(d) + " collegato e nessuna sessione · ");
+            if (why != null) sb.append("reset USB non fatto (").append(why).append(")");
+            else sb.append("reset USB del solo dongle: ").append(resetUsb(d) ? "fatto" : "non riuscito");
+            Diag.put("dongle.tentativo1", sb.toString());
+            Diag.put("dongle.esito", "tentativo 1 fatto: ricontrollo tra " + Math.max(delaySeconds(), 30) + " s");
+            BootLog.mark(ctx, "dongle", "tentativo 1");
+            if (why == null) checkReappear("dongle.dopoReset", d.getVendorId(), d.getProductId());
+            bg.postDelayed(this::check, Math.max(delaySeconds(), 30) * 1000L);
+            return;
         }
-        bg.postDelayed(this::check, delaySeconds() * 1000L);
+        if (phone != null) {
+            Diag.put("dongle.esito", "dongle " + describe(d) + " collegato, nessuna sessione dopo il tentativo 1, ma c'è un telefono collegato ("
+                    + phone + "): i servizi CarPlay/Android Auto non si fermano");
+            return;
+        }
+        setAttempts(2);
+        Diag.put("dongle.tentativo2", "riavvio di tutti i servizi CarPlay/Android Auto: " + restartAllgo());
+        BootLog.mark(ctx, "dongle", "tentativo 2");
+        bg.postDelayed(this::check, Math.max(delaySeconds(), 30) * 1000L);
+    }
+
+    /** Telefono collegato: col cavo (escluso dal riavvio) o in Bluetooth. null se nessuno (1.0.6). */
+    private String phoneConnected() {
+        if (!excluded().isEmpty()) return "col cavo USB";
+        // il servizio telefono del launcher è collegato solo con il riquadro Telefono: qui lo si apre per qualche secondo
+        PhoneClient pc = null;
+        try {
+            pc = PhoneClient.get(ctx);
+            pc.start(null);
+            for (int i = 0; i < 20 && !pc.serviceConnected(); i++) SystemClock.sleep(250);
+            SystemClock.sleep(800);   // lettura dello stato dopo il collegamento
+            if (pc.phoneConnected()) return "Bluetooth";
+            if (!pc.serviceConnected()) Diag.put("dongle.telefono", "servizio telefono non raggiungibile: Bluetooth non controllato");
+        } catch (Throwable e) {
+            Diag.put("dongle.telefono", "controllo Bluetooth non riuscito: " + e.getClass().getSimpleName());
+        } finally {
+            if (pc != null) try {
+                pc.stop(null);
+            } catch (Throwable ignored) {
+            }
+        }
+        return null;
     }
 
     /** Pulsante "Riavvia CarPlay/AA": reset del dongle se riconosciuto, poi riavvio del servizio. */
@@ -188,8 +281,11 @@ public final class DongleWatch {
                 UsbDevice d = findDongle();
                 StringBuilder sb = new StringBuilder();
                 String excl = excluded();
-                if (d == null && !excl.isEmpty()) sb.append("collegato solo ").append(excl).append(": USB non toccata; ");
-                if (d != null) sb.append("reset USB ").append(describe(d)).append(": ").append(resetUsb(d) ? "fatto" : "non riuscito").append("; ");
+                boolean phoneOnly = d == null && !excl.isEmpty();
+                boolean stick = storagePresent() || storageSeen;
+                if (phoneOnly) sb.append("collegato solo ").append(excl).append(": USB non toccata; ");
+                else if (d != null && stick) sb.append("chiavetta USB vista: reset USB non fatto; ");
+                else if (d != null) sb.append("reset USB ").append(describe(d)).append(": ").append(resetUsb(d) ? "fatto" : "non riuscito").append("; ");
                 sb.append("servizio: ").append(restartAllgo());
                 res = sb.toString();
             }
@@ -234,7 +330,11 @@ public final class DongleWatch {
         MediaClient.State m = media.last();
         if (m.deviceType == 0) return;
         boolean dongle = dongleName(m.deviceName);
-        Set<String> s = learned(), ph = phones();
+        if (dongle && !usesDongle()) {
+            sp.edit().putBoolean("usaDongle", true).apply();
+            Diag.put("dongle.inUso", "sessione con " + m.deviceName + ": quest'auto usa un dongle");
+        }
+        Set<String> s = learned(), ph = phones(), ids = knownIds();
         boolean changed = false;
         for (UsbDevice d : devices()) {
             int vid = d.getVendorId();
@@ -242,17 +342,38 @@ public final class DongleWatch {
             String serial = serial(d);
             if (serial.isEmpty()) {
                 Diag.putQuiet("dongle.seriale", describe(d) + ": numero di serie non leggibile");
+                if (dongle && !generic(d)) changed |= ids.add(idOf(d));   // VID:PID proprio dei dongle: basta quello
                 continue;
             }
             if (dongle) changed |= s.add(serial) | ph.remove(serial);
             else changed |= ph.add(serial) | s.remove(serial);
+            if (dongle) changed |= ids.add(idOf(d));
         }
         if (changed) {
-            sp.edit().putStringSet("seriali", s).putStringSet("telefoni", ph).apply();
+            sp.edit().putStringSet("seriali", s).putStringSet("telefoni", ph).putStringSet("dongleId", ids).apply();
             if (dongle) Diag.put("dongle.riconosciuto", m.deviceName + " (" + s.size() + " numeri di serie memorizzati)");
             // 1.0.4: niente nome del telefono nel log (dato personale)
             else Diag.put("dongle.telefonoRiconosciuto", "sessione con un telefono: il dispositivo USB è un telefono, non verrà mai resettato");
         }
+    }
+
+    // ---- chiavetta USB (SWI133: la porta media non si tocca mai, serve solo per non resettare il dongle) ----------
+
+    private boolean usesDongle() {
+        return sp.getBoolean("usaDongle", false);
+    }
+
+    /** C'è una chiavetta o un disco USB (classe mass storage) collegato. */
+    private boolean storagePresent() {
+        for (UsbDevice d : devices()) {
+            if (systemDevice(d)) continue;
+            if (d.getDeviceClass() == 8) return true;
+            try {
+                for (int i = 0; i < d.getInterfaceCount(); i++) if (d.getInterface(i).getInterfaceClass() == 8) return true;
+            } catch (Throwable ignored) {
+            }
+        }
+        return false;
     }
 
     private static boolean isDongleVid(int vid) {
@@ -260,19 +381,43 @@ public final class DongleWatch {
         return false;
     }
 
+    /** VID:PID dei dongle visti in una sessione con un nome da dongle (1.0.6). */
+    private Set<String> knownIds() {
+        return new HashSet<>(sp.getStringSet("dongleId", new HashSet<>()));
+    }
+
+    private static String idOf(UsbDevice d) {
+        return String.format(Locale.ROOT, "%04x:%04x", d.getVendorId(), d.getProductId());
+    }
+
+    /** VID:PID che usano anche i telefoni (Apple, modalità accessorio Android): da soli non bastano a dire "dongle". */
+    private static boolean generic(UsbDevice d) {
+        return d.getVendorId() == APPLE_VID || d.getVendorId() == GOOGLE_AOAP_VID;
+    }
+
     /**
-     * Solo un dongle wireless vero (0.9.8): produttore dei dongle, nome USB da dongle (es. "OKBox", "SmartBox",
-     * "smartlinkBox", anche con 18d1:2d00 o 2717:ff40) o numero di serie già visto in una sessione con nome da dongle.
-     * Un numero di serie visto in una sessione col nome di un telefono non è mai un dongle.
+     * 1.0.6 (issue #43): solo un dongle GIÀ RICONOSCIUTO in una sessione passata e collegato adesso. Vale il VID:PID
+     * salvato; per Apple e modalità accessorio Android (gli stessi dei telefoni) serve anche il numero di serie
+     * salvato. Un numero di serie già visto in una sessione con un nome da dongle (versioni di prima) conta come
+     * riconosciuto, e il suo VID:PID si salva. Un numero di serie visto col nome di un telefono non è mai un dongle.
+     * Nome o produttore da dongle da soli NON bastano più.
      */
     private UsbDevice findDongle() {
-        Set<String> s = learned(), ph = phones();
+        Set<String> s = learned(), ph = phones(), ids = knownIds();
         for (UsbDevice d : devices()) {
             if (systemDevice(d)) continue;
             String serial = serial(d);
             if (!serial.isEmpty() && ph.contains(serial)) continue;
-            if (isDongleVid(d.getVendorId()) || dongleName(product(d))) return d;
-            if (!serial.isEmpty() && s.contains(serial)) return d;
+            boolean serialKnown = !serial.isEmpty() && s.contains(serial);
+            boolean idKnown = ids.contains(idOf(d));
+            if (generic(d) ? serialKnown : idKnown || serialKnown) {
+                if (!idKnown) {
+                    ids.add(idOf(d));
+                    sp.edit().putStringSet("dongleId", ids).apply();
+                    Diag.put("dongle.riconosciuto", describe(d) + ": numero di serie già visto in una sessione con un dongle, VID:PID salvato");
+                }
+                return d;
+            }
         }
         return null;
     }
@@ -447,33 +592,101 @@ public final class DongleWatch {
         }
     }
 
-    /** Ferma i servizi CarPlay/AA e riavvia RemoteUIService (il launcher poi si ricollega da solo). */
+    /**
+     * 1.0.6 (issue #43): i servizi che si fermano e si riavviano TUTTI (prima ne ripartiva solo uno e Android Auto restava
+     * spento fino al riavvio). Componenti letti dal manifest degli APK AllGo del firmware R69 (tutti esportati, gli
+     * stessi che avviano i loro ricevitori BOOT_COMPLETED).
+     */
+    private static final String[][] ALLGO_SERVICES = {
+            {"com.allgo.rui", "com.allgo.rui.RemoteUIService", "com.allgo.rui.RemoteUIService"},
+            {"com.allgo.carplay.service", "com.allgo.carplay.service.CarPlayService", "com.allgo.app.carplay.CarPlayService"},
+            {"com.allgo.app.androidauto", "com.allgo.app.androidauto.AndroidAutoService", "com.allgo.app.androidauto.AndroidAutoService"},
+            {"com.allgo.app.androidauto", "com.allgo.app.androidauto.AndroidAutoMainService", "com.allgo.app.androidauto.AndroidAutoMainService"}};
+
+    private static String shortName(String cls) {
+        return cls.substring(cls.lastIndexOf('.') + 1);
+    }
+
+    /** Servizi AllGo attivi adesso (getRunningServices, con REAL_GET_TASKS si vedono anche quelli delle altre app). */
+    private String allgoRunning() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            android.app.ActivityManager am = (android.app.ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+            @SuppressWarnings("deprecation")
+            java.util.List<android.app.ActivityManager.RunningServiceInfo> l = am.getRunningServices(300);
+            for (android.app.ActivityManager.RunningServiceInfo i : l) {
+                if (i.service == null || !i.service.getPackageName().startsWith("com.allgo.")) continue;
+                for (String[] sv : ALLGO_SERVICES) {
+                    if (sv[1].equals(i.service.getClassName()) && sb.indexOf(shortName(sv[1])) < 0)
+                        sb.append(sb.length() == 0 ? "" : ",").append(shortName(sv[1]));
+                }
+            }
+        } catch (Throwable e) {
+            return "?";
+        }
+        return sb.toString();
+    }
+
+    private boolean installed(String pkg) {
+        try {
+            ctx.getPackageManager().getPackageInfo(pkg, 0);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Ferma i servizi CarPlay/AA (com.allgo.carplay.service, com.allgo.app.androidauto, com.allgo.rui) e li riavvia
+     * TUTTI (RemoteUIService, CarPlayService, AndroidAutoService, AndroidAutoMainService); dopo 5 s controlla che siano
+     * ripartiti davvero. Se uno non riparte: solo log, niente altro.
+     */
     private String restartAllgo() {
         StringBuilder sb = new StringBuilder();
+        sb.append("attivi prima [").append(allgoRunning()).append("] · ");
+        // 0.3.6: CarPlayService e AndroidAutoMainService si avviano solo con BIND_TELECOM_CONNECTION_SERVICE. Senza il
+        // permesso non si ferma niente, altrimenti CarPlay/AA resterebbero spenti fino al prossimo avvio
+        if (ctx.checkSelfPermission("android.permission.BIND_TELECOM_CONNECTION_SERVICE") != android.content.pm.PackageManager.PERMISSION_GRANTED)
+            return sb + "permesso BIND_TELECOM_CONNECTION_SERVICE mancante: niente fermato (i servizi non ripartirebbero)";
         try {
             android.app.ActivityManager am = (android.app.ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
             java.lang.reflect.Method fs = android.app.ActivityManager.class.getMethod("forceStopPackage", String.class);
             for (String p : ALLGO_PACKAGES) {
-                try {
-                    ctx.getPackageManager().getPackageInfo(p, 0);
-                } catch (Exception e) {
-                    continue;
-                }
+                if (!installed(p)) continue;
                 fs.invoke(am, p);
                 sb.append(p.substring(p.lastIndexOf('.') + 1)).append(" fermato; ");
             }
         } catch (Throwable e) {
             Throwable t = e instanceof java.lang.reflect.InvocationTargetException && e.getCause() != null ? e.getCause() : e;
-            return "arresto non riuscito: " + t;
+            return sb + "arresto non riuscito: " + t + " (niente riavviato)";
         }
         SystemClock.sleep(1500);
-        try {
-            ctx.startService(new Intent().setComponent(new ComponentName("com.allgo.rui", "com.allgo.rui.RemoteUIService")));
-            sb.append("RemoteUIService riavviato");
-        } catch (Throwable e) {
-            sb.append("riavvio: ").append(e.getClass().getSimpleName()).append(" (si riavvia al ricollegamento)");
+        java.util.List<String> started = new java.util.ArrayList<>();
+        for (String[] sv : ALLGO_SERVICES) {
+            if (!installed(sv[0])) continue;
+            try {
+                ComponentName cn = ctx.startService(new Intent(sv[2]).setComponent(new ComponentName(sv[0], sv[1])));
+                sb.append(shortName(sv[1])).append(cn != null ? " avviato; " : " non trovato; ");
+                if (cn != null) started.add(shortName(sv[1]));
+            } catch (Throwable e) {
+                sb.append(shortName(sv[1])).append(" non avviato (").append(e.getClass().getSimpleName()).append("); ");
+            }
         }
-        sb.append(restartProjection());
+        sb.append(restartProjection()).append(" · ");
+        SystemClock.sleep(5000);
+        String run = allgoRunning();
+        StringBuilder missing = new StringBuilder();
+        for (String[] sv : ALLGO_SERVICES) {
+            if (!installed(sv[0])) continue;
+            String n = shortName(sv[1]);
+            if (!run.contains(n)) missing.append(missing.length() == 0 ? "" : ", ").append(n);
+        }
+        sb.append("dopo 5 s attivi [").append(run).append("]");
+        if ("?".equals(run)) sb.append(" · controllo non riuscito");
+        else if (missing.length() > 0) {
+            sb.append(" · NON ripartiti: ").append(missing).append(" (niente altro)");
+            Diag.put("dongle.servizi", "non ripartiti dopo il riavvio: " + missing);
+        } else sb.append(" · tutti ripartiti");
         return sb.toString();
     }
 
