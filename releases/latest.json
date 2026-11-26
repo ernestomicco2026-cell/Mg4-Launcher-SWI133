@@ -1,6 +1,7 @@
 {
-  "version": "0.3.6",
-  "apk": "releases/MG4Launcher-SWI133-0.3.6.apk",
-  "size": 1243623,
-  "notes": "Android Auto, chiavetta USB e radio regolari all'accensione; Spegni la vettura (solo in P); riquadro auto nascondibile; navigatore in finestra e icone delle manovre; Simula ricarica e animazione più veloce; Android Auto e CarPlay tra le sorgenti; testi più grandi; Scorri in su e tendina dall'alto (facoltativi); 5 pulsanti della barra di ricarica a scelta; tema scuro con i fari; direzione dell'aria, sbrinamento e lunotto nel menu Clima."
+  "version": "0.3.7",
+  "apk": "releases/MG4Launcher-SWI133-0.3.7.apk",
+  "size": 1284583,
+  "sha256": "0637adf9a4baca7bede3b263a87a59e531fd460db155a398b09a10afbe43ff7c",
+  "notes": "Invio dei log più sicuro (tramite server ponte); diagnostica completa, anche automatica una volta per versione; Controllo funzioni più preciso dopo l'accensione; barre di sistema a posto durante le chiamate; copertina con CarPlay; consumo istantaneo accanto alla batteria (a scelta); Android Auto e radio più affidabili all'accensione."
 }

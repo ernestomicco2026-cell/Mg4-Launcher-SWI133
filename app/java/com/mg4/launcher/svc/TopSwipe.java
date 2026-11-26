@@ -56,10 +56,7 @@ public final class TopSwipe {
     }
 
     private static void show(AccessibilityService svc, String pkg) {
-        if (strip != null && owner == svc) {
-            log("attiva sopra " + pkg);
-            return;
-        }
+        if (strip != null && owner == svc) return;   // già attiva: nessuna riga a ogni cambio di app
         hide(null);
         try {
             WindowManager wm = (WindowManager) svc.getSystemService(Context.WINDOW_SERVICE);
@@ -93,7 +90,7 @@ public final class TopSwipe {
             wm.addView(v, lp);
             strip = v;
             owner = svc;
-            log("attiva sopra " + pkg);
+            log("attiva sopra " + pkg + " · " + homeState(svc));
         } catch (Throwable e) {
             log("striscia non aggiunta: " + e.getClass().getSimpleName());
         }
@@ -121,8 +118,25 @@ public final class TopSwipe {
             Diag.put("tendina.gesto", "apertura non riuscita: " + e.getClass().getSimpleName());
             return;
         }
-        Diag.put("tendina.gesto", "usato: " + (qs ? "impostazioni rapide aperte" : nt ? "tendina delle notifiche aperta" : "il sistema non ha aperto la tendina"));
+        Diag.put("tendina.gesto", "usato: " + (qs ? "impostazioni rapide aperte" : nt ? "tendina delle notifiche aperta" : "il sistema non ha aperto la tendina")
+                + " · " + homeState(svc));
         lastLog = "";
+    }
+
+    /**
+     * 0.3.7 (SWI133, issue SWI68 #42): la striscia è una finestra del servizio di accessibilità, quindi non dipende dalla
+     * home predefinita. Nel log si scrive se il launcher è predefinito, per confermarlo da chi lo usa senza.
+     */
+    private static String homeState(Context c) {
+        try {
+            android.content.pm.ResolveInfo ri = c.getPackageManager().resolveActivity(
+                    new android.content.Intent(android.content.Intent.ACTION_MAIN).addCategory(android.content.Intent.CATEGORY_HOME),
+                    android.content.pm.PackageManager.MATCH_DEFAULT_ONLY);
+            boolean ours = ri != null && ri.activityInfo != null && c.getPackageName().equals(ri.activityInfo.packageName);
+            return "launcher predefinito " + (ours ? "sì" : "no");
+        } catch (Throwable e) {
+            return "launcher predefinito ?";
+        }
     }
 
     private static void log(String txt) {

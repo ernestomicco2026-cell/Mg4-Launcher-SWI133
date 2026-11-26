@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-<a href="releases/MG4Launcher-SWI133-0.3.6.apk"><img alt="Scarica / Download 0.3.6" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.3.6-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
+<a href="releases/MG4Launcher-SWI133-0.3.7.apk"><img alt="Scarica / Download 0.3.7" src="https://img.shields.io/badge/Scarica%20%2F%20Download-0.3.7-2ea44f?style=for-the-badge&logo=android&logoColor=white"></a>
 <a href="https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT"><img alt="Sostieni il progetto con PayPal · Support the project with PayPal" src="https://img.shields.io/badge/Sostieni%20%2F%20Support-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white"></a> <img alt="sperimentale / experimental" src="https://img.shields.io/badge/sperimentale%20%2F%20experimental-orange?style=for-the-badge">
 </p>
 
@@ -57,6 +57,12 @@
 ## Schermate / Screenshots
 
 <table>
+<tr>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.7-entrambi-giorno.png" alt="Home con il consumo istantaneo accanto alla batteria (simulazione)" width="100%"><br>
+<sub><b>Accanto alla batteria → Entrambi</b>: carica e consumo istantaneo in kW · <i><b>Next to the battery → Both</b>: charge and instant consumption in kW</i></sub></td>
+<td width="50%" valign="top"><img src="docs/home-SWI133-0.3.7-entrambi-notte-recupero.png" alt="Consumo istantaneo di notte mentre l'auto recupera energia (simulazione)" width="100%"><br>
+<sub>Di notte, mentre l'auto <b>recupera energia</b>: la barra va a sinistra · <i>At night, while the car <b>recovers energy</b>: the bar goes left</i></sub></td>
+</tr>
 <tr>
 <td width="50%" valign="top"><img src="docs/home-SWI133-0.3.6-giorno-radio.png" alt="Home di giorno con la radio: FM/DAB sotto Radio, Mappa/Media in basso (simulazione)" width="100%"><br>
 <sub>Tema <b>giorno</b> con la radio: <b>FM/DAB</b> sotto Radio, <b>Mappa/Media</b> in basso prima dei preferiti · <i><b>Day</b> theme with the radio: <b>FM/DAB</b> under Radio, <b>Map/Media</b> at the bottom before the favourites</i></sub></td>
@@ -236,7 +242,7 @@ Si installa come una normale app: non serve per forza un computer. Ci sono due m
 
 #### Metodo 1 — Da chiavetta USB (senza computer)
 
-1. Copia `MG4Launcher-SWI133-0.3.6.apk` su una chiavetta USB formattata **FAT32** o **exFAT**.
+1. Copia `MG4Launcher-SWI133-0.3.7.apk` su una chiavetta USB formattata **FAT32** o **exFAT**.
 2. Inserisci la chiavetta nell'auto, apri il file manager e tocca l'APK.
 3. Se Android avvisa che non può installare app da questa fonte: tocca **Impostazioni**, attiva
    **Consenti da questa fonte** per il file manager e torna indietro.
@@ -252,7 +258,7 @@ Il firmware MG può bloccare l'installazione normale delle app: l'opzione `-f` l
 
 1. Installa:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.3.6.apk
+   adb install -r -f MG4Launcher-SWI133-0.3.7.apk
    ```
 2. Rendilo la home predefinita:
    ```bash
@@ -334,6 +340,16 @@ Anche solo **2 €** sono un aiuto prezioso per continuare a sviluppare e provar
 [![Offrimi un caffè con PayPal](https://img.shields.io/badge/Offrimi%20un%20caff%C3%A8-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
 
 ### Versioni
+
+#### 0.3.7
+- **Invio dei log più sicuro** (tramite server ponte).
+- **Diagnostica completa**: un pulsante in Impostazioni → Sistema raccoglie e invia tutto quello che serve per
+  correggere i problemi. Parte anche da sola una volta per ogni versione (a scelta, solo letture).
+- **Controllo funzioni** più preciso dopo l'accensione: aspetta rete e servizi invece di segnare errori.
+- **Barre di sistema** a posto durante le chiamate (grazie a **lukeet332**).
+- **Copertina con CarPlay**, quando il telefono la manda.
+- **Consumo istantaneo** accanto alla batteria (a scelta).
+- **Android Auto e radio** più affidabili all'accensione.
 
 #### 0.3.6
 - Android Auto, chiavetta USB e radio regolari all'accensione (il riavvio del dongle interviene solo con un dongle vero);
@@ -700,7 +716,7 @@ It installs like a normal app, so a computer isn't required. There are two ways:
 
 #### Method 1 — From a USB stick (no computer)
 
-1. Copy `MG4Launcher-SWI133-0.3.6.apk` to a USB stick formatted as **FAT32** or **exFAT**.
+1. Copy `MG4Launcher-SWI133-0.3.7.apk` to a USB stick formatted as **FAT32** or **exFAT**.
 2. Plug it into the car, open the file manager and tap the APK.
 3. If Android says it cannot install apps from this source: tap **Settings**, enable
    **Allow from this source** for the file manager and go back.
@@ -716,7 +732,7 @@ The MG firmware may block normal app installs; the `-f` option allows it.
 
 1. Install it:
    ```bash
-   adb install -r -f MG4Launcher-SWI133-0.3.6.apk
+   adb install -r -f MG4Launcher-SWI133-0.3.7.apk
    ```
 2. Make it the default home:
    ```bash
@@ -799,6 +815,16 @@ Even just **€2** is a great help to keep developing and testing new versions i
 [![Buy me a coffee with PayPal](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070BA?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/ErnestoMicco?locale.x=it_IT&country.x=IT)
 
 ### Changelog
+
+#### 0.3.7
+- **Safer log upload** (through a relay server).
+- **Full diagnostics**: a button in Settings → System collects and sends everything needed to fix problems. It also
+  runs by itself once per version (optional, read-only).
+- More accurate **function check** after start-up: it waits for network and services instead of reporting errors.
+- **System bars** fixed during calls (thanks to **lukeet332**).
+- **Cover art with CarPlay**, when the phone sends it.
+- **Instant consumption** next to the battery (optional).
+- More reliable **Android Auto and radio** at start-up.
 
 #### 0.3.6
 - Android Auto, USB stick and radio work normally at start-up (the dongle restart only acts with a real dongle);
