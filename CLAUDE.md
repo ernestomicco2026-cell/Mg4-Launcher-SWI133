@@ -22,7 +22,7 @@
 ## README
 - Changelog in italiano e in inglese (sezioni "Versioni" e "Changelog").
 - Solo numeri di versione, niente date.
-- L'avviso multilingua in cima al README resta.
+- L'avviso su come togliere il launcher sta sotto il riquadro di compatibilità, piccolo e solo in inglese.
 
 ## A ogni nuova versione
 - Alzare `VERSION_CODE` e `VERSION_NAME` in `version.properties`.
